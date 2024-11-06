@@ -1,18 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/StartScreen.dart';
 
 void main() {
   runApp(
     MaterialApp(
       home: Scaffold(
         body: Container(
-          decoration: const BoxDecoration(color: Colors.black),
-          child: const Center(
-            child: Text(
-              "Hallo World",
-              style: TextStyle(color: Colors.white, fontSize: 40),
-            ),
-          ),
-        ),
+          decoration: BoxDecoration(color: Colors.black87),
+          child: const StartScreen(),),
       ),
     ),
   );
