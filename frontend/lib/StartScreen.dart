@@ -24,7 +24,7 @@ class StartScreen extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
             ),
-            child: const Text('Anmelden'),
+            child: const Text('Log In'),
           ),
           SizedBox(height: 20),
           OutlinedButton(
@@ -32,7 +32,7 @@ class StartScreen extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
             ),
-            child: const Text('Registrieren'),
+            child: const Text('Sign In'),
           ),
         ],
       ),
