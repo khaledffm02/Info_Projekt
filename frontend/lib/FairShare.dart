@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/LogIn.dart';
+import 'package:frontend/SignUp.dart';
 import 'StartScreen.dart';
 
 class FairShare extends StatefulWidget {
@@ -12,19 +13,25 @@ class FairShare extends StatefulWidget {
 }
 
 class _FairShareState extends State<FairShare> {
-  Widget? aktivScreen;
+  Widget? aktiveScreen;
 
   @override
   void initState() {
-    aktivScreen=StartScreen(switchScreen);
+    aktiveScreen=StartScreen(switchToLogInScreen, switchToSignUpScreen);
     super.initState();
   }// Give Pointer to switch screen in StartScreen
 
-  void switchScreen() {
+  void switchToLogInScreen() {
     setState(() {
-      aktivScreen = const LogInScreen();           //Setting new State
+      aktiveScreen = const LogInScreen();           //Setting new State
     });
   }
+  void switchToSignUpScreen() {
+    setState(() {
+      aktiveScreen = const SignUpScreen();           //Setting new State
+    });
+  }
+
 
   @override
   Widget build(context) {
@@ -32,7 +39,7 @@ class _FairShareState extends State<FairShare> {
       home: Scaffold(
         body: Container(
           decoration: const BoxDecoration(color: Colors.black87),
-          child: aktivScreen,                          //Rendering the content Conditionaly
+          child: aktiveScreen,                          //Rendering the content Conditionaly
         ),
       ),
     );

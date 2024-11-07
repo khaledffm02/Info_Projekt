@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:frontend/LogIn.dart';
 
 class StartScreen extends StatelessWidget {
-  const  StartScreen(this.logIn, {super.key} );   //switchState can be  now used as a   Function
-  final void Function() logIn;                   //LogIn Variable that cann be use in a button
+  const StartScreen(this.logIn, this.SignUp,
+      {super.key}); //switchState can be  now used as a   Function
+  final void Function() logIn;
+  final void Function() SignUp; //LogIn Variable that cann be use in a button
   @override
   Widget build(context) {
     return Center(
@@ -31,7 +33,9 @@ class StartScreen extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () {
+              SignUp();
+            },
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
             ),
