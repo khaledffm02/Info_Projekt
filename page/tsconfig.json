@@ -1,0 +1,16 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "include": ["./src/**/*"],
+  "exclude": ["**/node_modules", "**/dist"],
+  "compilerOptions": {
+    "sourceMap": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["./shared/src/*"],
+      "@global/*": ["../global/src/*"]
+    },
+    "types": ["vite/client"]
+  }
+}
