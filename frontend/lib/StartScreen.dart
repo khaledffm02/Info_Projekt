@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/LogIn.dart';
 
 class StartScreen extends StatelessWidget {
-  const StartScreen({super.key});
-
+  const  StartScreen(this.logIn, {super.key} );   //switchState can be  now used as a   Function
+  final void Function() logIn;                   //LogIn Variable that cann be use in a button
   @override
   Widget build(context) {
     return Center(
@@ -20,13 +21,15 @@ class StartScreen extends StatelessWidget {
           ),
           const SizedBox(height: 200),
           OutlinedButton(
-            onPressed: () {},
+            onPressed: () {
+              logIn();
+            },
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
             ),
             child: const Text('Log In'),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           OutlinedButton(
             onPressed: () {},
             style: OutlinedButton.styleFrom(
