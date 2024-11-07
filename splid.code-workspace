@@ -1,0 +1,50 @@
+{
+  "folders": [
+    {
+      "name": "✨ root",
+      "path": "."
+    },
+    {
+      "name": "💛 functions",
+      "path": "./functions"
+    },
+    {
+      "name": "🕹️ page",
+      "path": "./page"
+    }
+  ],
+  "settings": {
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "files.autoSave": "onFocusChange",
+
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "explicit"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultColorDecorators": true,
+    "editor.semanticHighlighting.enabled": true,
+    "editor.inlineSuggest.enabled": true,
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.linkedEditing": true,
+
+    "editor.fontFamily": "'Monaspace Neon', monospace",
+    "editor.fontWeight": 100,
+    "editor.fontSize": 16,
+    "editor.lineHeight": 25,
+    "editor.fontLigatures": "'calt', 'liga', 'dlig', 'ss04'",
+    "workbench.colorTheme": "Dark+ Mono",
+
+    "git.ignoreLimitWarning": true,
+    // tailwind to run
+    "tailwindCSS.emmetCompletions": true,
+    "tailwindCSS.experimental.configFile": {
+      "../frontend/tailwind.config.js": "../frontend/**"
+    },
+
+    // so we dont get errors for @tailwind in css files
+    "css.validate": false
+  }
+}
