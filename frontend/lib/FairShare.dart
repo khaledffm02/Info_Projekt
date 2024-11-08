@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/ForgotPassword.dart';
 import 'package:frontend/LogIn.dart';
 import 'package:frontend/SignUp.dart';
 import 'StartScreen.dart';
@@ -36,6 +37,12 @@ class _FairShareState extends State<FairShare> {
   @override
   Widget build(context) {
     return MaterialApp(
+      routes: {
+        '/SignUpScreen' : (context) => SignUpScreen(),
+        '/LogInScreen' : (context) => LogInScreen(),
+        '/ForgotPassword' : (context) => Forgotpassword(),
+
+      },
       home: Scaffold(
         body: Container(
           decoration: const BoxDecoration(color: Colors.black87),

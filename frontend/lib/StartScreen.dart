@@ -24,7 +24,8 @@ class StartScreen extends StatelessWidget {
           const SizedBox(height: 200),
           OutlinedButton(
             onPressed: () {
-              logIn();
+              //logIn();
+              Navigator.pushNamed(context, '/LogInScreen');
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
@@ -34,12 +35,13 @@ class StartScreen extends StatelessWidget {
           const SizedBox(height: 20),
           OutlinedButton(
             onPressed: () {
-              SignUp();
+              //SignUp();
+              Navigator.pushNamed(context, '/SignUpScreen');
             },
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.white,
             ),
-            child: const Text('Sign In'),
+            child: const Text('Sign Up'),
           ),
         ],
       ),

@@ -10,13 +10,79 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+
+
   @override
   Widget build(context) {
-    return const Center(
-      child: Text(
-        'Sign Up Screen Screen',
-        style: TextStyle(color: Colors.white, fontSize: 20),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Create Account"),
+        backgroundColor: Colors.lightBlue,
+        centerTitle: true,
+      ),
+      body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextField(
+                    controller: _usernameController,
+                    decoration: InputDecoration(
+                      labelText: 'Username',
+                      border: OutlineInputBorder(),
+                    )
+                ),
+
+                const SizedBox(height: 16.0), // Space between text fields
+
+                TextField(
+                  controller: _emailController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                    labelText: 'Password',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 16.0), // Space between text fields
+                ElevatedButton(
+                  onPressed:(){
+                    final username = _usernameController.text;
+                    final email = _emailController.text;
+                    print('Username: $username, Email: $email');
+                    // prints out your info in console
+                  },
+                  child: const Text('Create Account'),
+
+                )
+
+
+              ],
+            ),
+          )
+      ),
+
+      bottomNavigationBar: BottomNavigationBar(
+          items:[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+            ),
+
+            BottomNavigationBarItem(
+                icon: Icon(Icons.settings),
+                label: 'Settings'
+            ),
+          ]
+
       ),
     );
+
+
+
+
   }
+
 }
