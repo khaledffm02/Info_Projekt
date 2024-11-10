@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async{
 
- if(kIsWeb){Firebase.initializeApp(options: const FirebaseOptions(apiKey: "AIzaSyAocdxKkpHf2hDQ4QlZtT_2HKU-ThEspUI",
+
+ WidgetsFlutterBinding.ensureInitialized();
+ 
+ if(kIsWeb){await Firebase.initializeApp(options: const FirebaseOptions(apiKey: "AIzaSyAocdxKkpHf2hDQ4QlZtT_2HKU-ThEspUI",
   authDomain: "projekt-24-a9104.firebaseapp.com",
   projectId: "projekt-24-a9104",
   storageBucket: "projekt-24-a9104.firebasestorage.app",
   messagingSenderId: "351644604797",
   appId: "1:351644604797:web:2279767fbcdab70688d414"));
 } else{
-   Firebase.initializeApp();
+  await Firebase.initializeApp();
 }
   
   runApp(
