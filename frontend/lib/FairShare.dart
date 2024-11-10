@@ -14,22 +14,22 @@ class FairShare extends StatefulWidget {
 }
 
 class _FairShareState extends State<FairShare> {
-  Widget? aktiveScreen;
+  Widget? aktivScreen;
 
   @override
   void initState() {
-    aktiveScreen=StartScreen(switchToLogInScreen, switchToSignUpScreen);
+    aktivScreen=StartScreen(switchToLogInScreen, switchToSignUpScreen);
     super.initState();
   }// Give Pointer to switch screen in StartScreen
 
   void switchToLogInScreen() {
     setState(() {
-      aktiveScreen = const LogInScreen();           //Setting new State
+      aktivScreen = const LogInScreen();           //Setting new State
     });
   }
   void switchToSignUpScreen() {
     setState(() {
-      aktiveScreen = const SignUpScreen();           //Setting new State
+      aktivScreen = const SignUpScreen();           //Setting new State
     });
   }
 
@@ -40,13 +40,14 @@ class _FairShareState extends State<FairShare> {
       routes: {
         '/SignUpScreen' : (context) => SignUpScreen(),
         '/LogInScreen' : (context) => LogInScreen(),
-        '/ForgotPassword' : (context) => Forgotpassword(),
+        '/ForgotPassword' : (context) => ForgotPassword(),
+
 
       },
       home: Scaffold(
         body: Container(
           decoration: const BoxDecoration(color: Colors.black87),
-          child: aktiveScreen,                          //Rendering the content Conditionaly
+          child: aktivScreen,                          //Rendering the content Conditionaly
         ),
       ),
     );
