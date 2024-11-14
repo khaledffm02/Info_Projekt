@@ -12,23 +12,18 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-<<<<<<< HEAD
-=======
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-
->>>>>>> 4baa19b (create and implement a Validator)
   @override
   Widget build(context) {
-    return const Center(
-      child: Text(
-        'Sign Up Screen Screen',
-        style: TextStyle(color: Colors.white, fontSize: 20),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Create Account"),
+        backgroundColor: Colors.black54,
+        centerTitle: true,
       ),
-<<<<<<< HEAD
-=======
       body: Center(
           child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -125,7 +120,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
       ]),
->>>>>>> 4baa19b (create and implement a Validator)
     );
   }
 }

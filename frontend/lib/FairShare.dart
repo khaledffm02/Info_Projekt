@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/ForgotPassword.dart';
 import 'package:frontend/LogIn.dart';
 import 'package:frontend/SignUp.dart';
 import 'StartScreen.dart';
@@ -13,22 +14,22 @@ class FairShare extends StatefulWidget {
 }
 
 class _FairShareState extends State<FairShare> {
-  Widget? aktiveScreen;
+  Widget? aktivScreen;
 
   @override
   void initState() {
-    aktiveScreen=StartScreen(switchToLogInScreen, switchToSignUpScreen);
+    aktivScreen=StartScreen(switchToLogInScreen, switchToSignUpScreen);
     super.initState();
   }// Give Pointer to switch screen in StartScreen
 
   void switchToLogInScreen() {
     setState(() {
-      aktiveScreen = const LogInScreen();           //Setting new State
+      aktivScreen = const LogInScreen();           //Setting new State
     });
   }
   void switchToSignUpScreen() {
     setState(() {
-      aktiveScreen = const SignUpScreen();           //Setting new State
+      aktivScreen = const SignUpScreen();           //Setting new State
     });
   }
 
@@ -36,10 +37,17 @@ class _FairShareState extends State<FairShare> {
   @override
   Widget build(context) {
     return MaterialApp(
+      routes: {
+        '/SignUpScreen' : (context) => SignUpScreen(),
+        '/LogInScreen' : (context) => LogInScreen(),
+        '/ForgotPassword' : (context) => ForgotPassword(),
+
+
+      },
       home: Scaffold(
         body: Container(
           decoration: const BoxDecoration(color: Colors.black87),
-          child: aktiveScreen,                          //Rendering the content Conditionaly
+          child: aktivScreen,                          //Rendering the content Conditionaly
         ),
       ),
     );
