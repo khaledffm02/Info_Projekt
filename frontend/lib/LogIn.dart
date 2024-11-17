@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Menu.dart';
 import 'package:frontend/Validator.dart';
 
 class LogInScreen extends StatefulWidget {
@@ -21,9 +22,10 @@ class _LogInScreenState extends State<LogInScreen> {
     return Scaffold(
       appBar: AppBar(
           title: Text("Login"),
-          backgroundColor: Colors.lightBlue,
+          backgroundColor: Colors.black12,
           centerTitle: true,
       ),
+      drawer: CustomDrawer(),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),

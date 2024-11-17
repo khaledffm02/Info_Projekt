@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/LogIn.dart';
+import 'package:frontend/Menu.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen(this.logIn, this.SignUp,
@@ -10,41 +11,42 @@ class StartScreen extends StatelessWidget {
   @override
   Widget build(context) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Image.asset('assets/images/logo.png', width: 250),
-          const Text(
-            "App Name",
-            style: TextStyle(
-              fontSize: 30,
-              color: Color.fromARGB(255, 255, 255, 255),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset('assets/images/logo.png', width: 250),
+            const Text(
+              "App Name",
+              style: TextStyle(
+                fontSize: 30,
+                color: Color.fromARGB(255, 255, 255, 255),
+              ),
             ),
-          ),
-          const SizedBox(height: 200),
-          OutlinedButton(
-            onPressed: () {
-              //logIn();
-              Navigator.pushNamed(context, '/LogInScreen');
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.white,
+            const SizedBox(height: 200),
+            OutlinedButton(
+              onPressed: () {
+                //logIn();
+                Navigator.pushNamed(context, '/LogInScreen');
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Log In'),
             ),
-            child: const Text('Log In'),
-          ),
-          const SizedBox(height: 20),
-          OutlinedButton(
-            onPressed: () {
-              //SignUp();
-              Navigator.pushNamed(context, '/SignUpScreen');
-            },
-            style: OutlinedButton.styleFrom(
-              foregroundColor: Colors.white,
+            const SizedBox(height: 20),
+            OutlinedButton(
+              onPressed: () {
+                //SignUp();
+                Navigator.pushNamed(context, '/SignUpScreen');
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.white,
+              ),
+              child: const Text('Sign Up'),
             ),
-            child: const Text('Sign Up'),
-          ),
-        ],
-      ),
+          ],
+        ),
+
     );
   }
 }

@@ -1,18 +1,26 @@
+// Join Group
+
 import 'package:flutter/material.dart';
-import 'package:frontend/Validator.dart';
 
+class JoinGroup extends StatelessWidget {
+  final TextEditingController _codeController = TextEditingController();
 
-class ForgotPassword extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
+  JoinGroup({super.key});
 
-  ForgotPassword({super.key});
-
+  //Check the code
+  String? validateCode(String code) {
+    final codeRegex = RegExp(r'^[a-zA-Z0-9]{6}$');     //code is 6 digits and can have a-z, A-Z, 0-9
+    if (!codeRegex.hasMatch(code)) {
+      return 'Please enter a valid code';
+    }
+    return null; // code ist gültig
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Forgot Password?"),
+        title: const Text("Join Group"),
         backgroundColor: Colors.black12,
         centerTitle: true,
       ),
@@ -22,27 +30,26 @@ class ForgotPassword extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: _emailController,
+              controller: _codeController,
               decoration: const InputDecoration(
-                labelText: 'Enter your Email',
+                labelText: 'Enter invitation code',
                 border: OutlineInputBorder(),
               ),
-              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () {
                 // Revalidating beim Klicken auf den Button
-                final email = _emailController.text;
-                final errorMessage = Validator.validateEmail(email);
+                final code = _codeController.text;
+                final errorMessage = validateCode(code);
 
                 if (errorMessage != null) {
-                  // Zeige Fehlermeldung, falls die E-Mail ungültig ist
+                  // Zeige Fehlermeldung, falls der Code ungültig ist
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
-                        title: const Text('Invalid Email'),
+                        title: const Text('Invalid Code'),
                         content: Text(errorMessage),
                         actions: [
                           TextButton(
@@ -56,18 +63,18 @@ class ForgotPassword extends StatelessWidget {
                     },
                   );
                 } else {
-                  // Zeigt Bestätigung, falls die E-Mail gültig ist
+                  // Zeigt Bestätigung, falls der Code gültig ist
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Success'),
-                        content: Text('Password reset link sent to $email'),
+                        content: Text('You are in the new group'),
                         actions: [
                           TextButton(
                             onPressed: () {
                               Navigator.of(context).pop();
-                              Navigator.pushNamed(context, '/LogInScreen');
+                              Navigator.pushNamed(context, '/GroupPage');
                             },
                             child: const Text('OK'),
                           ),
@@ -77,7 +84,7 @@ class ForgotPassword extends StatelessWidget {
                   );
                 }
               },
-              child: const Text('Validate Email'),
+              child: const Text('Validate Code'),
             ),
           ],
         ),
