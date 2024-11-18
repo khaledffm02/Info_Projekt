@@ -19,7 +19,7 @@ class GroupOverview extends StatelessWidget {
         children: [
           // Tabs (Overview and Expenses)
           Container(
-            color: Colors.orange,
+            color: Colors.lightBlue, // Changed to blue
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -28,7 +28,7 @@ class GroupOverview extends StatelessWidget {
                   onPressed: () {
                     // Handle Overview Tab
                   },
-                  style: TextButton.styleFrom(backgroundColor: Colors.orange),
+                  style: TextButton.styleFrom(backgroundColor: Colors.lightBlue),
                   child: const Text(
                     "Übersicht",
                     style: TextStyle(color: Colors.white),
@@ -64,32 +64,6 @@ class GroupOverview extends StatelessWidget {
                   ),
                 );
               },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle "Abrechnen" button
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                  ),
-                  child: const Text("Abrechnen"),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle "Einladen" button
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                  ),
-                  child: const Text("Einladen"),
-                ),
-              ],
             ),
           ),
         ],
