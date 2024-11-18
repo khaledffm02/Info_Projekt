@@ -92,8 +92,8 @@ class _CreateGroupState extends State<CreateGroup> {
                               arguments: {
                                 'groupName': _groupNameController.text,
                                 'members': [
-                                  {"name": "Khaled", "amount": 0.00},
-                                  {"name": "Tester", "amount": 0.00},
+                                  {"name": "Tester1", "amount": 0.00},
+                                  {"name": "Tester2", "amount": 0.00},
                                 ],
                               },
                             );

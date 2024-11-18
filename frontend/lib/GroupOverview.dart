@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Menu.dart';
 
 class GroupOverview extends StatelessWidget {
   final String groupName; // Group name passed from CreateGroup.dart
@@ -10,6 +11,7 @@ class GroupOverview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: CustomDrawer(),
       appBar: AppBar(
         title: Text(groupName), // Display the group name
         backgroundColor: Colors.lightBlue,
@@ -30,16 +32,16 @@ class GroupOverview extends StatelessWidget {
                   },
                   style: TextButton.styleFrom(backgroundColor: Colors.lightBlue),
                   child: const Text(
-                    "Übersicht",
+                    "Overview",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
                 TextButton(
                   onPressed: () {
-                    // Handle Expenses Tab
+                    //Handle Statistics
                   },
                   child: const Text(
-                    "Statistiken",
+                    "Statistics",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
