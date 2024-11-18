@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/CreateGroup.dart';
 import 'package:frontend/ForgotPassword.dart';
+import 'package:frontend/GroupOverview.dart';
 import 'package:frontend/GroupPage.dart';
 import 'package:frontend/JoinGroup.dart';
 import 'package:frontend/LogIn.dart';
@@ -47,9 +48,25 @@ class _FairShareState extends State<FairShare> {
         '/CreateGroup': (context) => CreateGroup(),
         '/JoinGroup': (context) => JoinGroup(),
         '/GroupPage': (context) => GroupPage(),
-
-
       },
+
+      onGenerateRoute: (settings) {
+        // Handle named routes dynamically
+        if (settings.name == '/GroupOverview') {
+          final args = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) {
+              return GroupOverview(
+                groupName: args['groupName'],
+                members: args['members'],
+              );
+            },
+          );
+        }
+        return null; // Return null if the route does not match
+      },
+
+
       home: Scaffold(
         body: Container(
           decoration: const BoxDecoration(color: Colors.black87),

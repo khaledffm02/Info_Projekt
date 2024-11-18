@@ -43,6 +43,17 @@ class StartScreen extends StatelessWidget {
             ),
             child: const Text('Sign Up'),
           ),
+      const SizedBox(height: 20),
+      OutlinedButton(
+        onPressed: () {
+          //SignUp();
+          Navigator.pushNamed(context, '/GroupPage');
+        },
+        style: OutlinedButton.styleFrom(
+          foregroundColor: Colors.white,
+        ),
+        child: const Text('GroupPage'),
+      ),
         ],
       ),
     );

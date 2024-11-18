@@ -85,7 +85,19 @@ class _CreateGroupState extends State<CreateGroup> {
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop();
-                            Navigator.pushNamed(context, '/GroupPage');
+
+                            Navigator.pushNamed(
+                              context,
+                              '/GroupOverview',
+                              arguments: {
+                                'groupName': _groupNameController.text,
+                                'members': [
+                                  {"name": "Khaled", "amount": 0.00},
+                                  {"name": "Tester", "amount": 0.00},
+                                ],
+                              },
+                            );
+
                           },
                           child: const Text('OK'),
                         ),
