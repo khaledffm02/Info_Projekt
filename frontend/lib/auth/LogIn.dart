@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/CustomDrawer.dart';
-import 'package:frontend/Validator.dart';
+import 'package:frontend/shared/CustomDrawer.dart';
+import 'package:frontend/shared/Validator.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});

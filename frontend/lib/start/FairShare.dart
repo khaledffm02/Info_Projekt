@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/CreateGroup.dart';
-import 'package:frontend/ForgotPassword.dart';
-import 'package:frontend/GroupPage.dart';
-import 'package:frontend/JoinGroup.dart';
-import 'package:frontend/LogIn.dart';
-import 'package:frontend/SignUp.dart';
+import 'package:frontend/group/CreateGroup.dart';
+import 'package:frontend/auth/ForgotPassword.dart';
+import 'package:frontend/group/GroupPage.dart';
+import 'package:frontend/group/JoinGroup.dart';
+import 'package:frontend/auth/LogIn.dart';
+import 'package:frontend/auth/SignUp.dart';
 import 'StartScreen.dart';
 
 class FairShare extends StatefulWidget {
