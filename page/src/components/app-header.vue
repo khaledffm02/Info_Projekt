@@ -7,7 +7,7 @@ import CurrencySwitch from "./currency-switch.vue";
   <div class="flex w-full border-b p-2">
     <div v-if="isAuthenticated" class="ml-auto">
       <CurrencySwitch />
-      You are {{ user.displayName }}
+      You are {{ user?.displayName }}
       <button @click="signOut()">Logout</button>
     </div>
     <div v-else class="ml-auto">
