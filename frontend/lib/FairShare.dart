@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/CreateGroup.dart';
 import 'package:frontend/ForgotPassword.dart';
 import 'package:frontend/LogIn.dart';
 import 'package:frontend/SignUp.dart';
@@ -41,6 +42,7 @@ class _FairShareState extends State<FairShare> {
         '/SignUpScreen' : (context) => SignUpScreen(),
         '/LogInScreen' : (context) => LogInScreen(),
         '/ForgotPassword' : (context) => ForgotPassword(),
+        '/CreateGroup' : (context) =>CreateGroup(),
 
 
       },

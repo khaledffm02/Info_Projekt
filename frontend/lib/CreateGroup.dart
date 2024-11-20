@@ -48,6 +48,7 @@ class _CreateGroupState extends State<CreateGroup> {
         title: const Text("Create Group"),
         backgroundColor: Colors.black12,
         centerTitle: true,
+
         actions: [
           TextButton(
             onPressed: () {
