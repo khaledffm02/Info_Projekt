@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/LogIn.dart';
-import 'package:frontend/Menu.dart';
+import 'package:frontend/auth/LogIn.dart';
+import 'package:frontend/shared/CustomDrawer.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen(this.logIn, this.SignUp,
