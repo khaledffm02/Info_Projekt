@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/CreateExpense.dart';
 import 'package:frontend/CreateGroup.dart';
 import 'package:frontend/ForgotPassword.dart';
 import 'package:frontend/GroupOverview.dart';
@@ -48,8 +49,24 @@ class _FairShareState extends State<FairShare> {
         '/CreateGroup': (context) => CreateGroup(),
         '/JoinGroup': (context) => JoinGroup(),
         '/GroupPage': (context) => GroupPage(),
+        '/CreateExpense': (context) {
+          final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+          return CreateExpense(members: arguments['members']);
+        },
+
+        '/GroupOverview': (context) {
+        // Retrieve the arguments from the navigation
+        final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+        return GroupOverview(
+        groupName: arguments['groupName'],
+        members: arguments['members'],
+        );
+
+        }
+
       },
 
+      /*
       onGenerateRoute: (settings) {
         // Handle named routes dynamically
         if (settings.name == '/GroupOverview') {
@@ -65,7 +82,7 @@ class _FairShareState extends State<FairShare> {
         }
         return null; // Return null if the route does not match
       },
-
+*/
 
       home: Scaffold(
         body: Container(

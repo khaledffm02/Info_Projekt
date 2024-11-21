@@ -65,11 +65,34 @@ class GroupOverview extends StatelessWidget {
                     ),
                   ),
                 );
+
               },
             ),
           ),
+
+          const SizedBox(height: 16.0), // Space between buttons
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/CreateExpense',
+                arguments: {
+                  'members': [
+                    {"name": "Tester1", "amount": 0.00},
+                    {"name": "Tester2", "amount": 0.00},
+                  ],
+                },
+              );
+            },
+              child:
+              const Text('Create Expense'),
+
+            ),
+
+
         ],
+
+
       ),
+
     );
   }
 }

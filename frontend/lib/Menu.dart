@@ -1,5 +1,3 @@
-// Drawer
-
 import 'package:flutter/material.dart';
 
 class CustomDrawer extends StatelessWidget {
