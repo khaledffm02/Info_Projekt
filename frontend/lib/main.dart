@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/start/FairShare.dart';
 import 'package:frontend/start/StartScreen.dart';
 
+
+//change
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if(kIsWeb) {
