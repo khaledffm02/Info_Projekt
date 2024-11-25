@@ -1,27 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/Menu.dart';
+import 'package:frontend/shared/CustomDrawer.dart';
+import 'package:frontend/shared/GroupNavigationBar.dart';
 
 class GroupOverview extends StatelessWidget {
   final String groupName; // Group name passed from CreateGroup.dart
   final List<Map<String, dynamic>> members; // List of group members and their expenses
 
   // Constructor to accept the group name and member data
-  GroupOverview({required this.groupName, required this.members});
+  const GroupOverview({super.key, required this.groupName, required this.members});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: CustomDrawer(),
+      drawer: const CustomDrawer(),
       appBar: AppBar(
         title: Text(groupName), // Display the group name
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.black12,
         centerTitle: true,
       ),
       body: Column(
         children: [
           // Tabs (Overview and Expenses)
           Container(
-            color: Colors.lightBlue, // Changed to blue
+            color: Colors.black12,
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -30,7 +31,7 @@ class GroupOverview extends StatelessWidget {
                   onPressed: () {
                     // Handle Overview Tab
                   },
-                  style: TextButton.styleFrom(backgroundColor: Colors.lightBlue),
+                  style: TextButton.styleFrom(backgroundColor: Colors.black12),
                   child: const Text(
                     "Overview",
                     style: TextStyle(color: Colors.white),
@@ -45,6 +46,19 @@ class GroupOverview extends StatelessWidget {
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
+
+                TextButton(
+                  onPressed: () {
+                    //Handle Transactions
+                  },
+                  child: const Text(
+                    "Transaction History",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+
+
+
               ],
             ),
           ),
@@ -70,22 +84,6 @@ class GroupOverview extends StatelessWidget {
             ),
           ),
 
-          const SizedBox(height: 16.0), // Space between buttons
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/CreateExpense',
-                arguments: {
-                  'members': [
-                    {"name": "Tester1", "amount": 0.00},
-                    {"name": "Tester2", "amount": 0.00},
-                  ],
-                },
-              );
-            },
-              child:
-              const Text('Create Expense'),
-
-            ),
 
 
         ],
@@ -93,6 +91,13 @@ class GroupOverview extends StatelessWidget {
 
       ),
 
+      bottomNavigationBar: GroupNavigationBar(
+        groupName: groupName,  // Pass group name
+        members: members,
+
+      ),  // No need for callbacks
+
     );
+
   }
 }

@@ -69,7 +69,7 @@ class JoinGroup extends StatelessWidget {
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Success'),
-                        content: Text('You are in the new group'),
+                        content: const Text('You are in the new group'),
                         actions: [
                           TextButton(
                             onPressed: () {

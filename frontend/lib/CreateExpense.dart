@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CreateExpense extends StatefulWidget {
   final List<Map<String, dynamic>> members; // List of group members
 
-  CreateExpense({required this.members});
+  const CreateExpense({super.key, required this.members});
 
   @override
   _CreateExpenseState createState() => _CreateExpenseState();
@@ -74,7 +74,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                         width: 100.0,
                         child: TextField(
                           keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: "0.00",
                             border: OutlineInputBorder(),
                           ),
@@ -90,7 +90,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                       ),
                     ],
                   );
-                }).toList(),
+                }),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
                   onPressed: () {
@@ -117,7 +117,7 @@ class _CreateExpenseState extends State<CreateExpense> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Create Expense"),
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.black12,
         centerTitle: true,
       ),
       body: Padding(
@@ -148,14 +148,14 @@ class _CreateExpenseState extends State<CreateExpense> {
                 ElevatedButton(
                   onPressed: _selectPayer,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue,
+                    backgroundColor: Colors.black12,
                   ),
                   child: Text(selectedPayer ?? "Payer"),
                 ),
                 ElevatedButton(
                   onPressed: _distributeAmount,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue,
+                    backgroundColor: Colors.black12,
                   ),
                   child: const Text("Receiver"),
                 ),
@@ -183,7 +183,7 @@ class _CreateExpenseState extends State<CreateExpense> {
           // Save the expense logic here
           print("Expense saved: Title: ${_titleController.text}, Amount: ${_amountController.text}, Payer: $selectedPayer, Distribution: $distributedAmounts");
         },
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.black12,
         child: const Icon(Icons.save),
       ),
     );

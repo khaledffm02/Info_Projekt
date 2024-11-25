@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/CreateExpense.dart';
-import 'package:frontend/CreateGroup.dart';
-import 'package:frontend/ForgotPassword.dart';
+import 'package:frontend/group/CreateGroup.dart';
+import 'package:frontend/auth/ForgotPassword.dart';
 import 'package:frontend/GroupOverview.dart';
-import 'package:frontend/GroupPage.dart';
-import 'package:frontend/JoinGroup.dart';
-import 'package:frontend/LogIn.dart';
-import 'package:frontend/SignUp.dart';
-import 'StartScreen.dart';
+import 'package:frontend/group/GroupPage.dart';
+import 'package:frontend/group/JoinGroup.dart';
+import 'package:frontend/auth/LogIn.dart';
+import 'package:frontend/auth/SignUp.dart';
+import 'package:frontend/StartScreen.dart';
+import 'package:frontend/start/Dashboard.dart';
 
 class FairShare extends StatefulWidget {
   const FairShare({super.key});
@@ -43,12 +44,14 @@ class _FairShareState extends State<FairShare> {
   Widget build(context) {
     return MaterialApp(
       routes: {
-        '/SignUpScreen' : (context) => SignUpScreen(),
-        '/LogInScreen' : (context) => LogInScreen(),
+        '/SignUpScreen' : (context) => const SignUpScreen(),
+        '/LogInScreen' : (context) => const LogInScreen(),
         '/ForgotPassword' : (context) => ForgotPassword(),
-        '/CreateGroup': (context) => CreateGroup(),
+        '/CreateGroup': (context) => const CreateGroup(),
         '/JoinGroup': (context) => JoinGroup(),
-        '/GroupPage': (context) => GroupPage(),
+        '/GroupPage': (context) => const GroupPage(),
+        '/Dashboard': (context) => const Dashboard(),
+
         '/CreateExpense': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
           return CreateExpense(members: arguments['members']);
@@ -66,23 +69,8 @@ class _FairShareState extends State<FairShare> {
 
       },
 
-      /*
-      onGenerateRoute: (settings) {
-        // Handle named routes dynamically
-        if (settings.name == '/GroupOverview') {
-          final args = settings.arguments as Map<String, dynamic>;
-          return MaterialPageRoute(
-            builder: (context) {
-              return GroupOverview(
-                groupName: args['groupName'],
-                members: args['members'],
-              );
-            },
-          );
-        }
-        return null; // Return null if the route does not match
-      },
-*/
+
+
 
       home: Scaffold(
         body: Container(

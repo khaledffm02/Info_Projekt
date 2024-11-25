@@ -1,15 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/start/FairShare.dart';
-import 'package:frontend/start/StartScreen.dart';
+import 'package:frontend/FairShare.dart';
 
 
 //change
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   if(kIsWeb) {
-    await Firebase.initializeApp(options: FirebaseOptions(
+    await Firebase.initializeApp(options: const FirebaseOptions(
         apiKey: "AIzaSyAocdxKkpHf2hDQ4QlZtT_2HKU-ThEspUI",
         authDomain: "projekt-24-a9104.firebaseapp.com",
         projectId: "projekt-24-a9104",
@@ -20,5 +19,5 @@ void main() async {
   else{
     await Firebase.initializeApp();
   }
-  runApp(FairShare());
+  runApp(const FairShare());
 }

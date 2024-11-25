@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/LogIn.dart';
+import 'package:frontend/auth/LogIn.dart';
+import 'package:frontend/FairShare.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen(this.logIn, this.SignUp,
@@ -15,7 +15,7 @@ class StartScreen extends StatelessWidget {
         children: [
           Image.asset('assets/images/logo.png', width: 250),
           const Text(
-            "App Name",
+            "FairShare",
             style: TextStyle(
               fontSize: 30,
               color: Color.fromARGB(255, 255, 255, 255),
@@ -43,17 +43,9 @@ class StartScreen extends StatelessWidget {
             ),
             child: const Text('Sign Up'),
           ),
-      const SizedBox(height: 20),
-      OutlinedButton(
-        onPressed: () {
-          //SignUp();
-          Navigator.pushNamed(context, '/GroupPage');
-        },
-        style: OutlinedButton.styleFrom(
-          foregroundColor: Colors.white,
-        ),
-        child: const Text('GroupPage'),
-      ),
+
+
+
         ],
       ),
     );

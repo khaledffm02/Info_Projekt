@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-class CustomDrawer extends StatelessWidget {
+class GroupDrawer extends StatelessWidget {
+  const GroupDrawer({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -9,7 +11,7 @@ class CustomDrawer extends StatelessWidget {
         children: [
           const DrawerHeader(
             decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Colors.black12,
             ),
             child: Text(
               'Menu',
@@ -23,9 +25,10 @@ class CustomDrawer extends StatelessWidget {
             leading: const Icon(Icons.dashboard),
             title: const Text('Dashboard'),
             onTap: () {
-              Navigator.pushNamed(context, '/dashboard');
+              Navigator.pushNamed(context, '/Dashboard');
             },
           ),
+          /*
           ListTile(
             leading: const Icon(Icons.receipt),
             title: const Text('New expense'),
@@ -33,11 +36,20 @@ class CustomDrawer extends StatelessWidget {
               Navigator.pushNamed(context, '/newExpense');
             },
           ),
+
+           */
           ListTile(
             leading: const Icon(Icons.group_add),
             title: const Text('Create a group'),
             onTap: () {
               Navigator.pushNamed(context, '/CreateGroup');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.groups),
+            title: const Text('Join a group'),
+            onTap: () {
+              Navigator.pushNamed(context, '/JoinGroup');
             },
           ),
           ListTile(
@@ -49,9 +61,9 @@ class CustomDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.person_add),
-            title: const Text('Invitate a friend'),
+            title: const Text('Invite a friend'),
             onTap: () {
-              Navigator.pushNamed(context, '/inviteFriend');
+              Navigator.pushNamed(context, '/InviteFriend');
             },
           ),
           ListTile(
