@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/GroupOverview.dart';
 
-//new
 class Dashboard extends StatelessWidget {
   const Dashboard({super.key});
 
