@@ -21,7 +21,7 @@ class JoinGroup extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Join Group"),
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.black12,
         centerTitle: true,
       ),
       body: Padding(

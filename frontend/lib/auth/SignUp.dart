@@ -1,41 +1,68 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/Validator.dart';
+import 'package:frontend/shared/Validator.dart';
 
 
-class ForgotPassword extends StatelessWidget {
-  final TextEditingController _emailController = TextEditingController();
-
-  ForgotPassword({super.key});
-
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<SignUpScreen> createState() {
+    return _SignUpScreenState();
+  }
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  Widget build(context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Forgot Password?"),
-        backgroundColor: Colors.lightBlue,
+        title: const Text("Create Account"),
+        backgroundColor: Colors.black12,
         centerTitle: true,
       ),
-      body: Padding(
+      body: Center(
+          child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: _emailController,
+              controller: _usernameController,
               decoration: const InputDecoration(
-                labelText: 'Enter your Email',
+                labelText: 'Username',
                 border: OutlineInputBorder(),
               ),
-              keyboardType: TextInputType.emailAddress,
             ),
-            const SizedBox(height: 16),
+
+            const SizedBox(height: 16.0), // Space between text fields
+
+            TextField(
+              controller: _emailController,
+              obscureText: false,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16.0),// Space between text fields
             ElevatedButton(
               onPressed: () {
-                // Revalidating beim Klicken auf den Button
+                final username = _usernameController.text;
                 final email = _emailController.text;
-                final errorMessage = Validator.validateEmail(email);
-
+                var errorMessage = Validator.validateEmail(email);
                 if (errorMessage != null) {
                   // Zeige Fehlermeldung, falls die E-Mail ungültig ist
                   showDialog(
@@ -76,12 +103,23 @@ class ForgotPassword extends StatelessWidget {
                     },
                   );
                 }
+                final password = _passwordController.text;
+                Validator.validatePassword(password);
+                print('Username: $username, Email: $email, Password $password');
+                // prints out your info in console
               },
-              child: const Text('Validate Email'),
-            ),
+              child: const Text('Create Account'),
+            )
           ],
         ),
-      ),
+      )),
+      bottomNavigationBar: BottomNavigationBar(items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Settings'),
+      ]),
     );
   }
 }

@@ -46,7 +46,7 @@ class _CreateGroupState extends State<CreateGroup> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Create Group"),
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.black12,
         centerTitle: true,
         actions: [
           TextButton(

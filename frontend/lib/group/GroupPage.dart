@@ -8,7 +8,7 @@ class GroupPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Groups"),
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.black12,
         centerTitle: true,
       ),
       body: Center(
