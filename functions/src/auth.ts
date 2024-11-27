@@ -1,9 +1,9 @@
-import { getAuth } from "firebase-admin/auth";
-import { Request as ExpressRequest } from "firebase-functions/v2/https";
-import { User } from "./models/User";
+import {getAuth} from "firebase-admin/auth";
+import {Request as ExpressRequest} from "firebase-functions/v2/https";
+import {User} from "./models/User";
 
 export async function loadUser(userID: string): Promise<User | undefined> {
-  const { uid, displayName, email } = await getAuth().getUser(userID);
+  const {uid, displayName, email} = await getAuth().getUser(userID);
   if (!uid || !displayName || !email) {
     return;
   }
@@ -24,5 +24,14 @@ export async function getUserID(
   }
   const decodedToken = await getAuth().verifyIdToken(idToken);
 
-  return { userID: decodedToken.uid };
+  return {userID: decodedToken.uid};
+}
+
+export async function changeUserPassword(email: string, newPassword: string) {
+  const user = await getAuth().getUserByEmail(email);
+  await getAuth().updateUser(user.uid, {password: newPassword});
+}
+
+export async function deleteUser(userID: string) {
+  await getAuth().deleteUser(userID)
 }

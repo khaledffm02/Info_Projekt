@@ -1,4 +1,4 @@
-import {loadUser} from "../auth";
+import {deleteUser, loadUser} from "../auth";
 import {Group, GroupJSON} from "../models/Group";
 import {randomString} from "../utils/random-string";
 
@@ -93,6 +93,12 @@ export class GroupManager {
         currency: options?.preferredCurrency,
       });
     }
+  }
+
+  async deleteUser(userID: string) {
+    await deleteUser(userID)
+    const userDoc = this.db.collection("users").doc(userID);
+    await userDoc.delete()
   }
 
   async getMember(

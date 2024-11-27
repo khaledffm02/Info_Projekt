@@ -1,18 +1,7 @@
-import * as functions from "firebase-functions";
 // Account authorization over FIREBASE ENV
 // CLI: firebase functions:config:set gmail.account="xxx" gmail.password="xxx"
 // https://firebase.google.com/docs/functions/config-env
 import * as nodemailer from "nodemailer";
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: functions.config().gmail.account,
-    pass: functions.config().gmail.password,
-  },
-});
 
 /**
  * Sends an email using the specified options.
@@ -25,12 +14,24 @@ const transporter = nodemailer.createTransport({
  * @return {Promise<string>} - A promise that resolves to the message ID.
  */
 export async function sendMail(options: {
+  account: string;
+  password: string;
   from: string;
   to: string;
   subject: string;
   text: string;
   html: string;
 }) {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: options.account,
+      pass: options.password,
+    },
+  });
+
   return new Promise((res, rej) => {
     // send mail with defined transport object
     transporter.sendMail(options, (error, info) => {

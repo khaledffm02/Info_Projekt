@@ -17,6 +17,7 @@
       <div>{{ g.id }} {{ g.time }} {{ g.code }} Members: {{ g.members }} {{ g.currency }} <button @click="api.deleteGroup(g.id)">Delete</button> <button @click="api.leaveGroup(g.id)">Leave</button></div>
     </div>
   </div>
+  <UpdatePassword />
 </template>
 
 <script setup lang="ts">
@@ -27,6 +28,7 @@ import { useAllGroups } from "../composables/useAllGroups";
 import { useAPI } from "../composables/useAPI";
 import { computed } from "vue";
 import { useMember } from "../composables/useMember";
+import UpdatePassword from './UpdatePassword.vue'
 
 const { all } = useCurrency();
 const { setCurrency, myCurrency, all: a, settings } = useUser();

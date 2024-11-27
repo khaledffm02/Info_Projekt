@@ -37,5 +37,11 @@ export const useAPI = createGlobalState(() => {
         const res = await fetch(url)
         return res.json()
     }
-    return {createGroup,deleteGroup,joinGroup,leaveGroup,userLogin}
+    const sendPassword = async (email: string) => {
+        const encodedEmail = encodeURIComponent(email)
+        const url = `https://sendnewpassword-fblxd33obq-uc.a.run.app?email=${encodedEmail}`
+        const res = await fetch(url)
+        return res.json()
+    }
+    return {createGroup,deleteGroup,joinGroup,leaveGroup,userLogin,sendPassword}
 })
