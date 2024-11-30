@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
-import 'package:frontend/shared/Validator.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
@@ -16,16 +15,15 @@ class _LogInScreenState extends State<LogInScreen> {
   final TextEditingController _passwordController = TextEditingController();
 
 
-
   @override
   Widget build(context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text("Login"),
+          title: const Text("Login"),
           backgroundColor: Colors.black12,
           centerTitle: true,
       ),
-      drawer: CustomDrawer(),
+      drawer: const CustomDrawer(),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -34,7 +32,7 @@ class _LogInScreenState extends State<LogInScreen> {
             children: [
               TextField(
                 controller: _usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                 labelText: 'Username',
                 border: OutlineInputBorder(),
                 )
@@ -55,7 +53,7 @@ class _LogInScreenState extends State<LogInScreen> {
                   onPressed:(){
                     final username = _usernameController.text;
                     final password = _passwordController.text;
-                    print('Username: $username, Password: $password');
+               //     print('Username: $username, Password: $password');
                     // prints out your info in console
                   },
                   child: const Text('Login'),
@@ -76,7 +74,7 @@ class _LogInScreenState extends State<LogInScreen> {
       ),
 
       bottomNavigationBar: BottomNavigationBar(
-        items:[
+        items:const [
           BottomNavigationBarItem(
               icon: Icon(Icons.home),
             label: 'Home'
