@@ -7,18 +7,22 @@ class DialogHelper {
     required String content,
     VoidCallback? onConfirm,
   }) {
+    // Überprüfen, ob der Navigator verfügbar ist und der Kontext gültig ist
+    if (!Navigator.of(context, rootNavigator: true).mounted) {
+      debugPrint("DialogHelper: Context is no longer mounted. Dialog cannot be shown.");
+      return;
+    }
 
-    if (!context.mounted) return; // Sicherstellen, dass der Kontext gültig ist
     showDialog(
       context: context,
-      builder: (BuildContext context) {
+      builder: (BuildContext dialogContext) {
         return AlertDialog(
           title: Text(title),
           content: Text(content),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Schließt den Dialog
+                Navigator.of(dialogContext).pop(); // Schließt den Dialog
                 if (onConfirm != null) onConfirm(); // Führt die Bestätigungsaktion aus
               },
               child: const Text('OK'),
