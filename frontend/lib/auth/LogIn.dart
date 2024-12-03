@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
-import 'package:frontend/shared/Validator.dart';
+import 'package:frontend/start/Dashboard.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
@@ -21,11 +21,11 @@ class _LogInScreenState extends State<LogInScreen> {
   Widget build(context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text("Login"),
+          title: const Text("Login"),
           backgroundColor: Colors.black12,
           centerTitle: true,
       ),
-      drawer: CustomDrawer(),
+     // drawer: const CustomDrawer(),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -34,7 +34,7 @@ class _LogInScreenState extends State<LogInScreen> {
             children: [
               TextField(
                 controller: _usernameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                 labelText: 'Username',
                 border: OutlineInputBorder(),
                 )
@@ -53,10 +53,7 @@ class _LogInScreenState extends State<LogInScreen> {
               const SizedBox(height: 16.0), // Space between button and textfield
               ElevatedButton(
                   onPressed:(){
-                    final username = _usernameController.text;
-                    final password = _passwordController.text;
-                    print('Username: $username, Password: $password');
-                    // prints out your info in console
+                 Navigator.pushNamed(context, '/Dashboard');
                   },
                   child: const Text('Login'),
 
@@ -75,20 +72,7 @@ class _LogInScreenState extends State<LogInScreen> {
         )
       ),
 
-      bottomNavigationBar: BottomNavigationBar(
-        items:[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-            label: 'Home'
-          ),
 
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings'
-          ),
-        ]
-
-      ),
        );
 
 

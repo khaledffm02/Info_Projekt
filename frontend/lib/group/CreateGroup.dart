@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 
 class CreateGroup extends StatefulWidget {
+  const CreateGroup({super.key});
+
   @override
   _CreateGroupState createState() => _CreateGroupState();
 }
@@ -58,7 +60,7 @@ class _CreateGroupState extends State<CreateGroup> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       title: const Text('Error'),
-                      content: Text('Please enter a group Name'),
+                      content: const Text('Please enter a group Name'),
                       actions: [
                         TextButton(
                           onPressed: () {
@@ -80,12 +82,24 @@ class _CreateGroupState extends State<CreateGroup> {
                   builder: (BuildContext context) {
                     return AlertDialog(
                       title: const Text('Success'),
-                      content: Text('You have created a new group'),
+                      content: const Text('You have created a new group'),
                       actions: [
                         TextButton(
                           onPressed: () {
                             Navigator.of(context).pop();
-                            Navigator.pushNamed(context, '/GroupPage');
+
+                            Navigator.pushNamed(
+                              context,
+                              '/GroupOverview',
+                              arguments: {
+                                'groupName': _groupNameController.text,
+                                'members': [
+                                  {"name": "Tester1", "amount": 0.00},
+                                  {"name": "Tester2", "amount": 0.00},
+                                ],
+                              },
+                            );
+
                           },
                           child: const Text('OK'),
                         ),
@@ -129,7 +143,7 @@ class _CreateGroupState extends State<CreateGroup> {
                     onTap: () => _selectCurrency(context),
                     child: AbsorbPointer(
                       child: TextField(
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           labelText: 'Currency',
                           border: OutlineInputBorder(),
                         ),

@@ -1,9 +1,12 @@
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/start/FairShare.dart';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/start/StartScreen.dart';
+import 'package:frontend/StartScreen.dart';
+import 'package:frontend/FairShare.dart';
+
 
 //change
 void main() async {
@@ -12,6 +15,7 @@ void main() async {
     print("Dotenv geladen: ${dotenv.env}");
   } catch (e) {
     print("Fehler beim Laden der .env-Datei: $e");
+
   }
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
@@ -28,5 +32,5 @@ void main() async {
   } else {
     await Firebase.initializeApp();
   }
-  runApp(FairShare());
+  runApp(const FairShare());
 }

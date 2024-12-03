@@ -3,11 +3,13 @@
 import 'package:flutter/material.dart';
 
 class GroupPage extends StatelessWidget {
+  const GroupPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Groups"),
+        title: const Text("Groups"),
         backgroundColor: Colors.black12,
         centerTitle: true,
       ),
@@ -34,18 +36,7 @@ class GroupPage extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: 'Settings',
-          ),
-        ],
-      ),
+
     );
   }
 }
