@@ -31,7 +31,7 @@ class ForgotPassword extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // Revalidating beim Klicken auf den Button
                 final email = _emailController.text;
                 final errorMessage = Validator.validateEmail(email);
@@ -56,25 +56,35 @@ class ForgotPassword extends StatelessWidget {
                     },
                   );
                 } else {
-                  // Zeigt Bestätigung, falls die E-Mail gültig ist
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Success'),
-                        content: Text('Password reset link sent to $email'),
+                  try {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Erfolgreich'),
+                        content: Text('Ein OTP wurde an $email gesendet.'),
                         actions: [
                           TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              Navigator.pushNamed(context, '/LogInScreen');
-                            },
+                            onPressed: () => Navigator.pop(context),
                             child: const Text('OK'),
                           ),
                         ],
-                      );
-                    },
-                  );
+                      ),
+                    );
+                  } catch (error) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Fehler'),
+                        content: const Text('Das Senden der OTP-E-Mail ist fehlgeschlagen.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 }
               },
               child: const Text('Validate Email'),

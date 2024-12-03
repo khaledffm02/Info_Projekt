@@ -1,48 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/shared/Validator.dart';
-
+import 'package:frontend/shared/ApiService.dart'; // Importiere den ApiService
+import 'package:frontend/shared/DialogHelper.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  State<SignUpScreen> createState() {
-    return _SignUpScreenState();
-  }
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _firstnameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController = TextEditingController();
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Create Account"),
-        backgroundColor: Colors.black12,
         centerTitle: true,
       ),
-      body: Center(
-          child: Padding(
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
-              controller: _usernameController,
+              controller: _firstnameController,
               decoration: const InputDecoration(
-                labelText: 'Username',
+                labelText: 'First Name',
                 border: OutlineInputBorder(),
               ),
             ),
-
-            const SizedBox(height: 16.0), // Space between text fields
-
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _lastnameController,
+              decoration: const InputDecoration(
+                labelText: 'Last Name',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16.0),
             TextField(
               controller: _emailController,
-              obscureText: false,
               decoration: const InputDecoration(
                 labelText: 'Email',
                 border: OutlineInputBorder(),
@@ -57,50 +60,65 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 border: OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16.0),// Space between text fields
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _confirmPasswordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Confirm Password',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () {
-                final username = _usernameController.text;
-                final email = _emailController.text;
-                var errorMessage = Validator.validateEmail(email);
-                if (errorMessage != null) {
-                  // Zeige Fehlermeldung, falls die E-Mail ungültig ist
-                  showDialog(
+              onPressed: () async {
+                final firstname = _firstnameController.text.trim();
+                final lastname = _lastnameController.text.trim();
+                final email = _emailController.text.trim();
+                final password = _passwordController.text;
+                final confirmPassword = _confirmPasswordController.text;
+
+                // Input validation
+                if (firstname.isEmpty ||
+                    lastname.isEmpty ||
+                    email.isEmpty ||
+                    password.isEmpty ||
+                    confirmPassword.isEmpty) {
+                  DialogHelper.showDialogCustom(
                     context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Invalid Email'),
-                        content: Text(errorMessage),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      );
+                    title: 'Error',
+                    content: 'All fields are required.',
+                  );
+                  return;
+                }
+
+                // Password match validation
+                if (password != confirmPassword) {
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Error',
+                    content: 'Passwords do not match.',
+                  );
+                  return;
+                }
+
+                // Register user using the ApiService
+                try {
+                  await ApiService.registerUser(email, password, firstname, lastname);
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Success',
+                    content: 'User registered successfully.',
+                    onConfirm: () {
+                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, '/LogInScreen');
                     },
                   );
-                } else {
-                  // Zeigt Bestätigung, falls die E-Mail gültig ist
-                  showDialog(
+                } catch (e) {
+                  DialogHelper.showDialogCustom(
                     context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Success'),
-                        content: Text('Password reset link sent to $email'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              Navigator.pushNamed(context, '/LogInScreen');
-                            },
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
+                    title: 'Error',
+                    content: 'An error occurred: $e',
                   );
                 }
                 final password = _passwordController.text;
@@ -112,8 +130,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             )
           ],
         ),
-      )),
-
+      ),
     );
   }
 }

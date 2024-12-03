@@ -1,4 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/shared/ApiService.dart'; // ApiService importieren
+import 'package:frontend/shared/DialogHelper.dart';
+
+import '../shared/CustomDrawer.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/start/Dashboard.dart';
 
@@ -6,75 +11,106 @@ class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});
 
   @override
-  State<LogInScreen> createState() {
-    return _LogInScreenState();
-  }
+  State<LogInScreen> createState() => _LogInScreenState();
 }
 
 class _LogInScreenState extends State<LogInScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
 
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text("Login"),
-          backgroundColor: Colors.black12,
-          centerTitle: true,
+        title: const Text("Login"),
+        centerTitle: true,
       ),
-     // drawer: const CustomDrawer(),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                controller: _usernameController,
-                decoration: const InputDecoration(
-                labelText: 'Username',
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Welcome Back!',
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 32.0),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
                 border: OutlineInputBorder(),
-                )
-          ),
-
-                const SizedBox(height: 16.0), // Space between text fields
-
-                TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                      ),
-                ),
-              const SizedBox(height: 16.0), // Space between button and textfield
-              ElevatedButton(
-                  onPressed:(){
-                 Navigator.pushNamed(context, '/Dashboard');
-                  },
-                  child: const Text('Login'),
-
+                prefixIcon: Icon(Icons.email),
               ),
-              const SizedBox(height: 16.0), // Space between button and textfield
-              ElevatedButton(
-                onPressed:(){
-                Navigator.pushNamed(context, '/ForgotPassword');
-                },
-                child: const Text('Forgot Password'),
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock),
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () async {
+                final email = _emailController.text.trim();
+                final password = _passwordController.text;
 
-              )
+                if (email.isEmpty || password.isEmpty) {
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Error',
+                    content: 'All fields are required.',
+                  );
+                  return;
+                }
 
-            ],
-          ),
-        )
+                try {
+                  // Direkt ApiService.loginUser aufrufen
+                  await ApiService.loginUser(email, password);
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Success',
+                    content: 'Logged in successfully!',
+                    onConfirm: () {
+                      final user = FirebaseAuth.instance.currentUser;
+
+                      if (user != null) {
+                        print('Benutzer ist angemeldet: ${user.uid}');
+                      } else {
+                        print('Kein Benutzer angemeldet.');
+                      }
+                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, '/CreateGroup');
+                    },
+                  );
+                } catch (e) {
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Error',
+                    content: 'Failed to log in: $e',
+                  );
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: const Text('Login'),
+            ),
+            const SizedBox(height: 16.0),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, '/ForgotPassword'),
+              child: const Text('Forgot Password?'),
+            ),
+          ],
+        ),
       ),
-
-
-       );
-
-
+    );
   }
 }
