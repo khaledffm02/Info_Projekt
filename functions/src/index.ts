@@ -293,3 +293,30 @@ export const addPayment = onRequest(
     return;
   }
 );
+
+export const addFileToTransaction = onRequest(
+  {cors: true},
+  async (request, response) => {
+    const groupID = request.query.groupID as string;
+    const transactionID = request.query.transactionID as string;
+    const fileName = request.query.fileName as string;
+    const {userID} = await getUserID(request);
+    if (!groupID || !userID || !transactionID) {
+      response.send({
+        success: false,
+        message: "Missing parameters",
+        detailedMessage: {groupID, userID, transactionID, fileName},
+      });
+      return;
+    }
+
+    await groupManager.addFileToTransaction(
+      groupID,
+      transactionID,
+      fileName,
+    );
+
+    response.send({success: true});
+    return;
+  }
+);

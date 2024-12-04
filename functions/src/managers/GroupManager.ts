@@ -180,6 +180,19 @@ export class GroupManager {
     return;
   }
 
+  async addFileToTransaction(
+    groupID: string,
+    transactionID: string,
+    fileName: string
+  ) {
+    const groupRef = this.db.collection("groups").doc(groupID);
+    await groupRef.update({
+      [`transactions.${transactionID}.meta.storageURL`]:
+        fileName || FieldValue.delete(),
+    });
+    return;
+  }
+
   async confirmTransaction(
     groupID: string,
     transactionID: string,

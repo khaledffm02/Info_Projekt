@@ -5,49 +5,41 @@ export const useAPI = createGlobalState(() => {
   const createGroup = async () => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const url = `https://groupcreate-fblxd33obq-uc.a.run.app?idToken=${encodeURIComponent(idToken)}&currencyID=EUR`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('groupcreate',{idToken,currencyID:'EUR'}));
     return res.json();
   };
   const deleteGroup = async (groupID: string) => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const url = `https://groupdelete-fblxd33obq-uc.a.run.app?idToken=${idToken}&groupID=${groupID}`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('groupdelete',{idToken,groupID}));
     return res.json();
   };
   const joinGroup = async (groupCode: string) => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const url = `https://groupjoin-fblxd33obq-uc.a.run.app?idToken=${idToken}&groupCode=${groupCode}`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('groupjoin',{idToken,groupCode}));
     return res.json();
   };
   const leaveGroup = async (groupID: string) => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const url = `https://groupleave-fblxd33obq-uc.a.run.app?idToken=${idToken}&groupID=${groupID}`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('groupleave',{idToken,groupID}));
     return res.json();
   };
   const userLogin = async () => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const url = `https://userlogin-fblxd33obq-uc.a.run.app?idToken=${encodeURIComponent(idToken)}`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('userlogin',{idToken}));
     return res.json();
   };
   const userRegistration = async (firstName: string, lastName: string) => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const url = `https://userregistration-fblxd33obq-uc.a.run.app?idToken=${encodeURIComponent(idToken)}&firstName=${encodeURIComponent(firstName)}&lastName=${encodeURIComponent(lastName)}`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('userregistration',{idToken,firstName,lastName}));
     return res.json();
   };
   const sendPassword = async (email: string) => {
-    const encodedEmail = encodeURIComponent(email);
-    const url = `https://sendnewpassword-fblxd33obq-uc.a.run.app?email=${encodedEmail}`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('sendnewpassword',{email}));
     return res.json();
   };
   const createTransaction = async (
@@ -60,8 +52,7 @@ export const useAPI = createGlobalState(() => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
     const request = encodeURIComponent(JSON.stringify({ groupID, title, category, user: userParam, friends }));
-    const url = `https://createtransaction-fblxd33obq-uc.a.run.app?idToken=${encodeURIComponent(idToken)}&request=${request}`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('createtransaction',{idToken,request}));
     return res.json();
   };
   const confirmTransaction = async (
@@ -70,8 +61,7 @@ export const useAPI = createGlobalState(() => {
   ) => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const url = `https://confirmtransaction-fblxd33obq-uc.a.run.app?idToken=${encodeURIComponent(idToken)}&groupID=${groupID}&transactionID=${transactionID}`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('confirmtransaction',{idToken,groupID,transactionID}));
     return res.json();
   };
   const deleteTransaction = async (
@@ -80,20 +70,28 @@ export const useAPI = createGlobalState(() => {
   ) => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const url = `https://deletetransaction-fblxd33obq-uc.a.run.app?idToken=${encodeURIComponent(idToken)}&groupID=${groupID}&transactionID=${transactionID}`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('deletetransaction',{groupID,transactionID,idToken}));
     return res.json();
   };
   const addPayment = async (
     groupID: string,
-    gromID: string,
+    fromID: string,
     toID: string,
     amount: number,
   ) => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const url = `https://addpayment-fblxd33obq-uc.a.run.app?idToken=${encodeURIComponent(idToken)}&groupID=${encodeURIComponent(groupID)}&fromID=${encodeURIComponent(gromID)}&toID=${encodeURIComponent(toID)}&value=${amount}`;
-    const res = await fetch(url);
+    const res = await fetch(createURL('addpayment',{groupID,idToken,fromID,toID,value:String(amount)}));
+    return res.json();
+  };
+  const addFileToTransaction = async (
+    groupID: string,
+    transactionID: string,
+    fileName: string,
+  ) => {
+    const idToken = await user.value?.getIdToken(true);
+    if (!idToken) return;
+    const res = await fetch(createURL('addfiletotransaction',{groupID,transactionID,fileName,idToken}));
     return res.json();
   };
   return {
@@ -108,5 +106,11 @@ export const useAPI = createGlobalState(() => {
     confirmTransaction,
     deleteTransaction,
     addPayment,
+    addFileToTransaction,
   };
 });
+
+function createURL(endpoint: string, params: Record<string, string>): string {
+  const p = new URLSearchParams(params).toString()
+  return `https://${endpoint}-icvq5uaeva-uc.a.run.app?${p}`;
+}

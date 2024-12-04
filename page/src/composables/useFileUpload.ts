@@ -4,7 +4,7 @@ import { ref as storageRef, uploadBytes } from "firebase/storage";
 import { ref } from "vue";
 
 const UPLOAD_PATH = "images";
-const DOWNLOAD_URL = (fileName: string) =>
+export const toDownloadURL = (fileName: string) =>
   `https://storage.googleapis.com/projekt-24-a9104.firebasestorage.app/images/${fileName}`;
 
 export const useFileUpload = () => {
@@ -34,7 +34,7 @@ export const useFileUpload = () => {
 
     await uploadBytes(storageFileReference, file);
 
-    downloadURL.value = DOWNLOAD_URL(fileName);
+    downloadURL.value = toDownloadURL(fileName);
     uploadedFileName.value = fileName;
   });
 
