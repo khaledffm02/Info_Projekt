@@ -2,7 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static Future<void> registerUser(String email, String password, String firstname, String lastname) async {
+  static Future<void> registerUser(String email, String password,
+      String firstname, String lastname) async {
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -23,9 +24,11 @@ class ApiService {
 
       if (response.statusCode != 200) {
         throw Exception(
-            'Failed to register user. Server responded with status: ${response.statusCode}');
+            'Failed to register user. Server responded with status: ${response
+                .statusCode}');
       }
-      await credential.user?.sendEmailVerification();                  //Trigger for verification Email for registration
+      await credential.user
+          ?.sendEmailVerification(); //Trigger for verification Email for registration
 
     } catch (e) {
       rethrow;
@@ -54,10 +57,37 @@ class ApiService {
 
       if (response.statusCode != 200) {
         throw Exception(
-            'Failed to log in user. Server responded with status: ${response.statusCode}');
+            'Failed to log in user. Server responded with status: ${response
+                .statusCode}');
       }
     } catch (e) {
       rethrow;
     }
   }
+
+
+  static Future<bool> resetPassword(String email) async {
+    try {
+      // Endpoint-URL
+      final url = Uri.parse(
+        'https://sendnewpassword-icvq5uaeva-uc.a.run.app'
+            '?email=${Uri.encodeComponent(email)}',
+      );
+
+      // Sende die Anfrage
+      final response = await http.get(url);
+
+      // Überprüfe den Status der Antwort
+      if (response.statusCode == 200) {
+        return true; // Erfolg
+      } else {
+        throw Exception(
+            'Failed to reset password. Server responded with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+      return false; // Rückgabe false bei Fehler
+    }
+  }
+
 }

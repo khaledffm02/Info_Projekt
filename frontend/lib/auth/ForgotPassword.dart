@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/Validator.dart';
 
 
@@ -57,11 +58,17 @@ class ForgotPassword extends StatelessWidget {
                   );
                 } else {
                   try {
+                    ApiService.resetPassword(email);
+                  }catch(e){
+                    print("Email  was not sent: $e");
+                  }
+
+                  try {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
                         title: const Text('Erfolgreich'),
-                        content: Text('Ein OTP wurde an $email gesendet.'),
+                        content: Text('„Falls die E-Mail-Adresse existiert, haben wir Ihnen eine Nachricht an $email mit Anweisungen zum Zurücksetzen des Passworts gesendet.“'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
