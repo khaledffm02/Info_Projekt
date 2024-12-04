@@ -11,7 +11,7 @@ import {initializeApp} from "firebase-admin/app";
 import {getFirestore} from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
-import {changeUserPassword, getUserID} from "./auth";
+import {changeUserPassword, getUserID, loadUser} from "./auth";
 import {defineSecret} from "firebase-functions/params";
 import {GroupManager} from "./managers/GroupManager";
 import {sendMail} from "./mail";
@@ -111,11 +111,26 @@ export const userLogin = onRequest(
   }
 );
 
+export const userRegistration = onRequest(
+  {cors: true},
+  async (request, response) => {
+    const {userID} = await getUserID(request);
+    const firstName = request.query.firstName as string;
+    const lastName = request.query.lastName as string;
+    await groupManager.userRegistration(userID, {
+      firstName,
+      lastName,
+      currency: "EUR",
+    });
+    response.send({success: true});
+  }
+);
+
 export const userDelete = onRequest(
   {cors: true},
   async (request, response) => {
     const {userID} = await getUserID(request);
-    await groupManager.deleteUser(userID)
+    await groupManager.deleteUser(userID);
     response.send({success: userID});
   }
 );
@@ -140,3 +155,141 @@ export const sendNewPassword = onRequest(
   }
 );
 
+export const createTransaction = onRequest(
+  {cors: true},
+  async (request, response) => {
+    const parameters = request.query.request as string;
+    const {userID} = await getUserID(request);
+    if (!parameters || !userID) {
+      response.send({success: false});
+      return;
+    }
+    const {groupID, title, category, user, friends} = JSON.parse(
+      parameters
+    ) as {
+      groupID: string;
+      title: string;
+      category: string;
+      user: { id: string; value: number };
+      friends: { id: string; value: number }[];
+    };
+    if (!groupID || !title || !user || !friends) {
+      response.send({
+        success: false,
+        message: "Missing parameters",
+        detailedMessage: {groupID, title, category, user, friends},
+      });
+      return;
+    }
+    const payed = user.value;
+    const spend = friends.reduce((acc, f) => acc + f.value, 0);
+    if (payed !== spend) {
+      response.send({
+        success: false,
+        message: "Sum of friends' values must be equal to user's value",
+        detailedMessage: {payed, spend},
+      });
+      return;
+    }
+    const id = await groupManager.createTransaction(
+      groupID,
+      {title, category},
+      user,
+      friends
+    );
+    response.send({success: true, transactionID: id});
+    return;
+  }
+);
+
+export const confirmTransaction = onRequest(
+  {cors: true},
+  async (request, response) => {
+    const groupID = request.query.groupID as string;
+    const transactionID = request.query.transactionID as string;
+    const {userID} = await getUserID(request);
+    if (!groupID || !transactionID || !userID) {
+      response.send({
+        success: false,
+        message: "Missing parameters",
+        detailedMessage: {groupID, transactionID, userID},
+      });
+      return;
+    }
+    await groupManager.confirmTransaction(groupID, transactionID, userID);
+    response.send({success: true});
+    return;
+  }
+);
+
+export const deleteTransaction = onRequest(
+  {cors: true},
+  async (request, response) => {
+    const groupID = request.query.groupID as string;
+    const transactionID = request.query.transactionID as string;
+    if (!groupID || !transactionID) {
+      response.send({
+        success: false,
+        message: "Missing parameters",
+        detailedMessage: {groupID, transactionID},
+      });
+      return;
+    }
+    await groupManager.deleteTransaction(groupID, transactionID);
+    response.send({success: true});
+    return;
+  }
+);
+
+export const addPayment = onRequest(
+  {cors: true, secrets: [emailAccount, emailPassword]},
+  async (request, response) => {
+    const groupID = request.query.groupID as string;
+    const fromID = request.query.fromID as string;
+    const toID = request.query.toID as string;
+    const amount = request.query.value as string;
+    const {userID} = await getUserID(request);
+    if (!groupID || !userID || !fromID || !toID || !amount) {
+      response.send({
+        success: false,
+        message: "Missing parameters",
+        detailedMessage: {groupID, fromID, toID, userID, amount},
+      });
+      return;
+    }
+
+    const fromUser = await loadUser(fromID);
+    const toUser = await loadUser(toID);
+    if (!fromUser || !toUser) {
+      response.send({
+        success: false,
+        message: "Users not found",
+        detailedMessage: {fromUser, toUser},
+      });
+      return;
+    }
+
+    const value = Number(amount);
+
+    const id = await groupManager.createTransaction(
+      groupID,
+      {title: "_payment", category: "payment"},
+      {id: fromID, value},
+      [{id: toID, value}]
+    );
+
+    await sendMail({
+      account: emailAccount.value(),
+      password: emailPassword.value(),
+      from: "splidapp@project.com",
+      text: `You have received a payment from ${fromUser.name} of ${value}`,
+      to: toUser.email,
+      subject: "You have received a payment",
+      html: `
+<b>You have received a payment from ${fromUser.name} of ${value}</b>`,
+    });
+
+    response.send({success: true, transactionID: id});
+    return;
+  }
+);

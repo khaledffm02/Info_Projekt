@@ -38,5 +38,8 @@
     "@sentry/cli",
     "esbuild",
     "protobufjs"
-  ]
+  ],
+  "dependencies": {
+    "@tailwindcss/forms": "^0.5.9"
+  }
 }

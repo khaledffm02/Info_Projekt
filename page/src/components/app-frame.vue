@@ -13,8 +13,11 @@
       <button @click="api.createGroup()">Create Group</button>
       <button @click="join()">Join Group</button>
     </div>
-    <div class="flex flex-col" v-for="g in groups">
+    <div class="flex flex-col hidden" v-for="g in groups">
       <div>{{ g.id }} {{ g.time }} {{ g.code }} Members: {{ g.members }} {{ g.currency }} <button @click="api.deleteGroup(g.id)">Delete</button> <button @click="api.leaveGroup(g.id)">Leave</button></div>
+    </div>
+    <div class="flex flex-col mt-8" v-for="g in rawGroups">
+      <SplidGroup :data="g as any" :id="g.id" />
     </div>
   </div>
   <UpdatePassword />
@@ -29,6 +32,7 @@ import { useAPI } from "../composables/useAPI";
 import { computed } from "vue";
 import { useMember } from "../composables/useMember";
 import UpdatePassword from './UpdatePassword.vue'
+import SplidGroup from './splid-group.vue'
 
 const { all } = useCurrency();
 const { setCurrency, myCurrency, all: a, settings } = useUser();

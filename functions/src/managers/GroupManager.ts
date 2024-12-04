@@ -1,6 +1,12 @@
-import {deleteUser, loadUser} from "../auth";
+import {loadUser} from "../auth";
 import {Group, GroupJSON} from "../models/Group";
 import {randomString} from "../utils/random-string";
+import {
+  transactionToJson,
+  Transaction,
+  transactionFromJson,
+} from "../models/Transaction";
+import {FieldValue} from "firebase-admin/firestore";
 
 export class GroupManager {
   constructor(readonly db: FirebaseFirestore.Firestore) {}
@@ -78,6 +84,7 @@ export class GroupManager {
       loadUser(userID),
     ]);
     if (!authUser) {
+      throw new Error(`User with ID ${userID} not found`);
       return;
     }
     if (!userRaw.exists) {
@@ -95,10 +102,33 @@ export class GroupManager {
     }
   }
 
-  async deleteUser(userID: string) {
-    await deleteUser(userID)
+  async userRegistration(
+    userID: string,
+    options: { firstName: string; lastName: string; currency: string }
+  ): Promise<void> {
     const userDoc = this.db.collection("users").doc(userID);
-    await userDoc.delete()
+    const [userRaw, authUser] = await Promise.all([
+      userDoc.get(),
+      loadUser(userID),
+    ]);
+    if (!authUser) {
+      throw new Error(`User with ID ${userID} not found`);
+    }
+    if (!userRaw.exists) {
+      await userDoc.set({
+        firstName: options.firstName,
+        lastName: options.lastName,
+        currency: options.currency,
+        email: authUser.email,
+      });
+    } else {
+      await userDoc.update({
+        firstName: options.firstName,
+        lastName: options.lastName,
+        currency: options.currency,
+        email: authUser.email,
+      });
+    }
   }
 
   async getMember(
@@ -110,5 +140,77 @@ export class GroupManager {
     }
     const {name, currency} = userDoc.data() ?? {};
     return {name, currency};
+  }
+
+  async createTransaction(
+    groupID: string,
+    meta: { title: string; category?: string },
+    user: { id: string; value: number },
+    friends: { id: string; value: number }[]
+  ) {
+    const groupRef = this.db.collection("groups").doc(groupID);
+    const transactionID = randomString(16);
+    await groupRef.update({
+      [`transactions.${transactionID}`]: transactionToJson(
+        new Transaction(
+          {
+            category: meta.category ?? "",
+            title: meta.title,
+            storageURL: "",
+            timestamp: Date.now(),
+          },
+          {userID: user.id, value: user.value},
+          Object.fromEntries(
+            friends.map((f) => [
+              f.id,
+              {value: f.value, isConfirmed: f.id === user.id},
+            ])
+          )
+        )
+      ),
+    });
+    return transactionID;
+  }
+
+  async deleteTransaction(groupID: string, transactionID: string) {
+    const groupRef = this.db.collection("groups").doc(groupID);
+    await groupRef.update({
+      [`transactions.${transactionID}`]: FieldValue.delete(),
+    });
+    return;
+  }
+
+  async confirmTransaction(
+    groupID: string,
+    transactionID: string,
+    userID: string
+  ) {
+    const groupRef = this.db.collection("groups").doc(groupID);
+    const groupDoc = await groupRef.get();
+    if (!groupDoc.exists) {
+      throw new Error(`Group with ID ${groupID} not found`);
+    }
+    const transaction = transactionFromJson(
+      groupDoc.data()?.transactions[transactionID]
+    );
+    if (transaction.user.userID === userID) {
+      throw new Error("User cannot confirm their own transaction");
+    }
+    const friend = transaction.friends[userID];
+    if (!friend) {
+      throw new Error("User is not part of this transaction");
+    }
+    if (friend.isConfirmed) {
+      throw new Error("User has already confirmed this transaction");
+    }
+    await groupRef.update({
+      [`transactions.${transactionID}.friends.${userID}.isConfirmed`]: true,
+    });
+    return;
+  }
+
+  async deleteUser(userID: string) {
+    const userDoc = this.db.collection("users").doc(userID);
+    await userDoc.delete();
   }
 }

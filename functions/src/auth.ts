@@ -4,10 +4,10 @@ import {User} from "./models/User";
 
 export async function loadUser(userID: string): Promise<User | undefined> {
   const {uid, displayName, email} = await getAuth().getUser(userID);
-  if (!uid || !displayName || !email) {
+  if (!uid || !email) {
     return;
   }
-  return new User(uid, displayName, email);
+  return new User(uid, displayName ?? email, email);
 }
 
 /**
@@ -30,8 +30,4 @@ export async function getUserID(
 export async function changeUserPassword(email: string, newPassword: string) {
   const user = await getAuth().getUserByEmail(email);
   await getAuth().updateUser(user.uid, {password: newPassword});
-}
-
-export async function deleteUser(userID: string) {
-  await getAuth().deleteUser(userID)
 }

@@ -21,8 +21,9 @@ import { useAPI } from '../composables/useAPI';
 const email = ref('');
 const password = ref('');
 
-function loginClicked() {
-    signInWithPasswordAndEmail(email.value, password.value)
+async function loginClicked() {
+    await signInWithPasswordAndEmail(email.value, password.value)
+    useAPI().userLogin()
 }
 
 function sendNewPassword() {

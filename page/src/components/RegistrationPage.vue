@@ -3,6 +3,8 @@
         Registration
         <input type="text" v-model="email" placeholder="e-mail" class="border">
         <input type="password" v-model="password" placeholder="password" class="border">
+        <input type="text" v-model="firstname" placeholder="firstname" class="border">
+        <input type="text" v-model="lastname" placeholder="lastname" class="border">
         <button @click="registerClicked()">Register</button>
     </div>
 </template>
@@ -11,11 +13,15 @@
 import { ref } from 'vue';
 
 import {registerWithPasswordAndEmail} from '../firebase/auth';
+import { useAPI } from '../composables/useAPI';
 
 const email = ref('');
 const password = ref('');
+const firstname = ref('');
+const lastname = ref('');
 
-function registerClicked() {
-    registerWithPasswordAndEmail(email.value, password.value)
+async function registerClicked() {
+    await registerWithPasswordAndEmail(email.value, password.value)
+    await useAPI().userRegistration(firstname.value, lastname.value)
 }
 </script>
