@@ -47,11 +47,12 @@ export const useAPI = createGlobalState(() => {
     title: string,
     category: string,
     userParam: { id: string; value: number },
-    friends: { id: string; value: number }[]
+    friends: { id: string; value: number }[],
+    storageURL?: string
   ) => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const request = encodeURIComponent(JSON.stringify({ groupID, title, category, user: userParam, friends }));
+    const request = encodeURIComponent(JSON.stringify({ groupID, title, category, user: userParam, friends, storageURL }));
     const res = await fetch(createURL('createtransaction',{idToken,request}));
     return res.json();
   };
@@ -94,6 +95,20 @@ export const useAPI = createGlobalState(() => {
     const res = await fetch(createURL('addfiletotransaction',{groupID,transactionID,fileName,idToken}));
     return res.json();
   };
+  const extractInformation = async (
+    fileName: string,
+  ): Promise<undefined | {category: string, title: string, amount: number}> => {
+    const idToken = await user.value?.getIdToken(true);
+    if (!idToken) return;
+    const res = await fetch(createURL('extractinformation',{fileName,idToken}));
+    const result = await res.json() as any;
+    return result.success ? result : undefined;
+  };
+  const updateRates = async (): Promise<undefined | {category: string, title: string, amount: number}> => {
+    const idToken = await user.value?.getIdToken(true);
+    if (!idToken) return;
+    await fetch(createURL('updaterates',{idToken}));
+  };
   return {
     createGroup,
     deleteGroup,
@@ -107,6 +122,8 @@ export const useAPI = createGlobalState(() => {
     deleteTransaction,
     addPayment,
     addFileToTransaction,
+    extractInformation,
+    updateRates,
   };
 });
 

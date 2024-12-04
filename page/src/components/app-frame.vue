@@ -16,6 +16,10 @@
     <div class="flex flex-col hidden" v-for="g in groups">
       <div>{{ g.id }} {{ g.time }} {{ g.code }} Members: {{ g.members }} {{ g.currency }} <button @click="api.deleteGroup(g.id)">Delete</button> <button @click="api.leaveGroup(g.id)">Leave</button></div>
     </div>
+    <div class="flex my-4 flex-col">
+      <div class="flex">{{ all }}</div>
+      <button class="py-1 px-4 w-fit border rounded" @click="api.updateRates()">Update rates</button>
+    </div>
     <div class="flex flex-col mt-8" v-for="g in rawGroups">
       <SplidGroup :data="g as any" :id="g.id" />
     </div>

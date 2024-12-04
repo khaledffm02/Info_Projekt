@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import {loadUser} from "../auth";
 import {Group, GroupJSON} from "../models/Group";
 import {randomString} from "../utils/random-string";
@@ -144,7 +145,7 @@ export class GroupManager {
 
   async createTransaction(
     groupID: string,
-    meta: { title: string; category?: string },
+    meta: { title: string; category?: string; storageURL?: string },
     user: { id: string; value: number },
     friends: { id: string; value: number }[]
   ) {
@@ -156,7 +157,7 @@ export class GroupManager {
           {
             category: meta.category ?? "",
             title: meta.title,
-            storageURL: "",
+            storageURL: meta.storageURL || "",
             timestamp: Date.now(),
           },
           {userID: user.id, value: user.value},
@@ -225,5 +226,29 @@ export class GroupManager {
   async deleteUser(userID: string) {
     const userDoc = this.db.collection("users").doc(userID);
     await userDoc.delete();
+  }
+
+  // / https://freecurrencyapi.com/docs/latest#request-parameters
+  async updateCurrencyRates(apikey: string) {
+    const currencyRef = this.db.collection("settings").doc("currencies");
+    const currencyDoc = await currencyRef.get();
+    if (
+      !currencyDoc.exists ||
+      !currencyDoc.data()?.timestamp ||
+      Date.now() - currencyDoc.data()?.timestamp > 1 * 60 * 1000
+    ) {
+      const base_currency = "EUR";
+      const currencies = "USD,GBP,JPY,CNY";
+      const url = `https://api.freecurrencyapi.com/v1/latest?${new URLSearchParams(
+        {apikey, base_currency, currencies}
+      ).toString()}`;
+      const result = await fetch(url);
+      const {data: newRates} = await result.json();
+      await currencyRef.set({...newRates, timestamp: Date.now()});
+      return newRates;
+    } else {
+      const rates = currencyDoc.data();
+      return rates;
+    }
   }
 }

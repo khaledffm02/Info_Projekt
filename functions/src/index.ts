@@ -16,10 +16,13 @@ import {defineSecret} from "firebase-functions/params";
 import {GroupManager} from "./managers/GroupManager";
 import {sendMail} from "./mail";
 import {randomString} from "./utils/random-string";
+import {gpt} from "./gpt";
 
 const discordApiKey = defineSecret("beispiel");
 const emailAccount = defineSecret("account");
 const emailPassword = defineSecret("password");
+const openaiToken = defineSecret("openaiToken");
+const currencyKey = defineSecret("currencyKey");
 
 initializeApp();
 
@@ -164,12 +167,13 @@ export const createTransaction = onRequest(
       response.send({success: false});
       return;
     }
-    const {groupID, title, category, user, friends} = JSON.parse(
+    const {groupID, title, category, user, friends, storageURL} = JSON.parse(
       parameters
     ) as {
       groupID: string;
       title: string;
       category: string;
+      storageURL?: string;
       user: { id: string; value: number };
       friends: { id: string; value: number }[];
     };
@@ -193,7 +197,7 @@ export const createTransaction = onRequest(
     }
     const id = await groupManager.createTransaction(
       groupID,
-      {title, category},
+      {title, category, storageURL},
       user,
       friends
     );
@@ -310,13 +314,78 @@ export const addFileToTransaction = onRequest(
       return;
     }
 
-    await groupManager.addFileToTransaction(
-      groupID,
-      transactionID,
-      fileName,
-    );
+    await groupManager.addFileToTransaction(groupID, transactionID, fileName);
 
     response.send({success: true});
+    return;
+  }
+);
+
+export const updateRates = onRequest(
+  {cors: true, secrets: [currencyKey]},
+  async (request, response) => {
+    const {userID} = await getUserID(request);
+    if (!userID) {
+      response.send({
+        success: false,
+        message: "Missing parameters",
+        detailedMessage: {userID},
+      });
+      return;
+    }
+
+    await groupManager.updateCurrencyRates(currencyKey.value());
+    response.send({success: true});
+
+    return;
+  }
+);
+
+export const extractInformation = onRequest(
+  {cors: true, secrets: [openaiToken]},
+  async (request, response) => {
+    const fileName = request.query.fileName as string;
+    const {userID} = await getUserID(request);
+    if (!fileName || !userID) {
+      response.send({
+        success: false,
+        message: "Missing parameters",
+        detailedMessage: {fileName, userID},
+      });
+      return;
+    }
+
+    const url = `https://storage.googleapis.com/projekt-24-a9104.firebasestorage.app/images/${fileName}`;
+    const text = `Could you please extract the overall amount paid 
+    from this picture of a recipe. And please put it in one of these
+    categories: "Food", "Vacation", "Transportation", "Other".
+    The title should be a descriptive title for this expense.
+    Could you please provide me with a JSON in the form of
+     {title: string; category: string; amount: number}`;
+
+    const result = await gpt(
+      [
+        {
+          role: "user",
+          content: [
+            {type: "text", text},
+            {type: "image_url", image_url: {url}},
+          ],
+        },
+      ],
+      500,
+      true,
+      "gpt-4o",
+      openaiToken.value()
+    );
+
+    if (!result) {
+      response.send({success: false});
+      return;
+    }
+    const {title, category, amount} = JSON.parse(result);
+    response.send({success: true, title, category, amount});
+
     return;
   }
 );

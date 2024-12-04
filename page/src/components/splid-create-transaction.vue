@@ -1,12 +1,13 @@
 <template>
     <div class="flex flex-col">
         <input type="text" placeholder="Title" v-model="title" class="border border-gray-300"/>
-        <div>
+        <div class="flex gap-2 items-center">
             User:
             <select v-model="user">
                 <option v-for="m in people" :key="m.memberID">{{ m.member.value?.email }}</option>
             </select>
             <input type="text" v-model="value" placeholder="Amount">
+            <button class="py-1 px-4 border rounded" @click="openFileDialog()">Upload file</button>
         </div>
         <div class="flex flex-col gap-2">
             Friends:
@@ -24,6 +25,7 @@
 import type { DocumentData } from 'firebase/firestore';
 import { useAPI } from '../composables/useAPI';
 import { ref, watch, watchEffect, type Ref } from 'vue';
+import { useFileUpload } from '../composables/useFileUpload';
 
 type F = {member: Ref<DocumentData | null | undefined, DocumentData | null | undefined>;
     isMember: boolean;
@@ -53,9 +55,20 @@ const create = async () => {
     const friendsList = friends.value.filter((f) => f.isChecked).map((f) => {
         return {id: f.id!, value: Number(f.amount)}
     })
-    const response = await useAPI().createTransaction(props.groupID, title.value, 'category', {id: userID!, value: Number(amount)}, friendsList)
+    const response = await useAPI().createTransaction(props.groupID, title.value, 'category', {id: userID!, value: Number(amount)}, friendsList, uploadedFileName.value || undefined)
     console.log(response)
 }
+
+const { open: openFileDialog, downloadURL, uploadedFileName } = useFileUpload();
+watch(uploadedFileName, async (fileName) => {
+    if (fileName) {
+        const res = await useAPI().extractInformation(fileName);
+        if (res) {
+            title.value = res.title
+            value.value = String(res.amount)
+        }
+    }
+});
 
 
 </script>
