@@ -1,7 +1,5 @@
 <template>
-    <div class="text-blue-500">{{ id }} {{ transaction }}
-
-
+    <div class="">{{ id }} {{ transaction }}
         <button v-if="!isConfirmed" @click="confirmTransaction()">Confirm</button>
         <button @click="deleteTransaction()">Delete</button>
     </div>
