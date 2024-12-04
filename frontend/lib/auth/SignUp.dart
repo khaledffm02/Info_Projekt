@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:frontend/shared/ApiService.dart'; // Importiere den ApiService
 import 'package:frontend/shared/DialogHelper.dart';
+
+import '../shared/Validator.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -72,6 +75,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () async {
+
+                print(dotenv.env);
+
                 final firstname = _firstnameController.text.trim();
                 final lastname = _lastnameController.text.trim();
                 final email = _emailController.text.trim();
@@ -121,10 +127,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     content: 'An error occurred: $e',
                   );
                 }
-                final password = _passwordController.text;
                 Validator.validatePassword(password);
-                print('Username: $username, Email: $email, Password $password');
-                // prints out your info in console
+
               },
               child: const Text('Create Account'),
             )

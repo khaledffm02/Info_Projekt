@@ -17,6 +17,7 @@ void main() async {
     print("Fehler beim Laden der .env-Datei: $e");
 
   }
+
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {
     await Firebase.initializeApp(

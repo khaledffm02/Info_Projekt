@@ -25,6 +25,8 @@ class ApiService {
         throw Exception(
             'Failed to register user. Server responded with status: ${response.statusCode}');
       }
+      await credential.user?.sendEmailVerification();                  //Trigger for verification Email for registration
+
     } catch (e) {
       rethrow;
     }

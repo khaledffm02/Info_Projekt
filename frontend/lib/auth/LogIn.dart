@@ -87,7 +87,7 @@ class _LogInScreenState extends State<LogInScreen> {
                         print('Kein Benutzer angemeldet.');
                       }
                       Navigator.of(context).pop();
-                      Navigator.pushNamed(context, '/CreateGroup');
+                      Navigator.pushNamed(context, '/Dashboard');
                     },
                   );
                 } catch (e) {
