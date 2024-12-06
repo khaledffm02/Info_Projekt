@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CustomDrawer extends StatelessWidget {
@@ -51,18 +52,27 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
 
-/*          ListTile(
-            leading: const Icon(Icons.history),
-            title: const Text('Transaction History'),
-            onTap: () {
-              Navigator.pushNamed(context, '/transactionHistory');
-            },
-        ),*/
+
           ListTile(
-            leading: const Icon(Icons.person_add),
+            leading: const Icon(Icons.logout),
             title: const Text('Sign out'),
-            onTap: () {
-              Navigator.pushNamed(context, 'User-signs-out');
+            onTap: () async {
+              try {
+                //sign out the current user
+                await FirebaseAuth.instance.signOut();
+
+                // check if user got sign out
+                final currentUser = FirebaseAuth.instance.currentUser;
+                print('Aktueller Benutzer nach Abmeldung: $currentUser');
+
+                // Go to logIn site
+                Navigator.pushReplacementNamed(context, '/LogInScreen');  //from stack deleted
+              } catch (e) {
+                print('Fehler beim Abmelden: $e');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Fehler beim Abmelden: $e')),   //small pop up with message
+                );
+              }
             },
           )
         ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/CreateExpense.dart';
+import 'package:frontend/UserSettings.dart';
 import 'package:frontend/group/CreateGroup.dart';
 import 'package:frontend/auth/ForgotPassword.dart';
 import 'package:frontend/GroupOverview.dart';
@@ -51,6 +52,8 @@ class _FairShareState extends State<FairShare> {
         '/JoinGroup': (context) => JoinGroup(),
         '/GroupPage': (context) => const GroupPage(),
         '/Dashboard': (context) => const Dashboard(),
+        '/UserSettings' : (context) => const UserSettings(),
+ //  To Do:     '/StartScreen' : (context) => const StartScreen()
 
         '/CreateExpense': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
