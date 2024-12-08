@@ -58,14 +58,12 @@ class _FairShareState extends State<FairShare> {
         },
 
         '/GroupOverview': (context) {
-        // Retrieve the arguments from the navigation
-        final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-        return GroupOverview(
-        groupName: arguments['groupName'],
-        members: arguments['members'],
-        );
-
-        }
+          final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+          return GroupOverview(
+            groupId: arguments['groupId'], // Use `groupId` for consistent routing
+            groupName: arguments['groupName'], // Pass group name if available
+          );
+        },
 
       },
 

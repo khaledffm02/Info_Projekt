@@ -2,19 +2,14 @@
 
 import 'package:flutter/material.dart';
 
+import '../shared/ApiService.dart';
+
 class JoinGroup extends StatelessWidget {
   final TextEditingController _codeController = TextEditingController();
 
   JoinGroup({super.key});
 
-  //Check the code
-  String? validateCode(String code) {
-    final codeRegex = RegExp(r'^[a-zA-Z0-9]{6}$');     //code is 6 digits and can have a-z, A-Z, 0-9
-    if (!codeRegex.hasMatch(code)) {
-      return 'Please enter a valid code';
-    }
-    return null; // code ist gültig
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -38,32 +33,16 @@ class JoinGroup extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async{
                 // Revalidating beim Klicken auf den Button
                 final code = _codeController.text;
-                final errorMessage = validateCode(code);
 
-                if (errorMessage != null) {
-                  // Zeige Fehlermeldung, falls der Code ungültig ist
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Invalid Code'),
-                        content: Text(errorMessage),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                } else {
-                  // Zeigt Bestätigung, falls der Code gültig ist
+
+                try {
+                  // Call the API to join the group
+                 await ApiService.joinGroup(context, code);
+
+                  // Show success dialog
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -73,8 +52,7 @@ class JoinGroup extends StatelessWidget {
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).pop();
-                              Navigator.pushNamed(context, '/GroupPage');
+                              Navigator.pushNamed(context, '/Dashboard'); // Navigate to the dashboard
                             },
                             child: const Text('OK'),
                           ),
@@ -82,7 +60,29 @@ class JoinGroup extends StatelessWidget {
                       );
                     },
                   );
+                } catch (error) {
+                  // Show error dialog if the group code is invalid or another error occurred
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: const Text('Error'),
+                        content: Text(error.toString()), // Show the error message
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop(); // Close the dialog and stay on the current page
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+
                 }
+
+
               },
               child: const Text('Validate Code'),
             ),

@@ -1,6 +1,7 @@
 //Create Group
 
 import 'package:flutter/material.dart';
+import 'package:frontend/shared/ApiService.dart';
 
 class CreateGroup extends StatefulWidget {
   const CreateGroup({super.key});
@@ -85,21 +86,9 @@ class _CreateGroupState extends State<CreateGroup> {
                       content: const Text('You have created a new group'),
                       actions: [
                         TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-
-                            Navigator.pushNamed(
-                              context,
-                              '/GroupOverview',
-                              arguments: {
-                                'groupName': _groupNameController.text,
-                                'members': [
-                                  {"name": "Tester1", "amount": 0.00},
-                                  {"name": "Tester2", "amount": 0.00},
-                                ],
-                              },
-                            );
-
+                          onPressed: () async{
+                            await ApiService.createGroup(context);
+                            Navigator.pushNamed(context, '/Dashboard');
                           },
                           child: const Text('OK'),
                         ),

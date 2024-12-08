@@ -1,4 +1,10 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:frontend/start/Dashboard.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -90,4 +96,98 @@ class ApiService {
     }
   }
 
+
+  static Future<void> createGroup(BuildContext context) async {
+    try {
+      // Get the current user from Firebase Authentication
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+      // Get the ID token from the current user
+      final idToken = await user.getIdToken();
+
+      // Build the API request URL with the idToken as a query parameter
+      final url = Uri.parse('https://groupcreate-icvq5uaeva-uc.a.run.app')
+          .replace(queryParameters: {
+        'idToken': idToken,
+      });
+
+      // Make the API call
+      final response = await http.get(url);
+
+      // Check if the response indicates success
+      if (response.statusCode != 200) {
+        throw Exception("Failed to create group: ${response.body}");
+      }
+
+      // Notify the user about the successful group creation
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Group created successfully!")),
+      );
+    } catch (e) {
+      // Log and notify the user of the error
+      print("Error creating group: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
+  }
+
+
+  static Future<void> joinGroup(BuildContext context, String groupCode) async {
+    try {
+      // Get the current user from Firebase Authentication
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+      // Check if the groupCode exists in Firestore
+      final groupDoc = await FirebaseFirestore.instance
+          .collection('groups') // Adjust this to your Firestore structure
+          .where('groupCode', isEqualTo: groupCode)
+          .limit(1)
+          .get();
+
+      if (groupDoc.docs.isEmpty) {
+        throw Exception("Group with code $groupCode does not exist.");
+      }
+
+
+
+
+      // Get the ID token from the current user
+      final idToken = await user.getIdToken();
+
+      // Build the API request URL with the idToken as a query parameter
+      final url = Uri.parse('https://groupjoin-icvq5uaeva-uc.a.run.app')
+          .replace(queryParameters: {
+        'idToken': idToken,
+        'groupCode': groupCode,
+      });
+
+      // Make the API call
+      final response = await http.get(url);
+
+      // Check if the response indicates success
+      if (response.statusCode != 200) {
+        throw Exception("Failed to join group: ${response.body}");
+      }
+
+      // Notify the user about the successful group creation
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Group joined successfully!")),
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+
+
+
 }
+
+
