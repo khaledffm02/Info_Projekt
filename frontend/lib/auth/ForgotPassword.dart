@@ -64,6 +64,8 @@ class ForgotPassword extends StatelessWidget {
                   }
 
                   try {
+
+
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
@@ -71,7 +73,10 @@ class ForgotPassword extends StatelessWidget {
                         content: Text('„Falls die E-Mail-Adresse existiert, haben wir Ihnen eine Nachricht an $email mit Anweisungen zum Zurücksetzen des Passworts gesendet.“'),
                         actions: [
                           TextButton(
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () {
+                              Navigator.pop(context); // Erste Aktion: Dialog schließen
+                              Navigator.pushNamed(context, '/LogInScreen'); // Zweite Aktion: Navigation zum Login-Screen
+                            },
                             child: const Text('OK'),
                           ),
                         ],
