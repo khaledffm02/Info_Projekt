@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 
 import '../shared/ApiService.dart';
+import '../shared/DialogHelper.dart';
 
 class JoinGroup extends StatelessWidget {
   final TextEditingController _codeController = TextEditingController();
@@ -43,41 +44,22 @@ class JoinGroup extends StatelessWidget {
                  await ApiService.joinGroup(context, code);
 
                   // Show success dialog
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Success'),
-                        content: const Text('You are in the new group'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pushNamed(context, '/Dashboard'); // Navigate to the dashboard
-                            },
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
+                 DialogHelper.showDialogCustom(
+                     context: context,
+                     title: 'Success',
+                     content: 'You are in the new group',
+                     onConfirm: () {
+                       Navigator.pushNamed(context, '/Dashboard'); // Navigate to the dashboard
+                     },
+
+                 );
+
                 } catch (error) {
                   // Show error dialog if the group code is invalid or another error occurred
-                  showDialog(
+                  DialogHelper.showDialogCustom(
                     context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Error'),
-                        content: Text(error.toString()), // Show the error message
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop(); // Close the dialog and stay on the current page
-                            },
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
+                    title: 'Error',
+                    content: error.toString(), // Show the error message
                   );
 
                 }
