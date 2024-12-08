@@ -1,24 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/shared/GroupNavigationBar.dart';
+import 'package:frontend/shared/GroupService.dart';
 
-class GroupOverview extends StatelessWidget {
-  final String groupName; // Group name passed from CreateGroup.dart
-  final List<Map<String, dynamic>> members; // List of group members and their expenses
+class GroupOverview extends StatefulWidget {
+  final String groupId; // Group ID passed from Dashboard.dart
 
-  // Constructor to accept the group name and member data
-  const GroupOverview({super.key, required this.groupName, required this.members});
+  const GroupOverview({super.key, required this.groupId, required groupName});
+
+  @override
+  _GroupOverviewState createState() => _GroupOverviewState();
+}
+
+class _GroupOverviewState extends State<GroupOverview> {
+  List<Map<String, dynamic>> members = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGroupMembers();
+  }
+
+  Future<void> _fetchGroupMembers() async {
+    try {
+      final fetchedMembers = await GroupService.getGroupMembers(widget.groupId);
+      setState(() {
+        members = fetchedMembers;
+        isLoading = false;
+      });
+    } catch (e) {
+      print("Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to load group members: $e")),
+      );
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: const CustomDrawer(),
       appBar: AppBar(
-        title: Text(groupName), // Display the group name
+        title: Text(widget.groupId), // Display the group ID (can be replaced with a name if available)
         backgroundColor: Colors.black12,
         centerTitle: true,
       ),
-      body: Column(
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
         children: [
           // Tabs (Overview and Expenses)
           Container(
@@ -39,26 +72,22 @@ class GroupOverview extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    //Handle Statistics
+                    // Handle Statistics
                   },
                   child: const Text(
                     "Statistics",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-
                 TextButton(
                   onPressed: () {
-                    //Handle Transactions
+                    // Handle Transactions
                   },
                   child: const Text(
                     "Transaction History",
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-
-
-
               ],
             ),
           ),
@@ -79,25 +108,15 @@ class GroupOverview extends StatelessWidget {
                     ),
                   ),
                 );
-
               },
             ),
           ),
-
-
-
         ],
-
-
       ),
-
       bottomNavigationBar: GroupNavigationBar(
-        groupName: groupName,  // Pass group name
+        groupName: widget.groupId, // Pass group ID
         members: members,
-
-      ),  // No need for callbacks
-
+      ),
     );
-
   }
 }

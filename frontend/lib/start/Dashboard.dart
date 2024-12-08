@@ -1,9 +1,42 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/GroupOverview.dart';
+import 'package:frontend/shared/GroupService.dart';
 
-class Dashboard extends StatelessWidget {
+class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
+
+  @override
+  State<Dashboard> createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  List<Map<String, dynamic>> _groups = []; // Holds fetched groups
+  bool _isLoading = true; // Tracks loading state
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGroups(); // Fetch groups on widget initialization
+  }
+
+  // Fetch groups from Firestore
+  Future<void> _fetchGroups() async {
+    try {
+      final groups = await GroupService.getUserGroups();
+      setState(() {
+        _groups = groups;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error fetching groups: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,21 +48,17 @@ class Dashboard extends StatelessWidget {
         centerTitle: true,
       ),
       body: Column(
-
-
-
-          children: [
-
-            Container(
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
-              child: const Text(
-                "Balance",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
+        children: [
+          // Balance Section
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
+            child: const Text(
+              "Balance",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
-
-        Expanded(
+          ),
+          Expanded(
             flex: 0,
             child: ListView.builder(
               shrinkWrap: true, // Prevents scrolling within the small list
@@ -41,18 +70,16 @@ class Dashboard extends StatelessWidget {
                   {"label": "You are owed", "amount": 0.00}
                 ][index];
 
-                // Explicitly cast the data values to their expected types
                 final label = data['label'] as String;
                 final amount = data['amount'] as double;
-
 
                 return Card(
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
-                    title: Text(label), // Now a String
+                    title: Text(label),
                     trailing: Text(
-                      "${amount.toStringAsFixed(2)} €", // Now a double
+                      "${amount.toStringAsFixed(2)} €",
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
@@ -73,29 +100,33 @@ class Dashboard extends StatelessWidget {
 
           // Groups ListView
           Expanded(
-            child: ListView.builder(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _groups.isEmpty
+                ? const Center(child: Text("No groups found."))
+                : ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              itemCount: 1, // Only one group for now
+              itemCount: _groups.length,
               itemBuilder: (context, index) {
+                final group = _groups[index];
                 return Card(
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
-                    title: const Text("Test Group"),
+                    title: Text(group['id']), // Display group document ID
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      // Navigate to GroupOverview when tapped
+                      // Navigate to GroupOverview
                       Navigator.pushNamed(
                         context,
                         '/GroupOverview',
                         arguments: {
-                          'groupName': "Test Group",
-                          'members': [
-                            {"name": "Tester1", "amount": 0.00},
-                            {"name": "Tester2", "amount": 0.00},
-                          ],
+                          'groupId': group['id'], // Pass the group ID
+                          'groupName': group['data']['name'] ?? group['id'], // Use group name or fallback to ID
                         },
                       );
+
+
                     },
                   ),
                 );
