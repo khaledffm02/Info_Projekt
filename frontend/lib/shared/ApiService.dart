@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:frontend/start/Dashboard.dart';
 import 'package:http/http.dart' as http;
 
+import 'DialogHelper.dart';
+
 class ApiService {
   static Future<void> registerUser(String email, String password,
       String firstname, String lastname) async {
@@ -185,7 +187,59 @@ class ApiService {
     }
   }
 
+// Method for Re-Authentication
+  static Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String confirmPassword,
+    required BuildContext context,
+  }) async {
+    // Hole den aktuellen Benutzer
+    User? user = FirebaseAuth.instance.currentUser;
 
+    if (user == null) {
+      throw Exception("No user is logged in");
+    }else{
+      print(user.toString());
+    }
+
+    // Überprüfen, ob die Passwörter übereinstimmen
+    if (newPassword != confirmPassword) {
+      throw Exception("The new passwords do not match.");
+    }
+
+    // Validierung des neuen Passworts
+/*    final errorMessage = Validator.validatePassword(newPassword);
+    if (errorMessage != null) {
+      throw Exception("Error: $errorMessage");
+    }
+*/
+    try {
+      // Erstelle die Anmeldeinformationen (Credential)
+      final credential = EmailAuthProvider.credential(
+        email: user.email ?? '',
+        password: "test",
+      );
+      print(user.email);
+      print(credential.toString());
+
+      // Re-Authentifizierung
+      await user.reauthenticateWithCredential(credential);
+      print("Test2");
+      // Passwort aktualisieren
+      await user.updatePassword(newPassword);
+      print("test3");
+      // Erfolgsmeldung zurückgeben
+      DialogHelper.showDialogCustom(
+        context: context,
+        title: "Confirmation",
+        content: "Your password has been successfully changed.",
+      );
+    } catch (e) {
+      // Fehler werfen
+      throw Exception("Failed to change password: $e");
+    }
+  }
 
 
 }
