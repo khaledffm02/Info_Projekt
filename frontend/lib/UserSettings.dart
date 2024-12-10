@@ -97,8 +97,13 @@ class _UserSettingsState extends State<UserSettings> {
                 }
                 print("test");
 
-                await user?.updatePassword(newPassword);
-
+                try {
+                  await user?.updatePassword(newPassword);
+                  DialogHelper.showDialogCustom(context: context, title: "Succes" , content: "Password was changed");
+                  Navigator.pushNamed(context, '/Dashboard');
+                } catch (e) {
+                  print("test_update_password: $e");
+                }
               },
               child: const Text('Change Password'),
             ),

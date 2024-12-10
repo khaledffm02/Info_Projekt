@@ -55,8 +55,7 @@ class _FairShareState extends State<FairShare> {
         '/GroupPage': (context) => const GroupPage(),
         '/Dashboard': (context) => const Dashboard(),
         '/UserSettings' : (context) => const UserSettings(),
- //  To Do:     '/StartScreen' : (context) => const StartScreen()
-
+        '/StartScreen': (context) => StartScreen(switchToLogInScreen, switchToSignUpScreen),
         '/CreateExpense': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
           return CreateExpense(members: arguments['members']);

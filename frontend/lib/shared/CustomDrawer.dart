@@ -66,7 +66,7 @@ class CustomDrawer extends StatelessWidget {
                 print('Current user after sign out: $currentUser');
 
                 // Go to logIn site
-                Navigator.pushReplacementNamed(context, '/LogInScreen');  //from stack deleted
+                Navigator.pushReplacementNamed(context, '/StartScreen');  //from stack deleted
               } catch (e) {
                 print('Fehler beim Abmelden: $e');
                 ScaffoldMessenger.of(context).showSnackBar(

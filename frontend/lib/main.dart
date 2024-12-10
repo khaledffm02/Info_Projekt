@@ -25,18 +25,12 @@ void main() async {
   if (kIsWeb) {
     await Firebase.initializeApp(
       options: FirebaseOptions(
-          apiKey: "AIzaSyAocdxKkpHf2hDQ4QlZtT_2HKU-ThEspUI",
-
-          authDomain: "projekt-24-a9104.firebaseapp.com",
-
-          projectId: "projekt-24-a9104",
-
-          storageBucket: "projekt-24-a9104.firebasestorage.app",
-
-          messagingSenderId: "351644604797",
-
-          appId: "1:351644604797:web:2279767fbcdab70688d414"
-
+        apiKey: dotenv.env['WEB_API_KEY']!,
+        authDomain: dotenv.env['WEB_AUTH_DOMAIN']!,
+        projectId: dotenv.env['WEB_PROJECT_ID']!,
+        storageBucket: dotenv.env['WEB_STORAGE_BUCKET']!,
+        messagingSenderId: dotenv.env['WEB_MESSAGING_SENDER_ID']!,
+        appId: dotenv.env['WEB_APP_ID']!,
       ),
     );
   } else {

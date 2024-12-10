@@ -83,6 +83,7 @@ class _LogInScreenState extends State<LogInScreen> {
 
                       if (user != null) {
                         print('Benutzer ist angemeldet: ${user.uid}');
+                        print(user.toString());
                       } else {
                         print('Kein Benutzer angemeldet.');
                       }
