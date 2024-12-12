@@ -65,7 +65,7 @@ class CustomDrawer extends StatelessWidget {
                 final currentUser = FirebaseAuth.instance.currentUser;
                 print('Current user after sign out: $currentUser');
 
-                // Go to logIn site
+
                 Navigator.pushReplacementNamed(context, '/StartScreen');  //from stack deleted
               } catch (e) {
                 print('Fehler beim Abmelden: $e');

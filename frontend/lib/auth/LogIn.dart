@@ -95,11 +95,12 @@ class _LogInScreenState extends State<LogInScreen> {
                   DialogHelper.showDialogCustom(
                     context: context,
                     title: 'Error',
-                    content: 'Failed to log in: $e',
+                    content: '"The provided login details are incorrect or the user does not exist."',
                   );
                 }
               },
-              style: ElevatedButton.styleFrom(
+    
+                style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),
               child: const Text('Login'),

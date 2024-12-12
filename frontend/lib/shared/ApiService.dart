@@ -241,7 +241,50 @@ class ApiService {
     }
   }
 
+  static const String deleteUserUrl = 'https://userdelete-icvq5uaeva-uc.a.run.app';
 
+  /// Methode zur Benutzerlöschung (GET-Request)
+  static Future<void> deleteUser({required BuildContext context}) async {
+    // Hole den aktuellen Benutzer
+    User? user = FirebaseAuth.instance.currentUser;
+    print("API: current User is:"+ user.toString());
+    if (user == null) {
+      throw Exception("No user is logged in.");
+    }
+
+    try {
+      // ID-Token des Benutzers abrufen
+      String? idToken = await user.getIdToken();
+      print("API:  Currentuser IDTocken is:" + idToken!);
+      // GET-Request senden (idToken als Query-Parameter)
+      final uri = Uri.parse('$deleteUserUrl?idToken=$idToken');
+      final response = await http.get(uri);
+
+      // Überprüfe die Antwort
+      if (response.statusCode == 200) {
+        print("User successfully deleted");
+        print(response.statusCode);
+        await user.delete();
+        print("User successfully deleted from Firebase Authentication");
+
+        // Optional: Benutzer aus Firebase abmelden
+
+
+        // Bestätigung anzeigen
+        DialogHelper.showDialogCustom(
+          context: context,
+          title: "User Deleted",
+          content: "Your account has been successfully deleted.",
+        );
+      } else {
+        // Fehlerbehandlung bei nicht erfolgreicher Antwort
+        throw Exception("Failed to delete user. Server returned: ${response.statusCode} - ${response.body}");
+      }
+    } catch (e) {
+      print("Error: $e");
+      throw Exception("Failed to delete user: $e");
+    }
+  }
 }
 
 
