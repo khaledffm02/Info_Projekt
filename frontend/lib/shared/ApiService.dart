@@ -10,8 +10,8 @@ import 'package:http/http.dart' as http;
 import 'DialogHelper.dart';
 
 class ApiService {
-  static Future<void> registerUser(String email, String password,
-      String firstname, String lastname) async {
+  static Future<void> registerUser(
+      String email, String password, String firstname, String lastname) async {
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -23,21 +23,19 @@ class ApiService {
 
       final url = Uri.parse(
         'https://userregistration-icvq5uaeva-uc.a.run.app'
-            '?idToken=${Uri.encodeComponent(idToken)}'
-            '&firstName=${Uri.encodeComponent(firstname)}'
-            '&lastName=${Uri.encodeComponent(lastname)}',
+        '?idToken=${Uri.encodeComponent(idToken)}'
+        '&firstName=${Uri.encodeComponent(firstname)}'
+        '&lastName=${Uri.encodeComponent(lastname)}',
       );
 
       final response = await http.get(url);
 
       if (response.statusCode != 200) {
         throw Exception(
-            'Failed to register user. Server responded with status: ${response
-                .statusCode}');
+            'Failed to register user. Server responded with status: ${response.statusCode}');
       }
       await credential.user
           ?.sendEmailVerification(); //Trigger for verification Email for registration
-
     } catch (e) {
       rethrow;
     }
@@ -58,28 +56,26 @@ class ApiService {
       // Step 3: Send ID Token to the login API endpoint
       final url = Uri.parse(
         'https://userlogin-icvq5uaeva-uc.a.run.app'
-            '?idToken=${Uri.encodeComponent(idToken)}',
+        '?idToken=${Uri.encodeComponent(idToken)}',
       );
 
       final response = await http.get(url);
 
       if (response.statusCode != 200) {
         throw Exception(
-            'Failed to log in user. Server responded with status: ${response
-                .statusCode}');
+            'Failed to log in user. Server responded with status: ${response.statusCode}');
       }
     } catch (e) {
       rethrow;
     }
   }
 
-
   static Future<bool> resetPassword(String email) async {
     try {
       // Endpoint-URL
       final url = Uri.parse(
         'https://sendnewpassword-icvq5uaeva-uc.a.run.app'
-            '?email=${Uri.encodeComponent(email)}',
+        '?email=${Uri.encodeComponent(email)}',
       );
 
       // Sende die Anfrage
@@ -97,7 +93,6 @@ class ApiService {
       return false; // Rückgabe false bei Fehler
     }
   }
-
 
   static Future<void> createGroup(BuildContext context) async {
     try {
@@ -137,7 +132,6 @@ class ApiService {
     }
   }
 
-
   static Future<void> joinGroup(BuildContext context, String groupCode) async {
     try {
       // Get the current user from Firebase Authentication
@@ -156,9 +150,6 @@ class ApiService {
       if (groupDoc.docs.isEmpty) {
         throw Exception("Group with code $groupCode does not exist.");
       }
-
-
-
 
       // Get the ID token from the current user
       final idToken = await user.getIdToken();
@@ -199,7 +190,7 @@ class ApiService {
 
     if (user == null) {
       throw Exception("No user is logged in");
-    }else{
+    } else {
       print(user.toString());
     }
 
@@ -241,13 +232,14 @@ class ApiService {
     }
   }
 
-  static const String deleteUserUrl = 'https://userdelete-icvq5uaeva-uc.a.run.app';
+  static const String deleteUserUrl =
+      'https://userdelete-icvq5uaeva-uc.a.run.app';
 
   /// Methode zur Benutzerlöschung (GET-Request)
   static Future<void> deleteUser({required BuildContext context}) async {
     // Hole den aktuellen Benutzer
     User? user = FirebaseAuth.instance.currentUser;
-    print("API: current User is:"+ user.toString());
+    print("API: current User is:" + user.toString());
     if (user == null) {
       throw Exception("No user is logged in.");
     }
@@ -269,7 +261,6 @@ class ApiService {
 
         // Optional: Benutzer aus Firebase abmelden
 
-
         // Bestätigung anzeigen
         DialogHelper.showDialogCustom(
           context: context,
@@ -278,7 +269,8 @@ class ApiService {
         );
       } else {
         // Fehlerbehandlung bei nicht erfolgreicher Antwort
-        throw Exception("Failed to delete user. Server returned: ${response.statusCode} - ${response.body}");
+        throw Exception(
+            "Failed to delete user. Server returned: ${response.statusCode} - ${response.body}");
       }
     } catch (e) {
       print("Error: $e");
@@ -286,5 +278,3 @@ class ApiService {
     }
   }
 }
-
-

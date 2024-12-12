@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/DialogHelper.dart';
 import 'package:frontend/shared/Validator.dart';
+import 'package:http/http.dart' as http;
 
 class UserSettings extends StatefulWidget {
   const UserSettings({super.key});
@@ -15,7 +16,80 @@ class _UserSettingsState extends State<UserSettings> {
   final TextEditingController _oldPasswordController = TextEditingController();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  TextEditingController();
+  
+  static Future<void> loginUser(String email, String password, BuildContext context) async {
+    try {
+      // Step 1: Sign in user with Firebase Authentication
+      final credential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      // Step 2: Retrieve the Firebase ID Token
+      final idToken = await credential.user?.getIdToken() ?? '';
+      if (idToken.isEmpty) {
+        throw Exception('Failed to retrieve ID Token.');
+      }
+
+      // Step 3: Send ID Token to the login API endpoint
+      final url = Uri.parse(
+        'https://userlogin-icvq5uaeva-uc.a.run.app'
+            '?idToken=${Uri.encodeComponent(idToken)}',
+      );
+
+      final response = await http.get(url);
+
+      if (response.statusCode != 200) {
+        throw Exception(
+            'Failed to log in user. Server responded with status: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  void handleLogin(String email, String password) async {
+    if (_failedLoginAttempts >= _maxAttempts) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Account locked. Please reset your password.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      await loginUser(email, password, context);
+      setState(() {
+        _failedLoginAttempts = 0; // Reset attempts on successful login
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login successful!'),
+        ),
+      );
+      Navigator.pushReplacementNamed(context, '/Dashboard');
+    } catch (e) {
+      setState(() {
+        _failedLoginAttempts++;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              'Login failed. Attempt $_failedLoginAttempts of $_maxAttempts.'),
+        ),
+      );
+
+      if (_failedLoginAttempts >= _maxAttempts) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account locked. Please reset your password.'),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,98 +104,29 @@ class _UserSettingsState extends State<UserSettings> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Old password
             TextField(
               controller: _oldPasswordController,
-              obscureText: true,
               decoration: const InputDecoration(
-                labelText: 'Enter your old Password',
+                labelText: 'Email',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
-            // New password
             TextField(
               controller: _newPasswordController,
               obscureText: true,
               decoration: const InputDecoration(
-                labelText: 'Enter new Password',
+                labelText: 'Password',
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: _confirmPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Confirm new Password',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            // Button for changing password
             ElevatedButton(
-              onPressed: () async {
-                final oldPassword = _oldPasswordController.text.trim();
-                final newPassword = _newPasswordController.text.trim();
-                final confirmPassword = _confirmPasswordController.text.trim();
-
-                if (newPassword.isEmpty || confirmPassword.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('The new password cannot be empty')),
-                  );
-                  return;
-                }
-
-                if (newPassword != confirmPassword) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Passwords do not match')),
-                  );
-                  return;
-                }
-
-                final user = FirebaseAuth.instance.currentUser;
-                final emailTrimmed = user?.email?.trim();
-                if (user != null) {
-                  // Create the credential with email and password
-                  final credential = EmailAuthProvider.credential(
-                    email: emailTrimmed ?? '',
-                    password: oldPassword,
-                  );
-
-                  try {
-                    // User re-authentication
-                    await user.reauthenticateWithCredential(credential);
-                    print('Reauthentication successful!');
-                  } catch (e) {
-                    print('Error during reauthentication: $e');
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(
-                              'Reauthentication failed. Check your old password.')),
-                    );
-                    return;
-                  }
-                }
-
-                try {
-                  await user?.updatePassword(newPassword);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Password changed successfully'),
-                    ),
-                  );
-                  Navigator.pushNamed(context, '/Dashboard');
-                } catch (e) {
-                  print("Error updating password: $e");
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(
-                            'An error occurred while changing the password.')),
-                  );
-                }
-              },
-              child: const Text('Change Password'),
+              onPressed: () => handleLogin(
+                _oldPasswordController.text.trim(),
+                _newPasswordController.text.trim(),
+              ),
+              child: const Text('Login'),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -144,6 +149,9 @@ class _UserSettingsState extends State<UserSettings> {
                             Navigator.of(context).pop(true); // User confirms
                           },
                           child: Text('Delete User'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
                         ),
                       ],
                     );
@@ -182,3 +190,4 @@ class _UserSettingsState extends State<UserSettings> {
     );
   }
 }
+git diff
