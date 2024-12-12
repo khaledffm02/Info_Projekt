@@ -71,6 +71,8 @@ class CustomDrawer extends StatelessWidget {
                 print('Fehler beim Abmelden: $e');
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('An error occurred while logging out. Please try again')),   //small pop up with message
+
+
                 );
               }
             },

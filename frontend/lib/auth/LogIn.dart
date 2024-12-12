@@ -99,7 +99,7 @@ class _LogInScreenState extends State<LogInScreen> {
                   );
                 }
               },
-    
+
                 style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),

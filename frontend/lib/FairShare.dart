@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/CreateExpense.dart';
-//import 'package:frontend/UserSettings.dart';
+import 'package:frontend/UserSettings.dart';
 import 'package:frontend/group/CreateGroup.dart';
 import 'package:frontend/auth/ForgotPassword.dart';
 import 'package:frontend/group/GroupOverview.dart';
