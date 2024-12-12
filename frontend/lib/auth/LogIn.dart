@@ -72,25 +72,29 @@ class _LogInScreenState extends State<LogInScreen> {
                 }
 
                 try {
-                  // Direkt ApiService.loginUser aufrufen
                   await ApiService.loginUser(email, password);
-                  DialogHelper.showDialogCustom(
-                    context: context,
-                    title: 'Success',
-                    content: 'Logged in successfully!',
-                    onConfirm: () {
-                      final user = FirebaseAuth.instance.currentUser;
+                  final user = FirebaseAuth.instance.currentUser;
+                  if (user?.emailVerified!=true){
+                    DialogHelper.showDialogCustom(context: context, title: 'Error', content: "You didn't confirm the email, to continue click in the link in an email");
+                    await FirebaseAuth.instance.signOut();
 
-                      if (user != null) {
-                        print('Benutzer ist angemeldet: ${user.uid}');
-                        print(user.toString());
-                      } else {
-                        print('Kein Benutzer angemeldet.');
-                      }
-                      Navigator.of(context).pop();
-                      Navigator.pushNamed(context, '/Dashboard');
-                    },
-                  );
+                  }else {
+                    DialogHelper.showDialogCustom(
+                      context: context,
+                      title: 'Success',
+                      content: 'Logged in successfully!',
+                      onConfirm: () {
+                        if (user != null) {
+                          print('Benutzer ist angemeldet: ${user.uid}');
+                          print(user.toString());
+                        } else {
+                          print('Kein Benutzer angemeldet.');
+                        }
+                        Navigator.of(context).pop();
+                        Navigator.pushNamed(context, '/Dashboard');
+                      },
+                    );
+                  }
                 } catch (e) {
                   DialogHelper.showDialogCustom(
                     context: context,
@@ -116,3 +120,5 @@ class _LogInScreenState extends State<LogInScreen> {
     );
   }
 }
+
+
