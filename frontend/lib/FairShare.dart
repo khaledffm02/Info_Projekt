@@ -54,7 +54,7 @@ class _FairShareState extends State<FairShare> {
 
         '/CreateExpense': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-          return CreateExpense(members: arguments['members']);
+          return CreateExpense(members: arguments['members'], groupName: arguments['groupName']);
         },
 
         '/GroupOverview': (context) {

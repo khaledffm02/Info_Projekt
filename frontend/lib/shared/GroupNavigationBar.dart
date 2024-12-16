@@ -31,7 +31,8 @@ class GroupNavigationBar extends StatelessWidget {
               context,
               '/CreateExpense',
               arguments: {
-                'members': members,  // Passing members as arguments
+                'members': members, // Passing members as arguments
+                'groupName' : groupName,
               },
             );
             break;
