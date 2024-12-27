@@ -161,7 +161,7 @@ export const sendNewPassword = onRequest(
 export const createTransaction = onRequest(
   {cors: true},
   async (request, response) => {
-    const parameters = request.query.request as string;
+    const parameters = decodeURIComponent(request.query.request as string);
     const {userID} = await getUserID(request);
     if (!parameters || !userID) {
       response.send({success: false});
