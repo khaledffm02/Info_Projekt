@@ -161,7 +161,7 @@ export class GroupManager {
     groupID: string,
     meta: { title: string; category?: string; storageURL?: string },
     user: { id: string; value: number },
-    friends: { id: string; value: number }[]
+    friends: { id: string; value: number; isConfirmed?: boolean }[]
   ) {
     const groupRef = this.db.collection("groups").doc(groupID);
     const transactionID = randomString(16);
@@ -178,7 +178,11 @@ export class GroupManager {
           Object.fromEntries(
             friends.map((f) => [
               f.id,
-              {value: f.value, isConfirmed: f.id === user.id},
+              {
+                value: f.value,
+                isConfirmed:
+                  f.id === user.id || !!f.isConfirmed,
+              },
             ])
           )
         )
@@ -264,5 +268,25 @@ export class GroupManager {
       const rates = currencyDoc.data();
       return rates;
     }
+  }
+
+  async setGroupReminder(groupID: string) {
+    const futureThreeDays = 3 * 24 * 60 * 60 * 1000;
+    const remindersRef = this.db.collection("reminders").doc(groupID);
+    await remindersRef.set({
+      reminder: Date.now() + futureThreeDays,
+    });
+  }
+
+  async getGroupRemindersForDate(timestamp = Date.now()): Promise<string[]> {
+    const remindersRef = this.db.collection("reminders");
+    const reminders = await remindersRef
+      .where("reminder", "<=", timestamp)
+      .get();
+    const groupsToRemind = reminders.docs.map((doc) => doc.id);
+    await Promise.all(
+      groupsToRemind.map((groupID) => remindersRef.doc(groupID).delete())
+    );
+    return groupsToRemind;
   }
 }

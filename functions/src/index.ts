@@ -11,6 +11,7 @@ import {initializeApp} from "firebase-admin/app";
 import {getFirestore} from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
+import {onSchedule} from "firebase-functions/v2/scheduler";
 import {changeUserPassword, getUserID, loadUser} from "./auth";
 import {defineSecret} from "firebase-functions/params";
 import {GroupManager} from "./managers/GroupManager";
@@ -233,6 +234,7 @@ export const createTransaction = onRequest(
       user,
       friends
     );
+    await groupManager.setGroupReminder(groupID);
     response.send({success: true, transactionID: id});
     return;
   }
@@ -311,7 +313,7 @@ export const addPayment = onRequest(
       groupID,
       {title: "_payment", category: "payment"},
       {id: fromID, value},
-      [{id: toID, value}]
+      [{id: toID, value, isConfirmed: true}]
     );
 
     await sendMail({
@@ -421,3 +423,55 @@ export const extractInformation = onRequest(
     return;
   }
 );
+
+export const sendReminders = onRequest(
+  {cors: true, secrets: [emailAccount, emailPassword]},
+  async (request, response) => {
+    const groupID = request.query.groupID as string;
+    if (!groupID) {
+      response.send({
+        success: false,
+        message: "Missing parameters",
+        detailedMessage: {groupID},
+      });
+      return;
+    }
+    const group = await groupManager.getGroup(groupID);
+    const balances = group.getBalances();
+    // eslint-disable-next-line guard-for-in
+    for (const entries in Object.entries(balances)) {
+      const userID = entries[0];
+      const balance = Number(entries[1]);
+      if (balance > 0) {
+        const user = await loadUser(userID);
+        if (!user) {
+          continue;
+        }
+        const email = user.email;
+        await sendMail({
+          account: emailAccount.value(),
+          password: emailPassword.value(),
+          from: "splidapp@project.com",
+          text: `Reminder open balance of ${balance}`,
+          to: email,
+          subject: "Reminder of open balance",
+          html: `<b>Hi ${user.name}, 
+            you have open payments to take action on 
+            in your group "${group.data.name}". 
+            Open: ${balance} ${group.data.currency}</b>`,
+        });
+      }
+    }
+
+    response.send({success: true});
+  }
+);
+
+exports.scheduledFunctionCrontab = onSchedule("*/5 * * * *", async () => {
+  const groups = await groupManager.getGroupRemindersForDate();
+  const getEndpoint = (groupID: string) =>
+    `https://sendreminders-icvq5uaeva-uc.a.run.app?groupID=${encodeURIComponent(groupID)}`;
+  await Promise.allSettled(
+    groups.map((groupID) => fetch(getEndpoint(groupID)))
+  );
+});
