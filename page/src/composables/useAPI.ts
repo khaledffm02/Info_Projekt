@@ -109,6 +109,11 @@ export const useAPI = createGlobalState(() => {
     if (!idToken) return;
     await fetch(createURL('updaterates',{idToken}));
   };
+  const getBalances = async (groupID: string): Promise<any> => {
+    const idToken = await user.value?.getIdToken(true);
+    if (!idToken) return;
+    await fetch(createURL('getgroupbalance',{idToken,groupID}));
+  }
   return {
     createGroup,
     deleteGroup,
@@ -124,6 +129,7 @@ export const useAPI = createGlobalState(() => {
     addFileToTransaction,
     extractInformation,
     updateRates,
+    getBalances,
   };
 });
 
