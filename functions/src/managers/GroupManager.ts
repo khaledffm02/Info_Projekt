@@ -75,6 +75,20 @@ export class GroupManager {
     );
   }
 
+  async changeGroup(
+    groupID: string,
+    changes: { name?: string; currency?: string }
+  ): Promise<void> {
+    if (changes.name === undefined && changes.currency === undefined) {
+      return;
+    }
+    const groupRef = this.db.collection("groups").doc(groupID);
+    await groupRef.update({
+      ...(changes.name ? {name: changes.name} : {}),
+      ...(changes.currency ? {currency: changes.currency} : {}),
+    });
+  }
+
   async userLogin(
     userID: string,
     options?: { preferredCurrency: string }
