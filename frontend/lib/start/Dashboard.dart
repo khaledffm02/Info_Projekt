@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
-import 'package:frontend/GroupOverview.dart';
+import 'package:frontend/group/GroupOverview.dart';
 import 'package:frontend/shared/GroupService.dart';
 
 class Dashboard extends StatefulWidget {

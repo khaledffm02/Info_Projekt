@@ -10,13 +10,16 @@ import 'package:frontend/FairShare.dart';
 
 //change
 void main() async {
-  try {
-    await dotenv.load(fileName: ".env");
+ /* try {
+    await dotenv.load(fileName: "asset/.env");
     print("Dotenv geladen: ${dotenv.env}");
   } catch (e) {
+    print("Fehler beim Laden der .env-Datei: ${e.toString()}");
     print("Fehler beim Laden der .env-Datei: $e");
 
   }
+  */
+
 
   WidgetsFlutterBinding.ensureInitialized();
   if (kIsWeb) {

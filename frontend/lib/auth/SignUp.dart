@@ -76,7 +76,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ElevatedButton(
               onPressed: () async {
 
-                print(dotenv.env);
+
 
                 final firstname = _firstnameController.text.trim();
                 final lastname = _lastnameController.text.trim();

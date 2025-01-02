@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/CreateExpense.dart';
+import 'package:frontend/UserSettings.dart';
 import 'package:frontend/group/CreateGroup.dart';
 import 'package:frontend/auth/ForgotPassword.dart';
-import 'package:frontend/GroupOverview.dart';
+import 'package:frontend/group/GroupOverview.dart';
 import 'package:frontend/group/GroupPage.dart';
 import 'package:frontend/group/JoinGroup.dart';
 import 'package:frontend/auth/LogIn.dart';
 import 'package:frontend/auth/SignUp.dart';
 import 'package:frontend/StartScreen.dart';
 import 'package:frontend/start/Dashboard.dart';
+
+import 'UserSettings.dart';
 
 class FairShare extends StatefulWidget {
   const FairShare({super.key});
@@ -51,7 +54,8 @@ class _FairShareState extends State<FairShare> {
         '/JoinGroup': (context) => JoinGroup(),
         '/GroupPage': (context) => const GroupPage(),
         '/Dashboard': (context) => const Dashboard(),
-
+        '/UserSettings' : (context) => const UserSettings(),
+        '/StartScreen': (context) => StartScreen(switchToLogInScreen, switchToSignUpScreen),
         '/CreateExpense': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
           return CreateExpense(members: arguments['members'], groupName: arguments['groupName']);
