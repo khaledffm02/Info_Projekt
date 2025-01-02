@@ -2,8 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/DialogHelper.dart';
-import 'package:frontend/shared/Validator.dart';
-import 'package:http/http.dart' as http;
 
 class UserSettings extends StatefulWidget {
   const UserSettings({super.key});
@@ -13,84 +11,6 @@ class UserSettings extends StatefulWidget {
 }
 
 class _UserSettingsState extends State<UserSettings> {
-  final TextEditingController _oldPasswordController = TextEditingController();
-  final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-  TextEditingController();
-  
-  static Future<void> loginUser(String email, String password, BuildContext context) async {
-    try {
-      // Step 1: Sign in user with Firebase Authentication
-      final credential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
-
-      // Step 2: Retrieve the Firebase ID Token
-      final idToken = await credential.user?.getIdToken() ?? '';
-      if (idToken.isEmpty) {
-        throw Exception('Failed to retrieve ID Token.');
-      }
-
-      // Step 3: Send ID Token to the login API endpoint
-      final url = Uri.parse(
-        'https://userlogin-icvq5uaeva-uc.a.run.app'
-            '?idToken=${Uri.encodeComponent(idToken)}',
-      );
-
-      final response = await http.get(url);
-
-      if (response.statusCode != 200) {
-        throw Exception(
-            'Failed to log in user. Server responded with status: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw e;
-    }
-  }
-
-  void handleLogin(String email, String password) async {
-    if (_failedLoginAttempts >= _maxAttempts) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account locked. Please reset your password.'),
-        ),
-      );
-      return;
-    }
-
-    try {
-      await loginUser(email, password, context);
-      setState(() {
-        _failedLoginAttempts = 0; // Reset attempts on successful login
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Login successful!'),
-        ),
-      );
-      Navigator.pushReplacementNamed(context, '/Dashboard');
-    } catch (e) {
-      setState(() {
-        _failedLoginAttempts++;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-              'Login failed. Attempt $_failedLoginAttempts of $_maxAttempts.'),
-        ),
-      );
-
-      if (_failedLoginAttempts >= _maxAttempts) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Account locked. Please reset your password.'),
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,35 +24,12 @@ class _UserSettingsState extends State<UserSettings> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TextField(
-              controller: _oldPasswordController,
-              decoration: const InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _newPasswordController,
-              obscureText: true,
-              decoration: const InputDecoration(
-                labelText: 'Password',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => handleLogin(
-                _oldPasswordController.text.trim(),
-                _newPasswordController.text.trim(),
-              ),
-              child: const Text('Login'),
-            ),
             ElevatedButton(
               onPressed: () async {
                 final bool? confirmed = await showDialog<bool>(
                   context: context,
                   builder: (BuildContext context) {
+
                     return AlertDialog(
                       title: const Text('Delete Account'),
                       content: const Text(
@@ -149,9 +46,6 @@ class _UserSettingsState extends State<UserSettings> {
                             Navigator.of(context).pop(true); // User confirms
                           },
                           child: Text('Delete User'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                          ),
                         ),
                       ],
                     );
@@ -182,7 +76,7 @@ class _UserSettingsState extends State<UserSettings> {
                   print('User cancelled account deletion.');
                 }
               },
-              child: Text('Delete account'),
+              child: const Text('Delete account'),
             ),
           ],
         ),
@@ -190,4 +84,3 @@ class _UserSettingsState extends State<UserSettings> {
     );
   }
 }
-git diff

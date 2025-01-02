@@ -4,7 +4,7 @@ import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/shared/GroupNavigationBar.dart';
 import 'package:frontend/shared/GroupService.dart';
 
-import 'ViewTransaction.dart';
+import 'package:frontend/ViewTransaction.dart';
 
 class GroupOverview extends StatefulWidget {
   final String groupId; // Group ID passed from Dashboard.dart
