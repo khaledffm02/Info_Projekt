@@ -188,8 +188,6 @@ class ApiService {
   static Future<void> createTransaction(String requestBody) async {
     const String endpointURL = "https://createtransaction-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
 
-
-
     try {
 
       final user = FirebaseAuth.instance.currentUser;
@@ -226,24 +224,51 @@ class ApiService {
   }
 
 
-  static Future<void> confirmTransaction({required String transactionId, required String friendId,})
-  async {
+  static Future<void> confirmTransaction({required String transactionId, required String groupId}) async {
 
-    print("transaction confirmed");
-  /*
+
+    const String endpointURL = "https://confirmtransaction-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+
     try {
-      final transactionRef = FirebaseFirestore.instance
-          .collection('transactions')
-          .doc(transactionId);
 
-      // Update the `isConfirmed` field for the friend in the Firestore database
-      await transactionRef.update({
-        'friends.$friendId.isConfirmed': true,
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+
+      // Get the ID token from the current user
+      final idToken = await user.getIdToken();
+
+      print("\n\n");
+      print(idToken);
+      print("\n\n");
+
+
+      final url = Uri.parse(endpointURL).replace(queryParameters: {
+        'idToken': idToken,
+        'groupID': groupId,
+        'transactionID': transactionId,
       });
+
+      print(url);
+
+      final response = await http.get(url);
+
+
+      if (response.statusCode == 200) {
+        print("Transaction successfully confirmed!");
+      } else {
+        print("Failed to confirm transaction: ${response.statusCode}");
+        print(response.body);
+      }
     } catch (e) {
-      throw Exception("Error confirming transaction: $e");
+      print("Error confirming transaction: $e");
+      rethrow;
     }
-  */
+
+
+
   }
 
 

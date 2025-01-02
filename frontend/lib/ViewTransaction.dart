@@ -5,12 +5,13 @@ import 'package:frontend/shared/ApiService.dart';
 class ViewTransaction extends StatefulWidget {
   final Map<String, dynamic> transaction;
   final Creator;
-
+  final groupId;
 
   const ViewTransaction({
     super.key,
     required this.transaction,
     required this.Creator,
+    required this.groupId,
   });
 
   @override
@@ -32,12 +33,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
     final transaction = widget.transaction;
     final friends = transaction['friends'];
     final bool isCreator = transaction['creatorID'] == currentUserId;
-
-    print("\n\n");
-    print(transaction);
-    print("\n\n");
-    print(friends);
-    print("\n\n");
+    final groupId = widget.groupId;
 
 
     return Scaffold(
@@ -90,6 +86,8 @@ class _ViewTransactionState extends State<ViewTransaction> {
         final friendName = friend['name'];
         final amountOwed = friend['amountOwed'];
         final isConfirmed = friend['isConfirmed'];
+        final creatorName = transaction['creatorName'];
+
 
         return ListTile(
           title: Text("Friend: $friendName"),
@@ -108,8 +106,9 @@ class _ViewTransactionState extends State<ViewTransaction> {
                 : () async {
               _showConfirmationDialog(
                 context,
-                friendId,
-                transaction['creatorName'],
+                currentUserId,
+                //friendId,
+                creatorName,
                 amountOwed,
               );
             },
@@ -122,16 +121,17 @@ class _ViewTransactionState extends State<ViewTransaction> {
 
   Future<void> _showConfirmationDialog(
       BuildContext context,
-      String friendId,
+      String currentUserId,
+      //friendId
       String creatorName,
-      double amount,
+      double amountOwed,
       ) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Confirm Transaction"),
         content: Text(
-          "Do you confirm that you owe $creatorName €$amount?",
+          "Do you confirm that you owe $creatorName €$amountOwed?",
         ),
         actions: [
           TextButton(
@@ -147,7 +147,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
     );
 
     if (confirm == true) {
-      _confirmTransaction(friendId);
+      _confirmTransaction(currentUserId);
     }
   }
 
@@ -155,23 +155,36 @@ class _ViewTransactionState extends State<ViewTransaction> {
   Future<void> _confirmTransaction(String friendId) async {
 
     try {
+      print("\n\n");
+      print(widget.groupId);
+      print("\n\n");
+      print(widget.transaction['id']);
       // Call your API method to confirm the transaction in Firestore
       await ApiService.confirmTransaction(
         transactionId: widget.transaction['id'],
-        friendId: friendId,
+       // friendId: currentUserId,
+        groupId : widget.groupId,
       );
+
+      /*
+      setState(() {
+        widget.transaction['friends'][friendId]['isConfirmed'] = true;
+      });
+*/
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Transaction confirmed!")),
+      );
+
 
       setState(() {
         widget.transaction['friends'][friendId]['isConfirmed'] = true;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Transaction confirmed!")),
-      );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to confirm transaction: $e")),
       );
+
     }
   }
 

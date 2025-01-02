@@ -232,6 +232,7 @@ class _GroupOverviewState extends State<GroupOverview> {
                           builder: (context) => ViewTransaction(
                             transaction: transaction,
                             Creator: transaction['creatorID'] == currentUserId,
+                            groupId: widget.groupId,
                           ),
                         ),
                       );

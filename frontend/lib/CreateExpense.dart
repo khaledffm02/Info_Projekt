@@ -229,19 +229,19 @@ class _CreateExpenseState extends State<CreateExpense> {
     }
 
     // Calculate the payer's amount from distributedAmounts (their portion of the total)
-    final payerAmount = distributedAmounts[selectedPayer] ?? 0.0;
+   final payerAmount = distributedAmounts[selectedPayer] ?? 0.0;
 
     // Prepare userParam for the payer (with correct amount)
     final Map<String, dynamic> userParam = {
       "id": payerID,
-      "value": amount - payerAmount,
+      "value": amount /*- payerAmount*/,
     };
 
 
     // Prepare friends array (excluding the payer)
     final List<Map<String, dynamic>> friends = [];
     distributedAmounts.forEach((name, value) {
-      if (name != selectedPayer) {
+    //  if (name != selectedPayer) {
         final String? friendID = idToNameMap.entries
             .firstWhere(
               (entry) => entry.value == name,
@@ -262,7 +262,7 @@ class _CreateExpenseState extends State<CreateExpense> {
         } else {
           print("Warning: No friend ID found for name: $name");
         }
-      }
+   //   }
     });
 
     //Sum of the distributed money
@@ -288,6 +288,7 @@ class _CreateExpenseState extends State<CreateExpense> {
       return;
     }
 
+    /*
     if (payerAmount <= 0)  {
       DialogHelper.showDialogCustom(
           context: context,
@@ -296,7 +297,7 @@ class _CreateExpenseState extends State<CreateExpense> {
       );
       return;
     }
-
+*/
 
     // Prepare the request body
     final Map<String, dynamic> requestBody = {

@@ -223,7 +223,7 @@ class GroupService {
   }
 
   static Future<String> _getUserName(String userId) async {
-    try {
+   try {
       // Fetch user data from the 'users' collection by userID
       final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
 
