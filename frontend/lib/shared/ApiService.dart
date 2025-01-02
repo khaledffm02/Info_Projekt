@@ -277,4 +277,92 @@ class ApiService {
       throw Exception("Failed to delete user: $e");
     }
   }
+
+  static Future<void> confirmTransaction({required String transactionId, required String groupId}) async {
+
+
+    const String endpointURL = "https://confirmtransaction-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+
+    try {
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+
+      // Get the ID token from the current user
+      final idToken = await user.getIdToken();
+
+      print("\n\n");
+      print(idToken);
+      print("\n\n");
+
+
+      final url = Uri.parse(endpointURL).replace(queryParameters: {
+        'idToken': idToken,
+        'groupID': groupId,
+        'transactionID': transactionId,
+      });
+
+      print(url);
+
+      final response = await http.get(url);
+
+
+      if (response.statusCode == 200) {
+        print("Transaction successfully confirmed!");
+      } else {
+        print("Failed to confirm transaction: ${response.statusCode}");
+        print(response.body);
+      }
+    } catch (e) {
+      print("Error confirming transaction: $e");
+      rethrow;
+    }
+
+  }
+
+
+  static Future<void> createTransaction(String requestBody) async {
+    const String endpointURL = "https://createtransaction-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+
+    try {
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+
+      // Get the ID token from the current user
+      final idToken = await user.getIdToken();
+
+
+
+      final url = Uri.parse(endpointURL).replace(queryParameters: {
+        'idToken': idToken,
+        'request': requestBody,
+      });
+
+      print(url);
+
+      final response = await http.get(url);
+
+
+      if (response.statusCode == 200) {
+        print("Transaction successfully stored!");
+      } else {
+        print("Failed to store transaction: ${response.statusCode}");
+        print(response.body);
+      }
+    } catch (e) {
+      print("Error sending transaction: $e");
+      rethrow;
+    }
+  }
+
+
+
+
 }
