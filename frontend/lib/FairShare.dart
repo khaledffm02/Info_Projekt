@@ -33,7 +33,7 @@ class _FairShareState extends State<FairShare> {
 
   void switchToLogInScreen() {
     setState(() {
-      aktivScreen = const LogInScreen();           //Setting new State
+      aktivScreen =  LogInScreen();           //Setting new State
     });
   }
   void switchToSignUpScreen() {
@@ -48,7 +48,7 @@ class _FairShareState extends State<FairShare> {
     return MaterialApp(
       routes: {
         '/SignUpScreen' : (context) => const SignUpScreen(),
-        '/LogInScreen' : (context) => const LogInScreen(),
+        '/LogInScreen' : (context) =>  LogInScreen(),
         '/ForgotPassword' : (context) => ForgotPassword(),
         '/CreateGroup': (context) => const CreateGroup(),
         '/JoinGroup': (context) => JoinGroup(),

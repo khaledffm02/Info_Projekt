@@ -2,56 +2,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart'; // ApiService importieren
 import 'package:frontend/shared/DialogHelper.dart';
+import 'package:watch_it/watch_it.dart';
 import 'dart:async';
 
+import '../models/LogInStateModel.dart';
 import '../shared/CustomDrawer.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/start/Dashboard.dart';
 
-class LogInScreen extends StatefulWidget {
-  const LogInScreen({super.key});
-
-  @override
-  State<LogInScreen> createState() => _LogInScreenState();
-}
-
-class _LogInScreenState extends State<LogInScreen> {
+class LogInScreen extends WatchingWidget {
+  LogInScreen({super.key});
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  int _failedAttempts = 0; // Count failed attempt of log in
-  final int _maxAttempts = 3; // Max number of log in attempt
-  bool _isLocked = false; // Lock state
 
-  void _login() async {
-    if (_isLocked) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account locked. Please try again later.'),
-        ),
-      );
-      return;
-    }
 
-    if (_failedAttempts >= _maxAttempts) {
-      setState(() {
-        _isLocked = true;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Account locked. Please wait 30 seconds before trying again.'),
-        ),
-      );
-
-      // Unlock the account after 30 seconds
-      Timer(const Duration(seconds: 30), () {
-        setState(() {
-          _isLocked = false;
-          _failedAttempts = 0; // Reset attempts after lock period
-        });
-      });
-      return;
-    }
+  void _login(BuildContext context, bool otpMode) async {
 
     final email = _emailController.text.trim();
     final password = _passwordController.text;
@@ -66,7 +31,21 @@ class _LogInScreenState extends State<LogInScreen> {
     }
 
     try {
-      await ApiService.loginUser(email, password);
+      var loginSuccess =  await ApiService.loginUser(email, password);
+
+      if (loginSuccess == false) {
+        if (di<LogInStateModel>().failedLoginAttempts == 2){
+          //TODO Meldung anzeigen, dass das der dritte Fehlversuch war und jetzt ein OTP per Mail kommt.
+          // TODO OTP per Mail verschicken
+          print("3. Fehlerhafte Anmeldung bla");
+        } else {
+          //TODO Meldung, dass Login nicht erfolgreich. Anzahl der Fehlversuche anzeigen.
+          print( di<LogInStateModel>().failedLoginAttempts.toString() + ". + 1 Fehlerhafte Anmeldung ");
+        }
+        di<LogInStateModel>().failedLoginAttempts++; // OTPMode wird im Setter von failedLoginAttempt auf True gesetzt
+
+        return;
+      }
 
       final user = FirebaseAuth.instance.currentUser;
       if (user?.emailVerified != true) {
@@ -77,10 +56,9 @@ class _LogInScreenState extends State<LogInScreen> {
           "You didn't confirm the email. Please click the link in your email to verify.",
         );
         await FirebaseAuth.instance.signOut();
-      } else {
-        setState(() {
-          _failedAttempts = 0; // Reset attempts on successful login
-        });
+      } else if (otpMode == false){
+
+        di<LogInStateModel>().otpMode=false; //otpMode was already "false" but in the setter, we also reset the counter "_failedLoginAttempts"
 
         DialogHelper.showDialogCustom(
           context: context,
@@ -91,24 +69,18 @@ class _LogInScreenState extends State<LogInScreen> {
             Navigator.pushNamed(context, '/Dashboard');
           },
         );
+      } else if (otpMode == true){
+        print( "otp mode true ");
+        //TODO Weiterleitung zu Screen "Passwort ändern"
       }
-    } catch (e) {
-      setState(() {
-        _failedAttempts++;
-      });
-
-      DialogHelper.showDialogCustom(
-        context: context,
-        title: 'Error',
-        content: _failedAttempts >= _maxAttempts
-            ? 'Account locked. Please wait 30 seconds before trying again.'
-            : 'The provided login details are incorrect or the user does not exist.',
-      );
+    }catch(e){
+      //todo
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final otpMode = watchPropertyValue((LogInStateModel x) => x.otpMode);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
@@ -145,7 +117,9 @@ class _LogInScreenState extends State<LogInScreen> {
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: _login,
+              onPressed: () {
+                _login(context, otpMode);
+              },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),

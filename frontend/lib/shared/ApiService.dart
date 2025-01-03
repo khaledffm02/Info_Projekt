@@ -41,7 +41,7 @@ class ApiService {
     }
   }
 
-  static Future<void> loginUser(String email, String password) async {
+  static Future<bool> loginUser(String email, String password) async {
     try {
       // Step 1: Sign in user with Firebase Authentication
       final credential = await FirebaseAuth.instance
@@ -62,11 +62,12 @@ class ApiService {
       final response = await http.get(url);
 
       if (response.statusCode != 200) {
-        throw Exception(
-            'Failed to log in user. Server responded with status: ${response.statusCode}');
+        return false;
+      } else {
+        return true;
       }
     } catch (e) {
-      rethrow;
+      return false;
     }
   }
 
@@ -278,18 +279,16 @@ class ApiService {
     }
   }
 
-  static Future<void> confirmTransaction({required String transactionId, required String groupId}) async {
-
-
-    const String endpointURL = "https://confirmtransaction-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+  static Future<void> confirmTransaction(
+      {required String transactionId, required String groupId}) async {
+    const String endpointURL =
+        "https://confirmtransaction-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
 
     try {
-
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception("User is not authenticated.");
       }
-
 
       // Get the ID token from the current user
       final idToken = await user.getIdToken();
@@ -297,7 +296,6 @@ class ApiService {
       print("\n\n");
       print(idToken);
       print("\n\n");
-
 
       final url = Uri.parse(endpointURL).replace(queryParameters: {
         'idToken': idToken,
@@ -309,7 +307,6 @@ class ApiService {
 
       final response = await http.get(url);
 
-
       if (response.statusCode == 200) {
         print("Transaction successfully confirmed!");
       } else {
@@ -320,25 +317,20 @@ class ApiService {
       print("Error confirming transaction: $e");
       rethrow;
     }
-
   }
 
-
   static Future<void> createTransaction(String requestBody) async {
-    const String endpointURL = "https://createtransaction-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+    const String endpointURL =
+        "https://createtransaction-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
 
     try {
-
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception("User is not authenticated.");
       }
 
-
       // Get the ID token from the current user
       final idToken = await user.getIdToken();
-
-
 
       final url = Uri.parse(endpointURL).replace(queryParameters: {
         'idToken': idToken,
@@ -348,7 +340,6 @@ class ApiService {
       print(url);
 
       final response = await http.get(url);
-
 
       if (response.statusCode == 200) {
         print("Transaction successfully stored!");
@@ -361,8 +352,4 @@ class ApiService {
       rethrow;
     }
   }
-
-
-
-
 }
