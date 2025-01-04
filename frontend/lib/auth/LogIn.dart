@@ -35,12 +35,24 @@ class LogInScreen extends WatchingWidget {
 
       if (loginSuccess == false) {
         if (di<LogInStateModel>().failedLoginAttempts == 2){
-          //TODO Meldung anzeigen, dass das der dritte Fehlversuch war und jetzt ein OTP per Mail kommt.
-          // TODO OTP per Mail verschicken
-          print("3. Fehlerhafte Anmeldung bla");
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'You don not log correctly for the 3rd time. We send a One Time Password to your Email'),
+            ),
+          );
+          try {
+            ApiService.resetPassword(email);
+          }catch(e){
+            print("Email  was not sent: $e");
+          }
         } else {
-          //TODO Meldung, dass Login nicht erfolgreich. Anzahl der Fehlversuche anzeigen.
-          print( di<LogInStateModel>().failedLoginAttempts.toString() + ". + 1 Fehlerhafte Anmeldung ");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                  'Log in failed. It is your  ${di<LogInStateModel>().failedLoginAttempts+1} atempt(s)',
+            ),),
+          );          //print( di<LogInStateModel>().failedLoginAttempts.toString() + ". + 1 Fehlerhafte Anmeldung ");
         }
         di<LogInStateModel>().failedLoginAttempts++; // OTPMode wird im Setter von failedLoginAttempt auf True gesetzt
 
@@ -71,7 +83,7 @@ class LogInScreen extends WatchingWidget {
         );
       } else if (otpMode == true){
         print( "otp mode true ");
-        //TODO Weiterleitung zu Screen "Passwort ändern"
+        Navigator.pushNamed(context, '/ChangePassword');
       }
     }catch(e){
       //todo

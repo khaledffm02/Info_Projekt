@@ -9,7 +9,7 @@ class LogInStateModel extends ChangeNotifier {
 
   set failedLoginAttempts(int value) {
     _failedLoginAttempts++;
-    if (_failedLoginAttempts > 2) {
+    if (_failedLoginAttempts >= 2) {
       _otpMode = true;
     }
     notifyListeners();
