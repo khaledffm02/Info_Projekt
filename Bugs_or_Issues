@@ -1,8 +1,8 @@
 RESOLVED Issue - Initial issue with addPayment. Not reflecting newly added payments in the transaction list.  
  *- Incorrect Parameter Specification in Frontend Corrected in Backend `addPayment` Method:*
 
-- *Issue:* Inconsistent parameter name `groupID` entered in frontend.
+- *Issue:* Inconsistent parameter name `groupId` entered in frontend.
 - *Resolution:* Updated the `addPayment` function in the backend to align with the frontend parameter change.
 - *Scope:* The modification is isolated to the `addPayment` method within the `index.js` file.
-- *Details:* Parameter name changed from `groupID` to `groupId` exclusively within the function's parameter list and internal logic.
+- *Details:* Parameter name changed from `groupID` to `groupId` exclusively within the function's parameter list and internal logic. Same for 'fromId', 'toId'.
 
