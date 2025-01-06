@@ -282,10 +282,10 @@ export const deleteTransaction = onRequest(
 export const addPayment = onRequest(
   {cors: true, secrets: [emailAccount, emailPassword]},
   async (request, response) => {
-    const groupID = request.query.groupId as string;
-    const fromID = request.query.fromId as string;
-    const toID = request.query.toId as string;
-    const amount = request.query.value as string;
+    const groupID = (request.query.groupID || request.query.groupId) as string;
+    const fromID = (request.query.fromID || request.query.fromId) as string;
+    const toID = (request.query.toID || request.query.toId) as string;
+    const amount = request.query.amount as string;
     const {userID} = await getUserID(request);
     if (!groupID || !userID || !fromID || !toID || !amount) {
       response.send({
