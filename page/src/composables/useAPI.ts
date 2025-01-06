@@ -82,7 +82,7 @@ export const useAPI = createGlobalState(() => {
   ) => {
     const idToken = await user.value?.getIdToken(true);
     if (!idToken) return;
-    const res = await fetch(createURL('addpayment',{groupId:groupID,idToken,fromId:fromID,toId:toID,value:String(amount)}));
+    const res = await fetch(createURL('addpayment',{groupID,idToken,fromID,toID,amount:String(amount)}));
     return res.json();
   };
   const addFileToTransaction = async (
