@@ -290,3 +290,14 @@ export class GroupManager {
     return groupsToRemind;
   }
 }
+
+async getLoginAttempts(email: string): Promise<number> {
+  const user = await getAuth().getUserByEmail(email);
+  const userDoc = await this.db.collection("users").doc(user.uid).get();
+  if (userDoc.exists) {
+    const {loginAttempts} = userDoc.data() as any;
+    return Number(loginAttempts ?? 0);
+  }
+  return 0;
+}
+
