@@ -492,6 +492,21 @@ export const sendReminders = onRequest(
   }
 );
 
+export const getLoginAttempts = onRequest(
+  {cors: true},
+  async (request, response) => {
+    const email = request.query.email as string;
+    try {
+      const value = await groupManager.getLoginAttempts(email);
+      response.send({loginAttempts: value});
+    } catch {
+      response.send({message: "User not found"}).status(404);
+      return;
+    }
+  }
+);
+
+
 exports.scheduledFunctionCrontab = onSchedule("*/5 * * * *", async () => {
   const groups = await groupManager.getGroupRemindersForDate();
   const getEndpoint = (groupID: string) =>
