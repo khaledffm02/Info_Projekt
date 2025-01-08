@@ -6,3 +6,5 @@ RESOLVED Issue - Initial issue with addPayment. Not reflecting newly added payme
 - *Scope:* The modification is isolated to the `addPayment` method within the `index.js` file.
 - *Details:* Parameter name changed from `groupID` to `groupId` exclusively within the function's parameter list and internal logic. Same for 'fromId', 'toId'.
 
+
+Open Issue - Photo Upload function not properly uploading or displaying.
