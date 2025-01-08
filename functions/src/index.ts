@@ -506,6 +506,19 @@ export const getLoginAttempts = onRequest(
   }
 );
 
+export const increaseLoginAttempts = onRequest(
+  {cors: true},
+  async (request, response) => {
+    const email = request.query.email as string;
+    try {
+      const success = await groupManager.increaseLoginAttempts(email);
+      response.send({success});
+    } catch {
+      response.send({message: "User not found"}).status(404);
+      return;
+    }
+  }
+);
 
 exports.scheduledFunctionCrontab = onSchedule("*/5 * * * *", async () => {
   const groups = await groupManager.getGroupRemindersForDate();
