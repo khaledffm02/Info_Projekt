@@ -301,3 +301,14 @@ async getLoginAttempts(email: string): Promise<number> {
   return 0;
 }
 
+async increaseLoginAttempts(email: string): Promise<boolean> {
+  const user = await getAuth().getUserByEmail(email);
+  const userDoc = this.db.collection("users").doc(user.uid);
+  if ((await userDoc.get()).exists) {
+    userDoc.update({
+      loginAttempts: FieldValue.increment(1),
+    });
+    return true;
+  }
+  return false;
+}
