@@ -140,6 +140,12 @@ const getLoginAttempts = async (email: string) => {
   return res.json();
 };
 
+const increaseLoginAttempts = async (email: string) => {
+  const idToken = await user.value?.getIdToken(true);
+  if (!idToken) return;
+  const res = await fetch(createURL('increaseloginattempts', { idToken, email }));
+  return res.json();
+};
 
 function createURL(endpoint: string, params: Record<string, string>): string {
   const p = new URLSearchParams(params).toString()
