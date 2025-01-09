@@ -1,81 +1,81 @@
 ENDPOINTS:
 
-deleteTransaction
-https://deletetransaction-icvq5uaeva-uc.a.run.app
-+ idToken, groupID, transactionID
-
-updateRates
-https://updaterates-icvq5uaeva-uc.a.run.app
-+ idToken
-
-groupLeave
-https://groupleave-icvq5uaeva-uc.a.run.app
-+ idToken, groupID
-
-groupDelete
-https://groupdelete-icvq5uaeva-uc.a.run.app
-+ idToken, groupID
-
-userDelete
-https://userdelete-icvq5uaeva-uc.a.run.app
-+ idToken
-
-scheduledFunctionCrontab
-*/5 * * * *
-(no parameters internally fetches groupIDs and sends reminders)
-
-groupChange
-https://groupchange-icvq5uaeva-uc.a.run.app
-+ idToken, groupID, groupName, groupCurrency (name and currency are optional parameters)
-
-userLogin
-https://userlogin-icvq5uaeva-uc.a.run.app
-+ idToken
-
-userRegistration
-https://userregistration-icvq5uaeva-uc.a.run.app
-+ idToken, firstName, lastName
-
-extractInformation
-https://extractinformation-icvq5uaeva-uc.a.run.app
-+ idToken, fileName
-
-currencyRate
-https://currencyrate-icvq5uaeva-uc.a.run.app
-+ idToken, currencyID
-
 addFileToTransaction
-https://addfiletotransaction-icvq5uaeva-uc.a.run.app
-+ idToken, groupID, transactionID, fileName
-
-createTransaction
-https://createtransaction-icvq5uaeva-uc.a.run.app
-+ idToken, “request” (JSON stringified object)
-
-getGroupBalance
-https://getgroupbalance-icvq5uaeva-uc.a.run.app
-+ idToken, groupID
-
-sendNewPassword
-https://sendnewpassword-icvq5uaeva-uc.a.run.app
-+ email 
-
-groupJoin
-https://groupjoin-icvq5uaeva-uc.a.run.app
-+ idToken, groupCode
-
-sendReminders
-https://sendreminders-icvq5uaeva-uc.a.run.app
-+ idToken, groupID
+  - https://addfiletotransaction-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, groupID, transactionID, fileName
 
 addPayment
-https://addpayment-icvq5uaeva-uc.a.run.app
-+ idToken, groupId, fromId, toId, amount
-
-groupCreate
-https://groupcreate-icvq5uaeva-uc.a.run.app
-+ idToken
+  - https://addpayment-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, groupId, fromId, toId, amount
 
 confirmTransaction
-https://confirmtransaction-icvq5uaeva-uc.a.run.app
-+ idToken, groupID, transactionID
+  - https://confirmtransaction-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, groupID, transactionID
+
+createTransaction
+  - https://createtransaction-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, “request” (JSON stringified object)
+
+currencyRate
+  - https://currencyrate-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, currencyID
+
+deleteTransaction
+  - https://deletetransaction-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, groupID, transactionID
+
+extractInformation
+  - https://extractinformation-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, fileName
+
+getGroupBalance
+  - https://getgroupbalance-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, groupID
+
+groupChange
+  - https://groupchange-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, groupID, groupName, groupCurrency (name and currency are optional parameters)
+
+groupCreate
+  - https://groupcreate-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken
+
+groupDelete
+  - https://groupdelete-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, groupID
+
+groupJoin
+  - https://groupjoin-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, groupCode
+
+groupLeave
+  - https://groupleave-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, groupID
+
+scheduledFunctionCrontab
+  - */5 * * * *
+  - (no parameters internally fetches groupIDs and sends reminders)
+
+sendNewPassword
+  - https://sendnewpassword-icvq5uaeva-uc.a.run.app
+  - Parameters: email
+
+sendReminders
+  - https://sendreminders-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, groupID
+
+updateRates
+  - https://updaterates-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken
+
+userDelete
+  - https://userdelete-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken
+
+userLogin
+  - https://userlogin-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken
+
+userRegistration
+  - https://userregistration-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, firstName, lastName
