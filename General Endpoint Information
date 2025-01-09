@@ -30,12 +30,15 @@ https://groupchange-icvq5uaeva-uc.a.run.app
 
 userLogin
 https://userlogin-icvq5uaeva-uc.a.run.app
++ idToken
 
 userRegistration
 https://userregistration-icvq5uaeva-uc.a.run.app
++ idToken, firstName, lastName
 
 extractInformation
 https://extractinformation-icvq5uaeva-uc.a.run.app
++ idToken, fileName
 
 currencyRate
 https://currencyrate-icvq5uaeva-uc.a.run.app
@@ -55,6 +58,7 @@ https://getgroupbalance-icvq5uaeva-uc.a.run.app
 
 sendNewPassword
 https://sendnewpassword-icvq5uaeva-uc.a.run.app
++ email 
 
 groupJoin
 https://groupjoin-icvq5uaeva-uc.a.run.app
