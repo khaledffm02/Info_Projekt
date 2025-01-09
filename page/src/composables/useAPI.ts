@@ -147,6 +147,14 @@ const increaseLoginAttempts = async (email: string) => {
   return res.json();
 };
 
+const resetLoginAttempts = async (email: string) => {
+  const idToken = await user.value?.getIdToken(true);
+  if (!idToken) return;
+  const res = await fetch(createURL('resetloginattempts', { idToken, email }));
+  return res.json();
+};
+
+
 function createURL(endpoint: string, params: Record<string, string>): string {
   const p = new URLSearchParams(params).toString()
   return `https://${endpoint}-icvq5uaeva-uc.a.run.app?${p}`;
