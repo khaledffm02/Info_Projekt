@@ -312,3 +312,16 @@ async increaseLoginAttempts(email: string): Promise<boolean> {
   }
   return false;
 }
+
+async resetLoginAttempts(email: string): Promise<boolean> {
+  const user = await getAuth().getUserByEmail(email);
+  const userDoc = this.db.collection("users").doc(user.uid);
+  if ((await userDoc.get()).exists) {
+    userDoc.update({
+      loginAttempts: 0,
+    });
+    return true;
+  }
+  return false;
+}
+}
