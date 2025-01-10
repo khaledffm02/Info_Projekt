@@ -32,6 +32,10 @@ getGroupBalance
   - https://getgroupbalance-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID
 
+getLoginAttempts
+  - https://getloginattempts-icvq5uaeva-uc.a.run.app
+  - Parameters: email
+
 groupChange
   - https://groupchange-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID, groupName, groupCurrency (name and currency are optional parameters)
@@ -51,6 +55,14 @@ groupJoin
 groupLeave
   - https://groupleave-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID
+
+increaseLoginAttempts
+  - https://increaseloginattempts-icvq5uaeva-uc.a.run.app
+  - Parameters: email
+
+resetLoginAttempts
+  - https://resetloginattempts-icvq5uaeva-uc.a.run.app
+  - Parameters: email
 
 scheduledFunctionCrontab
   - */5 * * * *
