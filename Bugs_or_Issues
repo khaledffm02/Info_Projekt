@@ -8,3 +8,7 @@ RESOLVED Issue - Initial issue with addPayment. Not reflecting newly added payme
 
 
 Open Issue - Photo Upload function not properly uploading or displaying.
+
+RESOLVED Issue - Verified to frontend getLoginAttempts endpoint is functioning properly, and found the initial frontend input error.
+- An existing email address, in the system, must be used to call the endpoint, with a false password. If not, the response is "user not found".
+- *Scope:* Applies only to getLoginAttempts, however is linked to the functioning of the other two login attempt endpoints.
