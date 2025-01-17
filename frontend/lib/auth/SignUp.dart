@@ -77,7 +77,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               const SizedBox(height: 20.0),
-
               Row(
                 children: [
                   Checkbox(
@@ -102,31 +101,43 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   children: const [
                                     Text(
                                       'Welcome to FairShare, a money-splitting platform designed to help users manage shared expenses.\n',
-                                      style: TextStyle(fontSize: 20, height: 1.5,  fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontSize: 20,
+                                          height: 1.5,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       'Interpersonal Disputes:',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       'FairShare solely facilitates the splitting and tracking of expenses. We are not liable for any disputes or conflicts that may arise between users regarding transactions, payments, or interpersonal interactions.\n',
-                                      style: TextStyle(fontSize: 16, height: 1.5),
+                                      style:
+                                          TextStyle(fontSize: 16, height: 1.5),
                                     ),
                                     Text(
                                       'Account Deletion:',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       'If you choose to delete your account, all associated personal data, including participation in groups, will be permanently removed. Group data relevant to remaining members will remain intact without your personal information.\n',
-                                      style: TextStyle(fontSize: 16, height: 1.5),
+                                      style:
+                                          TextStyle(fontSize: 16, height: 1.5),
                                     ),
                                     Text(
                                       'Data Protection:',
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       'We are committed to protecting your data in compliance with privacy laws. By continuing, you acknowledge and accept these terms.\n\nPlease read these carefully before proceeding.',
-                                      style: TextStyle(fontSize: 16, height: 1.5),
+                                      style:
+                                          TextStyle(fontSize: 16, height: 1.5),
                                     ),
                                   ],
                                 ),
@@ -134,7 +145,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               actions: [
                                 TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).pop(); // Fenster schließen
+                                    Navigator.of(context)
+                                        .pop(); // Fenster schließen
                                   },
                                   child: const Text("Schließen"),
                                 ),
@@ -157,7 +169,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ElevatedButton(
                 onPressed: isChecked
                     ? () async {
-
                         final firstname = _firstnameController.text.trim();
                         final lastname = _lastnameController.text.trim();
                         final email = _emailController.text.trim();
@@ -187,28 +198,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           );
                           return;
                         }
-
-                        // Register user using the ApiService
-                        try {
-                          await ApiService.registerUser(
-                              email, password, firstname, lastname);
-                          DialogHelper.showDialogCustom(
-                            context: context,
-                            title: 'Success',
-                            content: 'User registered successfully.',
-                            onConfirm: () {
-                              Navigator.of(context).pop();
-                              Navigator.pushNamed(context, '/LogInScreen');
-                            },
-                          );
-                        } catch (e) {
-                          DialogHelper.showDialogCustom(
-                            context: context,
-                            title: 'Error',
-                            content: 'An error occurred: $e',
-                          );
+                        if (Validator.validatePassword(password)) {
+                          // Register user using the ApiService
+                          try {
+                            await ApiService.registerUser(
+                                email, password, firstname, lastname);
+                            DialogHelper.showDialogCustom(
+                              context: context,
+                              title: 'Success',
+                              content: 'User registered successfully. Confirm your Account through the link, we send to you via email',
+                              onConfirm: () {
+                                Navigator.of(context).pop();
+                                Navigator.pushNamed(context, '/LogInScreen');
+                              },
+                            );
+                          } catch (e) {
+                            DialogHelper.showDialogCustom(
+                              context: context,
+                              title: 'Error',
+                              content: 'An error occurred: $e',
+                            );
+                          }
+                        }else{
+                          DialogHelper.showDialogCustom(context: context, title: "Error", content: 'Password must be at least 12 characters long, include both uppercase and lowercase letters, and contain at least one special character');
                         }
-                        Validator.validatePassword(password);
                       }
                     : null,
                 child: const Text('Create Account'),

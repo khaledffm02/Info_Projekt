@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/shared/DialogHelper.dart';
 import 'package:frontend/shared/Validator.dart';
 import 'package:watch_it/watch_it.dart';
 
@@ -76,44 +77,48 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
               return;
             }
 
-            final user = FirebaseAuth.instance.currentUser;
-            final emailTrimmed = user?.email?.trim();
-            if (user != null) {
-              final credential = EmailAuthProvider.credential(
-                email: emailTrimmed ?? '',
-                password: oldPassword,
-              );
+            if(Validator.validatePassword(newPassword)) {
+              final user = FirebaseAuth.instance.currentUser;
+              final emailTrimmed = user?.email?.trim();
+              if (user != null) {
+                final credential = EmailAuthProvider.credential(
+                  email: emailTrimmed ?? '',
+                  password: oldPassword,
+                );
+
+                try {
+                  await user.reauthenticateWithCredential(credential);
+                  print('Reauthentication successful!');
+                } catch (e) {
+                  print('Error during reauthentication: $e');
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text(
+                            'Reauthentication failed. Check your old password.')),
+                  );
+                  return;
+                }
+              }
 
               try {
-                await user.reauthenticateWithCredential(credential);
-                print('Reauthentication successful!');
-              } catch (e) {
-                print('Error during reauthentication: $e');
+                await user?.updatePassword(newPassword);
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                      content: Text(
-                          'Reauthentication failed. Check your old password.')),
+                    content: Text('Password changed successfully'),
+                  ),
                 );
-                return;
+                di<LogInStateModel>().otpMode = false;
+                Navigator.pushNamed(context, '/Dashboard');
+              } catch (e) {
+                print("Error updating password: $e");
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content:
+                      Text('An error occurred while changing the password.')),
+                );
               }
-            }
-
-            try {
-              await user?.updatePassword(newPassword);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Password changed successfully'),
-                ),
-              );
-              di<LogInStateModel>().otpMode = false;
-              Navigator.pushNamed(context, '/Dashboard');
-            } catch (e) {
-              print("Error updating password: $e");
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                    content:
-                        Text('An error occurred while changing the password.')),
-              );
+            }else{
+              DialogHelper.showDialogCustom(context: context, title: "Error", content: 'Password must be at least 12 characters long, include both uppercase and lowercase letters, and contain at least one special character');
             }
           },
           child: const Text('Change Password'),
