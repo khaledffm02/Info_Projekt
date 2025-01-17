@@ -8,8 +8,9 @@ class LogInStateModel extends ChangeNotifier {
   int get failedLoginAttempts => _failedLoginAttempts;
 
   set failedLoginAttempts(int value) {
-    _failedLoginAttempts++;
-    if (_failedLoginAttempts >= 2) {
+
+    _failedLoginAttempts=value;
+    if (_failedLoginAttempts >= 3) {
       _otpMode = true;
     }
     notifyListeners();
@@ -20,7 +21,7 @@ class LogInStateModel extends ChangeNotifier {
   bool get otpMode => _otpMode;
 
   set otpMode(bool value) {
-    _failedLoginAttempts = 0;
+   // _failedLoginAttempts = 0;   ist in logIn implementiert
     _otpMode = value;
 
     notifyListeners();

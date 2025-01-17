@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/auth/ChangePassword.dart';
 import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/DialogHelper.dart';
 
@@ -23,7 +24,9 @@ class _UserSettingsState extends State<UserSettings> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [ChangePasswordWidget(),
+            const SizedBox(height: 40.0),
             ElevatedButton(
               onPressed: () async {
                 final bool? confirmed = await showDialog<bool>(

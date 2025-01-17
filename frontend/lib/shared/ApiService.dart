@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/start/Dashboard.dart';
 import 'package:http/http.dart' as http;
 
 import 'DialogHelper.dart';
@@ -92,6 +91,62 @@ class ApiService {
     } catch (e) {
       print('Error: $e');
       return false; // Rückgabe false bei Fehler
+    }
+  }
+
+  static Future<int> getLoginAttempts(String email) async {
+    try {
+      // Construct the URL with the email parameter
+      final url = Uri.parse(
+          'https://getloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri.encodeComponent(email)}');
+
+      // Perform the GET request
+      final response = await http.get(url);
+
+      // Print the response details for debugging
+      print('Status Code: ${response.statusCode}');
+      print('Response Body: ${response.body}');
+
+      // Check if the response is successful
+      if (response.statusCode == 200 && response.body.isNotEmpty) {
+        // Decode the response and directly access "attempts"
+        final decodedBody = json.decode(response.body);
+        if (decodedBody['loginAttempts'] != null) {
+          //   print("Rückgabewert: Api" + decodedBody['loginAttempts']);
+          return int.parse(decodedBody['loginAttempts'].toString());
+        } else {
+          print('Key "attempts" not found in the response');
+          return -1;
+        }
+      } else {
+        print('Error: Response is empty or status code is not 200');
+        return -1;
+      }
+    } catch (e) {
+      print('Exception occurred: $e');
+      return -1;
+    }
+  }
+
+  static Future<int?> increaseLoginAttempts(email) async {
+    try {
+      final url = Uri.parse(
+          'https://increaseloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri.encodeComponent(email)}');
+      final response = await http.get(url);
+      print('Status Code: ${response.statusCode}');
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  static void resetLoginAttempts(email) async {
+    try {
+      final url =
+          Uri.parse('https://resetloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri.encodeComponent(email)}');
+      final response = await http.get(url);
+      print('Status Code: ${response.statusCode}');
+    } catch (e) {
+      print('Error: $e');
     }
   }
 

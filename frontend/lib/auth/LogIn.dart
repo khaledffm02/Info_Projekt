@@ -9,15 +9,16 @@ import '../models/LogInStateModel.dart';
 import '../shared/CustomDrawer.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/start/Dashboard.dart';
+import 'dart:developer' as developer;
+import 'package:logger/logger.dart';
 
 class LogInScreen extends WatchingWidget {
   LogInScreen({super.key});
+
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-
   void _login(BuildContext context, bool otpMode) async {
-
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
@@ -29,12 +30,17 @@ class LogInScreen extends WatchingWidget {
       );
       return;
     }
-
+//ToDo:what will shown with >4 try in Snackbar
     try {
-      var loginSuccess =  await ApiService.loginUser(email, password);
+      var loginSuccess = await ApiService.loginUser(email, password);
 
       if (loginSuccess == false) {
-        if (di<LogInStateModel>().failedLoginAttempts == 2){
+        await ApiService.increaseLoginAttempts(email);
+        developer.log('Testmessage', name: 'Info');
+        var getLoginResponse = await ApiService.getLoginAttempts(email);
+        di<LogInStateModel>().failedLoginAttempts = getLoginResponse;
+        print(di<LogInStateModel>().failedLoginAttempts);
+        if (di<LogInStateModel>().failedLoginAttempts == 3) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
@@ -43,34 +49,39 @@ class LogInScreen extends WatchingWidget {
           );
           try {
             ApiService.resetPassword(email);
-          }catch(e){
+          } catch (e) {
             print("Email  was not sent: $e");
           }
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                  'Log in failed. It is your  ${di<LogInStateModel>().failedLoginAttempts+1} atempt(s)',
-            ),),
-          );          //print( di<LogInStateModel>().failedLoginAttempts.toString() + ". + 1 Fehlerhafte Anmeldung ");
+                //'Log in failed. It is your  ${di<LogInStateModel>().failedLoginAttempts+1} atempt(s)',
+                'Log in failed. It is your atempt(s)  ' +
+                    getLoginResponse.toString(),
+              ),
+            ),
+          ); //print( di<LogInStateModel>().failedLoginAttempts.toString() + ". + 1 Fehlerhafte Anmeldung ");
         }
-        di<LogInStateModel>().failedLoginAttempts++; // OTPMode wird im Setter von failedLoginAttempt auf True gesetzt
 
         return;
       }
-
+      ApiService.resetLoginAttempts(email);
+      di<LogInStateModel>().failedLoginAttempts =
+          await ApiService.getLoginAttempts(email);
+      print(di<LogInStateModel>().failedLoginAttempts);
       final user = FirebaseAuth.instance.currentUser;
       if (user?.emailVerified != true) {
         DialogHelper.showDialogCustom(
           context: context,
           title: 'Error',
           content:
-          "You didn't confirm the email. Please click the link in your email to verify.",
+              "You didn't confirm the email. Please click the link in your email to verify.",
         );
         await FirebaseAuth.instance.signOut();
-      } else if (otpMode == false){
-
-        di<LogInStateModel>().otpMode=false; //otpMode was already "false" but in the setter, we also reset the counter "_failedLoginAttempts"
+      } else if (otpMode == false) {
+        di<LogInStateModel>().otpMode =
+            false; //otpMode was already "false" but in the setter, we also reset the counter "_failedLoginAttempts"
 
         DialogHelper.showDialogCustom(
           context: context,
@@ -79,13 +90,15 @@ class LogInScreen extends WatchingWidget {
           onConfirm: () {
             Navigator.of(context).pop();
             Navigator.pushNamed(context, '/Dashboard');
+            //endpoint attempts_reset
           },
         );
-      } else if (otpMode == true){
-        print( "otp mode true ");
+      } else if (otpMode == true) {
+        print("otp mode true ");
         Navigator.pushNamed(context, '/ChangePassword');
+        //endpoints attemöpt_reset
       }
-    }catch(e){
+    } catch (e) {
       //todo
     }
   }
@@ -129,7 +142,7 @@ class LogInScreen extends WatchingWidget {
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 _login(context, otpMode);
               },
               style: ElevatedButton.styleFrom(
