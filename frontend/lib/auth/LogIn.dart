@@ -3,9 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart'; // ApiService importieren
 import 'package:frontend/shared/DialogHelper.dart';
 
-import '../shared/CustomDrawer.dart';
-import 'package:frontend/shared/CustomDrawer.dart';
-import 'package:frontend/start/Dashboard.dart';
 
 class LogInScreen extends StatefulWidget {
   const LogInScreen({super.key});

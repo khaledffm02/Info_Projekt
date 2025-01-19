@@ -214,8 +214,8 @@ class _GroupOverviewState extends State<GroupOverview> {
           title: Text(widget.groupId), // Display the group ID (can be replaced with a name if available)
           backgroundColor: Colors.black12,
           centerTitle: true,
-          bottom: TabBar(
-            tabs: const [
+          bottom: const TabBar(
+            tabs: [
               Tab(text: "Overview"),
               Tab(text: "Expenses"), //renamed from transactions to expenses
               Tab(text: "Payments"), // New Payments tab

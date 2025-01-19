@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/auth/LogIn.dart';
-import 'package:frontend/FairShare.dart';
 
 class StartScreen extends StatelessWidget {
   const StartScreen(this.logIn, this.SignUp,

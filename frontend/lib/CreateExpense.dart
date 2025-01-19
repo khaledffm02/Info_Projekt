@@ -197,7 +197,7 @@ class _CreateExpenseState extends State<CreateExpense> {
     final totalAmount = double.tryParse(_amountController.text) ?? 0.0;
 
 
-      if (totalAmount == null || totalAmount <= 0) {
+      if (totalAmount <= 0) {
         DialogHelper.showDialogCustom(
             context: context,
             title: 'Error',
@@ -211,7 +211,7 @@ class _CreateExpenseState extends State<CreateExpense> {
       Map<String, TextEditingController> amountControllers = {};
 
       // Initialize controllers with saved values
-      widget.members.forEach((member) {
+      for (var member in widget.members) {
         final memberName = member['name'];
         percentageControllers[memberName] = TextEditingController(
           text: roundToTwo(
@@ -221,7 +221,7 @@ class _CreateExpenseState extends State<CreateExpense> {
         amountControllers[memberName] = TextEditingController(
           text: (distributedAmounts[memberName] ?? 0.0).toStringAsFixed(2),
         );
-      });
+      }
 
       final result = await showDialog<Map<String, double>>(
         context: context,
@@ -322,7 +322,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                             ),
                           ],
                         );
-                      }).toList(),
+                      }),
                       const SizedBox(height: 16.0),
                       ElevatedButton(
                         onPressed: () {
@@ -391,7 +391,7 @@ class _CreateExpenseState extends State<CreateExpense> {
       )
           .key;
 
-      if (payerID == null || payerID.isEmpty) {
+      if (payerID.isEmpty) {
         DialogHelper.showDialogCustom(
           context: context,
           title: "Error",
@@ -414,14 +414,14 @@ class _CreateExpenseState extends State<CreateExpense> {
       final List<Map<String, dynamic>> friends = [];
       distributedAmounts.forEach((name, value) {
         //  if (name != selectedPayer) {
-        final String? friendID = idToNameMap.entries
+        final String friendID = idToNameMap.entries
             .firstWhere(
               (entry) => entry.value == name,
           orElse: () => const MapEntry("", ""),
         )
             .key;
 
-        if (friendID != null && friendID.isNotEmpty) {
+        if (friendID.isNotEmpty) {
           if (value > 0) {
             friends.add({
               "id": friendID,

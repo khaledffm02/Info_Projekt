@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
-import 'package:frontend/GroupOverview.dart';
 import 'package:frontend/shared/GroupService.dart';
 
 class Dashboard extends StatefulWidget {
@@ -16,7 +15,7 @@ class _DashboardState extends State<Dashboard> {
   late double totalowedto;
   late double totalowedby;
   bool _isloadingtotalowedto = true;
-  bool _isloadingtotalowedby = true;
+  final bool _isloadingtotalowedby = true;
 
 
   @override
