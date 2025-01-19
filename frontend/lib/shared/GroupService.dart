@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'ApiService.dart';
+
 class GroupService {
 
   // Fetch all groups the current user is a member of
@@ -31,6 +33,41 @@ class GroupService {
       return [];
     }
   }
+
+
+  static Future<Map<String, double>> calculateTotalBalanceForUser() async {
+    try {
+      // Fetch all groups the user is part of
+      final userGroups = await getUserGroups();
+
+      // Extract group IDs
+      final groupIds = userGroups.map((group) => group['id'] as String).toList();
+
+      double totalOwedToOthers = 0.0;
+      double totalOwedByOthers = 0.0;
+
+      for (String groupId in groupIds) {
+        final balances = await ApiService.getGroupBalance(groupId, FirebaseAuth.instance.currentUser!.uid);
+        totalOwedToOthers += balances['owedToOthers']!;
+        totalOwedByOthers += balances['owedByOthers']!;
+      }
+
+
+
+      return {
+        'totalOwedToOthers': totalOwedToOthers < 0 ? totalOwedToOthers * -1 : totalOwedToOthers ,
+        'totalOwedByOthers': totalOwedByOthers,
+      };
+    } catch (e) {
+      print("Error calculating total balance: $e");
+      throw Exception("Failed to calculate total balance.");
+    }
+  }
+
+
+
+
+
 
   static Future<List<Map<String, dynamic>>> getGroupMembers(String groupId) async {
     try {

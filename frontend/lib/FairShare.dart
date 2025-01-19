@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/AddPayment.dart';
 import 'package:frontend/CreateExpense.dart';
-import 'package:frontend/UserSettings.dart';
-import 'package:frontend/auth/ChangePassword.dart';
 import 'package:frontend/group/CreateGroup.dart';
 import 'package:frontend/auth/ForgotPassword.dart';
-import 'package:frontend/group/GroupOverview.dart';
+import 'package:frontend/GroupOverview.dart';
 import 'package:frontend/group/GroupPage.dart';
 import 'package:frontend/group/JoinGroup.dart';
 import 'package:frontend/auth/LogIn.dart';
 import 'package:frontend/auth/SignUp.dart';
 import 'package:frontend/StartScreen.dart';
 import 'package:frontend/start/Dashboard.dart';
-
-import 'UserSettings.dart';
 
 class FairShare extends StatefulWidget {
   const FairShare({super.key});
@@ -34,7 +31,7 @@ class _FairShareState extends State<FairShare> {
 
   void switchToLogInScreen() {
     setState(() {
-      aktivScreen =  LogInScreen();           //Setting new State
+      aktivScreen = const LogInScreen();           //Setting new State
     });
   }
   void switchToSignUpScreen() {
@@ -49,19 +46,13 @@ class _FairShareState extends State<FairShare> {
     return MaterialApp(
       routes: {
         '/SignUpScreen' : (context) => const SignUpScreen(),
-        '/LogInScreen' : (context) =>  LogInScreen(),
+        '/LogInScreen' : (context) => const LogInScreen(),
         '/ForgotPassword' : (context) => ForgotPassword(),
         '/CreateGroup': (context) => const CreateGroup(),
         '/JoinGroup': (context) => JoinGroup(),
         '/GroupPage': (context) => const GroupPage(),
         '/Dashboard': (context) => const Dashboard(),
-        '/UserSettings' : (context) => const UserSettings(),
-        '/StartScreen': (context) => StartScreen(switchToLogInScreen, switchToSignUpScreen),
-        '/ChangePassword' : (contex)  => ChangePasswordWidget(),
-        '/CreateExpense': (context) {
-          final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-          return CreateExpense(members: arguments['members'], groupName: arguments['groupName']);
-        },
+
 
         '/GroupOverview': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
@@ -69,6 +60,20 @@ class _FairShareState extends State<FairShare> {
             groupId: arguments['groupId'], // Use `groupId` for consistent routing
             groupName: arguments['groupName'], // Pass group name if available
           );
+        },
+
+        '/CreateExpense': (context) {
+          final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+          return CreateExpense(members: arguments['members'], groupName: arguments['groupName']);
+        },
+
+
+
+        '/AddPayment': (context)  {
+          final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+          return AddPayment(
+            members: arguments['members'],
+            groupName: arguments['groupName']);
         },
 
       },
