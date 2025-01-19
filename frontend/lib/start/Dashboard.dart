@@ -13,12 +13,57 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   List<Map<String, dynamic>> _groups = []; // Holds fetched groups
   bool _isLoading = true; // Tracks loading state
+  late double totalowedto;
+  late double totalowedby;
+  bool _isloadingtotalowedto = true;
+  bool _isloadingtotalowedby = true;
+
 
   @override
   void initState() {
     super.initState();
-    _fetchGroups(); // Fetch groups on widget initialization
+    _fetchGroups();// Fetch groups on widget initialization
+    _showTotalBalance();
+    _showTotalBalance();
   }
+
+  void _showTotalBalance() async {
+    try {
+      final balances = await GroupService.calculateTotalBalanceForUser();
+
+      final double totalOwedToOthers = balances['totalOwedToOthers']!;
+      final double totalOwedByOthers = balances['totalOwedByOthers']!;
+
+      final double netBalance = totalOwedToOthers + totalOwedByOthers;
+
+      setState(() {
+        totalowedto = totalOwedToOthers;
+        totalowedby = totalOwedByOthers;
+        _isloadingtotalowedto = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Owed to others: €$totalOwedToOthers\n"
+                "Owed by others: €${totalOwedByOthers.abs()}\n"
+                "Net balance: ${netBalance >= 0 ? '€$netBalance (You owe)' : '€${netBalance.abs()} (You are owed)'}",
+          ),
+        ),
+      );
+
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to calculate balance: $e")),
+      );
+    }
+  }
+
+
+
+
+
 
   // Fetch groups from Firestore
   Future<void> _fetchGroups() async {
@@ -60,14 +105,17 @@ class _DashboardState extends State<Dashboard> {
           ),
           Expanded(
             flex: 0,
-            child: ListView.builder(
+            child:
+            _isloadingtotalowedto
+              ? const Center(child: CircularProgressIndicator()) :
+            ListView.builder(
               shrinkWrap: true, // Prevents scrolling within the small list
               padding: const EdgeInsets.all(16.0),
               itemCount: 2, // Two items: "You owe" and "You are owed"
               itemBuilder: (context, index) {
                 final data = [
-                  {"label": "You owe", "amount": 0.00},
-                  {"label": "You are owed", "amount": 0.00}
+                  {"label": "You owe", "amount": totalowedto},
+                  {"label": "You are owed", "amount": totalowedby}
                 ][index];
 
                 final label = data['label'] as String;

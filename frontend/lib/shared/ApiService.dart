@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -225,12 +226,9 @@ class ApiService {
 
 
   static Future<void> confirmTransaction({required String transactionId, required String groupId}) async {
-
-
     const String endpointURL = "https://confirmtransaction-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
 
     try {
-
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception("User is not authenticated.");
@@ -240,18 +238,12 @@ class ApiService {
       // Get the ID token from the current user
       final idToken = await user.getIdToken();
 
-      print("\n\n");
-      print(idToken);
-      print("\n\n");
-
 
       final url = Uri.parse(endpointURL).replace(queryParameters: {
         'idToken': idToken,
         'groupID': groupId,
         'transactionID': transactionId,
       });
-
-      print(url);
 
       final response = await http.get(url);
 
@@ -266,10 +258,211 @@ class ApiService {
       print("Error confirming transaction: $e");
       rethrow;
     }
+  }
 
+    static Future<void> addPayment({
+      //required String transactionId,
+      required String groupId,
+      required String? toId,
+      required String fromId,
+      required double amount
+    }) async {
+      const String endpointURL = "https://addpayment-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user == null) {
+          throw Exception("User is not authenticated.");
+        }
+
+        final idToken = await user.getIdToken();
+
+        final url = Uri.parse(endpointURL).replace(queryParameters: {
+          'groupId': groupId,
+          'idToken': idToken,
+          'fromID': fromId,
+          //'transactionId': transactionId,
+          'toID': toId, // Include toId in the query parameters
+          'amount': amount.toString(), // Convert amount to string
+        });
+
+        print(url);
+
+        final response = await http.get(url);
+
+        if (response.statusCode == 200) {
+          print("Payment successfully added!");
+        } else {
+          print("Failed to add payment: ${response.statusCode}");
+          print(response.body);
+        }
+      } catch (e) {
+        print("Error adding payment: $e");
+        rethrow;
+      }
+    }
+
+  static getGroupBalance(String groupId, String uid) async {
+    const String endpointURL = "https://getgroupbalance-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+
+      // Get the ID token from the current user
+      final idToken = await user.getIdToken();
+
+
+      final url = Uri.parse(endpointURL).replace(queryParameters: {
+        'idToken': idToken,
+        'groupID': groupId,
+      });
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        // Parse the response body
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        // Extract the "balances" map
+        final Map<String, dynamic> balances = responseData['balances'] ?? {};
+
+        double totalOwedToOthers = 0.0; // Positive balances
+        double totalOwedByOthers = 0.0; // Negative balances
+
+        balances.forEach((userId, balance) {
+          if (userId == uid) {
+            // Skip the user's own ID
+            return;
+          }
+
+          final double balanceValue = balance.toDouble();
+
+          if (balanceValue < 0) {
+            totalOwedToOthers += balanceValue;
+          } else if (balanceValue > 0) {
+            totalOwedByOthers += balanceValue;
+          }
+        });
+
+        print(
+            "Processed group balance for $groupId: Owed to others: $totalOwedToOthers, Owed by others: $totalOwedByOthers");
+
+        // Return the calculated balances
+        return {
+          'owedToOthers': totalOwedToOthers,
+          'owedByOthers': totalOwedByOthers,
+        };
+      } else {
+        print("Failed to retrieve balance : ${response.statusCode}");
+        print(response.body);
+      }
+    } catch (e) {
+      print("Error retrieving balance: $e");
+      rethrow;
+    }
+  }
+
+/*
+   static getMemberbalance(String groupId, String uid) async {
+
+
+      const String endpointURL = "https://getgroupbalance-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+
+      try {
+        final user = FirebaseAuth.instance.currentUser;
+        if (user == null) {
+          throw Exception("User is not authenticated.");
+        }
+
+
+        // Get the ID token from the current user
+        final idToken = await user.getIdToken();
+
+
+        final url = Uri.parse(endpointURL).replace(queryParameters: {
+          'idToken': idToken,
+          'groupID': groupId,
+        });
+
+        final response = await http.get(url);
+
+        print(url);
+
+
+        if (response.statusCode == 200) {
+
+          // Parse the response body
+          final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+          // Extract the "balances" map
+          final HashSet<Map<String, dynamic>> balances = responseData['balances'] ?? {};
+
+
+          // Return the calculated balances
+          return {
+            balances
+          };
+        } else {
+          print("Failed to retrieve balance : ${response.statusCode}");
+          print(response.body);
+        }
+      } catch (e) {
+        print("Error retrieving balance: $e");
+        rethrow;
+      }
 
 
   }
+
+  */
+
+
+  static Future<Map<String, dynamic>> getMemberbalance(String groupId, String uid) async {
+    const String endpointURL = "https://getgroupbalance-icvq5uaeva-uc.a.run.app";
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+      final idToken = await user.getIdToken();
+      final url = Uri.parse(endpointURL).replace(queryParameters: {
+        'idToken': idToken,
+        'groupID': groupId,
+      });
+
+      print("Fetching balances...");
+      print("URL: $url");
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final balances = responseData['balances'] ?? {};
+        return balances; // Return the map directly
+      } else {
+        print("API Error - Status: ${response.statusCode}, Body: ${response.body}");
+        throw Exception("Failed to retrieve balance: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error in API call: $e");
+      throw Exception("Error retrieving balances: $e");
+    }
+  }
+
+
+
+
+
+
+
+
+
 
 
 }

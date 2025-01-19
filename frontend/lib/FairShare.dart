@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/AddPayment.dart';
 import 'package:frontend/CreateExpense.dart';
 import 'package:frontend/group/CreateGroup.dart';
 import 'package:frontend/auth/ForgotPassword.dart';
@@ -52,10 +53,6 @@ class _FairShareState extends State<FairShare> {
         '/GroupPage': (context) => const GroupPage(),
         '/Dashboard': (context) => const Dashboard(),
 
-        '/CreateExpense': (context) {
-          final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-          return CreateExpense(members: arguments['members'], groupName: arguments['groupName']);
-        },
 
         '/GroupOverview': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
@@ -63,6 +60,20 @@ class _FairShareState extends State<FairShare> {
             groupId: arguments['groupId'], // Use `groupId` for consistent routing
             groupName: arguments['groupName'], // Pass group name if available
           );
+        },
+
+        '/CreateExpense': (context) {
+          final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+          return CreateExpense(members: arguments['members'], groupName: arguments['groupName']);
+        },
+
+
+
+        '/AddPayment': (context)  {
+          final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+          return AddPayment(
+            members: arguments['members'],
+            groupName: arguments['groupName']);
         },
 
       },

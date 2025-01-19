@@ -19,8 +19,8 @@ class GroupNavigationBar extends StatelessWidget {
           label: "Create Expense",
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: "Group Settings",
+          icon: Icon(Icons.monetization_on),
+          label: "Add Payment",
         ),
       ],
       onTap: (index) {
@@ -38,7 +38,16 @@ class GroupNavigationBar extends StatelessWidget {
             break;
           case 1:
           // Navigate to Group Settings screen
-            Navigator.pushNamed(context, '/GroupSettings');
+            Navigator.pushNamed(
+              context,
+              '/AddPayment',
+              arguments: {
+                'members': members,
+                'groupName': groupName,
+              },
+            );
+
+
             break;
         }
       },

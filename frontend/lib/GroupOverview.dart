@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/shared/GroupNavigationBar.dart';
 import 'package:frontend/shared/GroupService.dart';
-
+import 'package:fl_chart/fl_chart.dart';
 import 'ViewTransaction.dart';
+
+
 
 class GroupOverview extends StatefulWidget {
   final String groupId; // Group ID passed from Dashboard.dart
@@ -26,6 +29,9 @@ class _GroupOverviewState extends State<GroupOverview> {
   List<Map<String, dynamic>> othertransactions = [];
   bool isLoadingotherTransactions = true;
   final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+  late Map<String, dynamic> Memberbalance;
+
+
 
 
 
@@ -35,8 +41,105 @@ class _GroupOverviewState extends State<GroupOverview> {
     _fetchGroupMembers();
     _fetchownTransactions();
     _fetchotherTransactions();
+    processTransactionData();
+    getMemberbalance();
+  }
+
+
+  void getMemberbalance() async {
+    try {
+      final balance = await ApiService.getMemberbalance(widget.groupId, currentUserId);
+
+      print("\n\n");
+      print(transactions);
+      print("\n\n");
+
+
+      setState(() {
+        Memberbalance = balance;
+      });
+
+
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Failed to get member balance: $e")),
+      );
+    }
+
 
   }
+
+
+
+
+
+
+
+  Future<Map<String, double>> processTransactionData() async {
+    try {
+      final transactions = await GroupService.getOwnTransactions(widget.groupId);
+
+      if (transactions.isEmpty) {
+        print("No transactions found.");
+        return {'No Data': 0.0};
+      }
+
+      Map<String, double> categoryTotals = {};
+
+
+
+
+      for (var transaction in transactions) {
+        final category = transaction['category'];
+        final totalAmount = transaction['totalAmount'];
+
+        if (category == null || totalAmount == null) {
+          print("Invalid transaction data: $transaction");
+          continue;
+        }
+
+
+        double amount;
+        if (category == 'payment') {
+          amount = totalAmount as double;
+        }
+
+
+        else {
+          final friend = transaction['friends']?.firstWhere(
+                (friend) => friend['friendId'] == currentUserId,
+           /* orElse: () => null, */
+          );
+          amount = friend['amountOwed'] as double;
+        }
+
+
+        categoryTotals[category] = (categoryTotals[category] ?? 0) + amount;
+
+
+      }
+
+
+
+      print("Processed category totals: $categoryTotals");
+
+
+      return categoryTotals;
+
+
+    } catch (e) {
+      print("Error in processTransactionData: $e");
+      return {'Error': 0.0};
+    }
+
+
+  }
+
+
+
+
+
 
   Future<void> _fetchGroupMembers() async {
     try {
@@ -63,7 +166,6 @@ class _GroupOverviewState extends State<GroupOverview> {
       setState(() {
         transactions = fetchedtransactions;
         isLoadingTransactions = false;
-
       });
 
     } catch (e) {
@@ -105,7 +207,7 @@ class _GroupOverviewState extends State<GroupOverview> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3, // Number of tabs
+      length: 4, // Number of tabs
       child: Scaffold(
         drawer: const CustomDrawer(),
         appBar: AppBar(
@@ -115,10 +217,11 @@ class _GroupOverviewState extends State<GroupOverview> {
           bottom: TabBar(
             tabs: const [
               Tab(text: "Overview"),
-              Tab(text: "Transactions"),
+              Tab(text: "Expenses"), //renamed from transactions to expenses
+              Tab(text: "Payments"), // New Payments tab
               Tab(text: "Statistics"),
             ],
-            indicatorColor: Colors.white,
+           indicatorColor: Colors.white,
           ),
         ),
         body: isLoadingMembers
@@ -127,6 +230,7 @@ class _GroupOverviewState extends State<GroupOverview> {
           children: [
             _buildOverviewTab(),
             _buildTransactionsTab(),
+            _buildPaymentsTab(), // New Payments tab content
             _buildStatisticsTab(),
           ],
         ),
@@ -146,13 +250,22 @@ class _GroupOverviewState extends State<GroupOverview> {
         itemCount: members.length,
         itemBuilder: (context, index) {
           final member = members[index];
+
+          // Skip if the member ID matches the current user ID
+          if (member['id'] == currentUserId) {
+            return const SizedBox.shrink(); // Return an empty widget
+          }
+
+          final memberId = member['id']; // Assume 'id' is the key for the member ID
+          final memberBalance = Memberbalance[memberId]?.toStringAsFixed(2) ?? "0.00";
+
           return Card(
             elevation: 2.0,
             margin: const EdgeInsets.symmetric(vertical: 8.0),
             child: ListTile(
               title: Text(member['name']),
               trailing: Text(
-                "${member['amount'].toStringAsFixed(2)} €",
+                "$memberBalance €",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
@@ -163,33 +276,55 @@ class _GroupOverviewState extends State<GroupOverview> {
   }
 
   Widget _buildTransactionsTab() {
+    List<Map<String, dynamic>> filteredTransactions = transactions.where((transaction) {
+      return transaction['category'] != 'payment';
+    }).toList();
+
+    List<Map<String, dynamic>> otherfilteredTransactions = othertransactions.where((transaction) {
+      return transaction['category'] != 'payment';
+    }).toList();
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header for the transactions tab
           Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
             child: const Text(
-              "My Transactions",
+              "My Expenses",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ),
-          const SizedBox(height: 8.0), // Add spacing between header and list
-          // Transactions List
+          const SizedBox(height: 8.0),
           Expanded(
             child: ListView.builder(
-              itemCount: transactions.length,
+              itemCount: filteredTransactions.length,
               itemBuilder: (context, index) {
-                final transaction = transactions[index];
+                final transaction = filteredTransactions[index];
                 return Card(
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
                     title: Text(transaction['title']),
-                    //subtitle: Text(transaction['category']), // Example of additional detail
+                    subtitle: Text(transaction['category']),
+
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ViewTransaction(
+                            transaction: transaction,
+                            Creator: transaction['creatorID'] == currentUserId,
+                            groupId: widget.groupId,
+                          ),
+                        ),
+                      );
+                    },
+
+
+
                     trailing: Text(
                       "${transaction['totalAmount']} €",
                       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -200,11 +335,12 @@ class _GroupOverviewState extends State<GroupOverview> {
             ),
           ),
 
+
           Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
             child: const Text(
-              "Other Transactions",
+              "Other Expenses",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ),
@@ -212,17 +348,17 @@ class _GroupOverviewState extends State<GroupOverview> {
 
           Expanded(
             child: ListView.builder(
-              itemCount: othertransactions.length,
+              itemCount: otherfilteredTransactions.length,
               itemBuilder: (context, index) {
-                final transaction = othertransactions[index];
+                final transaction = otherfilteredTransactions[index];
                 return Card(
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
                     title: Text(transaction['title']),
-                   // subtitle: Text(transaction['category']), //Example of additional detail
+                    // subtitle: Text(transaction['category']), //Example of additional detail
                     subtitle: Text(transaction['involvementStatus']),
-                    onTap: transaction['involvementStatus'] == "involved" ||
+                    onTap: transaction['involvementStatus'] == "involved" && transaction['category'] != "payment"  ||
                         transaction['creatorID'] == currentUserId
                         ? () {
                       print(transaction);
@@ -249,18 +385,159 @@ class _GroupOverviewState extends State<GroupOverview> {
           ),
 
 
-
         ],
       ),
     );
   }
 
-  Widget _buildStatisticsTab() {
-    return Center(
-      child: const Text(
-        "Statistics Page",
-        style: TextStyle(fontSize: 20.0),
+  Widget _buildPaymentsTab() {
+    // Filter payments for "My Payments" and "Other Payments"
+    List<Map<String, dynamic>> myPayments = transactions.where((transaction) {
+      return transaction['category'] == 'payment' && transaction['creatorID'] == currentUserId;
+    }).toList();
+
+    print("\n\n");
+    print(myPayments);
+    print("\n\n");
+
+    List<Map<String, dynamic>> otherPayments = othertransactions.where((transaction) {
+      return transaction['category'] == 'payment';
+    }).toList();
+
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
+            child: const Text(
+              "My Payments",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+          const SizedBox(height: 8.0),
+          Expanded(
+            child: ListView.builder(
+              itemCount: myPayments.length,
+              itemBuilder: (context, index) {
+                final payment = myPayments[index];
+                return Card(
+                  elevation: 2.0,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListTile(
+                    title: Text("to ${payment['friends'].map((friend) => friend['name']).join(', ')}"),
+                    trailing: Text(
+                      "${payment['totalAmount']} €",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+          Container(
+            alignment: Alignment.centerLeft,
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+            child: const Text(
+              "Other Payments",
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: otherPayments.length,
+              itemBuilder: (context, index) {
+                final payment = otherPayments[index];
+                return Card(
+                  elevation: 2.0,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListTile(
+                    title: Text("From ${payment['creatorName']} to ${payment['friends'].map((friend) => friend['name']).join(', ')}"),
+                    trailing: Text(
+                      "${payment['totalAmount']} €",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
+
+
+
+
+
+  Widget _buildStatisticsTab() {
+    return FutureBuilder<Map<String, double>>(
+      future: processTransactionData(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text("Error: ${snapshot.error}"));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(child: Text("No spending data available"));
+        } else {
+          final categoryTotals = snapshot.data!;
+          final pieSections = categoryTotals.entries.map((entry) {
+            return PieChartSectionData(
+              color: _getCategoryColor(entry.key),
+              value: entry.value,
+              title: '${entry.key}\n€${entry.value.toStringAsFixed(2)}',
+              titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+            );
+          }).toList();
+
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                const Text(
+                  "Spending by Category",
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16.0),
+                Expanded(
+                  child: PieChart(
+                    PieChartData(
+                      sections: pieSections,
+                      centerSpaceRadius: 50,
+                      sectionsSpace: 4,
+                      borderData: FlBorderData(show: false),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      },
+    );
+  }
+
+
+
+// Assign unique colors for each category
+  Color _getCategoryColor(String category) {
+    switch (category) {
+      case 'payment':
+        return Colors.blue;
+      case 'Accommodation':
+        return Colors.green;
+      case 'Food':
+        return Colors.orange;
+      case 'Entertainment':
+        return Colors.purple;
+      default:
+        return Colors.grey;
+    }
+  }
+
+
 }
