@@ -509,7 +509,7 @@ class _GroupOverviewState extends State<GroupOverview> {
                       sections: pieSections,
                       centerSpaceRadius: 50,
                       sectionsSpace: 4,
-                      borderData: FlBorderData(show: false),
+                      borderData: FlBorderData(show: true),
                     ),
                   ),
                 ),
