@@ -8,6 +8,7 @@ import {
   transactionFromJson,
 } from "../models/Transaction";
 import {FieldValue} from "firebase-admin/firestore";
+import { getAuth } from "firebase-admin/auth";
 
 export class GroupManager {
   constructor(readonly db: FirebaseFirestore.Firestore) {}
@@ -289,7 +290,7 @@ export class GroupManager {
     );
     return groupsToRemind;
   }
-}
+
 
 async getLoginAttempts(email: string): Promise<number> {
   const user = await getAuth().getUserByEmail(email);
