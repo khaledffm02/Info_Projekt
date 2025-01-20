@@ -7,8 +7,6 @@ import 'package:frontend/shared/GroupService.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:frontend/ViewTransaction.dart';
 
-
-
 class GroupOverview extends StatefulWidget {
   final String groupId; // Group ID passed from Dashboard.dart
 
@@ -22,18 +20,16 @@ class _GroupOverviewState extends State<GroupOverview> {
   //load group members
   List<Map<String, dynamic>> members = [];
   bool isLoadingMembers = true;
+
   //load own transactions (created by the user)
   List<Map<String, dynamic>> transactions = [];
   bool isLoadingTransactions = true;
+
   //load other transactions
   List<Map<String, dynamic>> othertransactions = [];
   bool isLoadingotherTransactions = true;
   final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
   late Map<String, dynamic> Memberbalance;
-
-
-
-
 
   @override
   void initState() {
@@ -45,40 +41,29 @@ class _GroupOverviewState extends State<GroupOverview> {
     getMemberbalance();
   }
 
-
   void getMemberbalance() async {
     try {
-      final balance = await ApiService.getMemberbalance(widget.groupId, currentUserId);
+      final balance =
+          await ApiService.getMemberbalance(widget.groupId, currentUserId);
 
       print("\n\n");
       print(transactions);
       print("\n\n");
 
-
       setState(() {
         Memberbalance = balance;
       });
-
-
-
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Failed to get member balance: $e")),
       );
     }
-
-
   }
-
-
-
-
-
-
 
   Future<Map<String, double>> processTransactionData() async {
     try {
-      final transactions = await GroupService.getOwnTransactions(widget.groupId);
+      final transactions =
+          await GroupService.getOwnTransactions(widget.groupId);
 
       if (transactions.isEmpty) {
         print("No transactions found.");
@@ -86,9 +71,6 @@ class _GroupOverviewState extends State<GroupOverview> {
       }
 
       Map<String, double> categoryTotals = {};
-
-
-
 
       for (var transaction in transactions) {
         final category = transaction['category'];
@@ -99,47 +81,28 @@ class _GroupOverviewState extends State<GroupOverview> {
           continue;
         }
 
-
         double amount;
         if (category == 'payment') {
           amount = totalAmount as double;
-        }
-
-
-        else {
+        } else {
           final friend = transaction['friends']?.firstWhere(
-                (friend) => friend['friendId'] == currentUserId,
-           /* orElse: () => null, */
+            (friend) => friend['friendId'] == currentUserId,
+            /* orElse: () => null, */
           );
           amount = friend['amountOwed'] as double;
         }
 
-
         categoryTotals[category] = (categoryTotals[category] ?? 0) + amount;
-
-
       }
-
-
 
       print("Processed category totals: $categoryTotals");
 
-
       return categoryTotals;
-
-
     } catch (e) {
       print("Error in processTransactionData: $e");
       return {'Error': 0.0};
     }
-
-
   }
-
-
-
-
-
 
   Future<void> _fetchGroupMembers() async {
     try {
@@ -162,12 +125,12 @@ class _GroupOverviewState extends State<GroupOverview> {
 
   Future<void> _fetchownTransactions() async {
     try {
-      final fetchedtransactions = await GroupService.getOwnTransactions(widget.groupId);
+      final fetchedtransactions =
+          await GroupService.getOwnTransactions(widget.groupId);
       setState(() {
         transactions = fetchedtransactions;
         isLoadingTransactions = false;
       });
-
     } catch (e) {
       print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -177,19 +140,16 @@ class _GroupOverviewState extends State<GroupOverview> {
         isLoadingTransactions = false;
       });
     }
-
-
   }
-
 
   Future<void> _fetchotherTransactions() async {
     try {
-      final otherfetchedtransactions = await GroupService.getOtherTransactions(widget.groupId);
+      final otherfetchedtransactions =
+          await GroupService.getOtherTransactions(widget.groupId);
       setState(() {
         othertransactions = otherfetchedtransactions;
         isLoadingotherTransactions = false;
       });
-
     } catch (e) {
       print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
@@ -199,10 +159,7 @@ class _GroupOverviewState extends State<GroupOverview> {
         isLoadingotherTransactions = false;
       });
     }
-
-
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -211,7 +168,8 @@ class _GroupOverviewState extends State<GroupOverview> {
       child: Scaffold(
         drawer: const CustomDrawer(),
         appBar: AppBar(
-          title: Text(widget.groupId), // Display the group ID (can be replaced with a name if available)
+          title: Text(widget.groupId),
+          // Display the group ID (can be replaced with a name if available)
           backgroundColor: Colors.black12,
           centerTitle: true,
           bottom: TabBar(
@@ -221,19 +179,19 @@ class _GroupOverviewState extends State<GroupOverview> {
               Tab(text: "Payments"), // New Payments tab
               Tab(text: "Statistics"),
             ],
-           indicatorColor: Colors.white,
+            indicatorColor: Colors.white,
           ),
         ),
         body: isLoadingMembers
             ? const Center(child: CircularProgressIndicator())
             : TabBarView(
-          children: [
-            _buildOverviewTab(),
-            _buildTransactionsTab(),
-            _buildPaymentsTab(), // New Payments tab content
-            _buildStatisticsTab(),
-          ],
-        ),
+                children: [
+                  _buildOverviewTab(),
+                  _buildTransactionsTab(),
+                  _buildPaymentsTab(), // New Payments tab content
+                  _buildStatisticsTab(),
+                ],
+              ),
         bottomNavigationBar: GroupNavigationBar(
           groupName: widget.groupId, // Pass group ID
           members: members,
@@ -243,7 +201,6 @@ class _GroupOverviewState extends State<GroupOverview> {
   }
 
   Widget _buildOverviewTab() {
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: ListView.builder(
@@ -256,8 +213,10 @@ class _GroupOverviewState extends State<GroupOverview> {
             return const SizedBox.shrink(); // Return an empty widget
           }
 
-          final memberId = member['id']; // Assume 'id' is the key for the member ID
-          final memberBalance = Memberbalance[memberId]?.toStringAsFixed(2) ?? "0.00";
+          final memberId =
+              member['id']; // Assume 'id' is the key for the member ID
+          final memberBalance =
+              Memberbalance[memberId]?.toStringAsFixed(2) ?? "0.00";
 
           return Card(
             elevation: 2.0,
@@ -276,11 +235,13 @@ class _GroupOverviewState extends State<GroupOverview> {
   }
 
   Widget _buildTransactionsTab() {
-    List<Map<String, dynamic>> filteredTransactions = transactions.where((transaction) {
+    List<Map<String, dynamic>> filteredTransactions =
+        transactions.where((transaction) {
       return transaction['category'] != 'payment';
     }).toList();
 
-    List<Map<String, dynamic>> otherfilteredTransactions = othertransactions.where((transaction) {
+    List<Map<String, dynamic>> otherfilteredTransactions =
+        othertransactions.where((transaction) {
       return transaction['category'] != 'payment';
     }).toList();
 
@@ -291,7 +252,8 @@ class _GroupOverviewState extends State<GroupOverview> {
         children: [
           Container(
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
             child: const Text(
               "My Expenses",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -309,7 +271,6 @@ class _GroupOverviewState extends State<GroupOverview> {
                   child: ListTile(
                     title: Text(transaction['title']),
                     subtitle: Text(transaction['category']),
-
                     onTap: () {
                       Navigator.push(
                         context,
@@ -322,9 +283,6 @@ class _GroupOverviewState extends State<GroupOverview> {
                         ),
                       );
                     },
-
-
-
                     trailing: Text(
                       "${transaction['totalAmount']} €",
                       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -334,18 +292,15 @@ class _GroupOverviewState extends State<GroupOverview> {
               },
             ),
           ),
-
-
           Container(
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
             child: const Text(
               "Other Expenses",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
           ),
-
-
           Expanded(
             child: ListView.builder(
               itemCount: otherfilteredTransactions.length,
@@ -358,22 +313,25 @@ class _GroupOverviewState extends State<GroupOverview> {
                     title: Text(transaction['title']),
                     // subtitle: Text(transaction['category']), //Example of additional detail
                     subtitle: Text(transaction['involvementStatus']),
-                    onTap: transaction['involvementStatus'] == "involved" && transaction['category'] != "payment"  ||
-                        transaction['creatorID'] == currentUserId
+                    onTap: transaction['involvementStatus'] == "involved" &&
+                                transaction['category'] != "payment" ||
+                            transaction['creatorID'] == currentUserId
                         ? () {
-                      print(transaction);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ViewTransaction(
-                            transaction: transaction,
-                            Creator: transaction['creatorID'] == currentUserId,
-                            groupId: widget.groupId,
-                          ),
-                        ),
-                      );
-                    }
-                        : null, // Disable click for uninvolved transactions
+                            print(transaction);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ViewTransaction(
+                                  transaction: transaction,
+                                  Creator:
+                                      transaction['creatorID'] == currentUserId,
+                                  groupId: widget.groupId,
+                                ),
+                              ),
+                            );
+                          }
+                        : null,
+                    // Disable click for uninvolved transactions
                     trailing: Text(
                       "${transaction['totalAmount']} €",
                       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -383,8 +341,6 @@ class _GroupOverviewState extends State<GroupOverview> {
               },
             ),
           ),
-
-
         ],
       ),
     );
@@ -393,14 +349,16 @@ class _GroupOverviewState extends State<GroupOverview> {
   Widget _buildPaymentsTab() {
     // Filter payments for "My Payments" and "Other Payments"
     List<Map<String, dynamic>> myPayments = transactions.where((transaction) {
-      return transaction['category'] == 'payment' && transaction['creatorID'] == currentUserId;
+      return transaction['category'] == 'payment' &&
+          transaction['creatorID'] == currentUserId;
     }).toList();
 
     print("\n\n");
     print(myPayments);
     print("\n\n");
 
-    List<Map<String, dynamic>> otherPayments = othertransactions.where((transaction) {
+    List<Map<String, dynamic>> otherPayments =
+        othertransactions.where((transaction) {
       return transaction['category'] == 'payment';
     }).toList();
 
@@ -411,7 +369,8 @@ class _GroupOverviewState extends State<GroupOverview> {
         children: [
           Container(
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
             child: const Text(
               "My Payments",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -427,7 +386,8 @@ class _GroupOverviewState extends State<GroupOverview> {
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
-                    title: Text("to ${payment['friends'].map((friend) => friend['name']).join(', ')}"),
+                    title: Text(
+                        "to ${payment['friends'].map((friend) => friend['name']).join(', ')}"),
                     trailing: Text(
                       "${payment['totalAmount']} €",
                       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -439,7 +399,8 @@ class _GroupOverviewState extends State<GroupOverview> {
           ),
           Container(
             alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
             child: const Text(
               "Other Payments",
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -454,7 +415,8 @@ class _GroupOverviewState extends State<GroupOverview> {
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
-                    title: Text("From ${payment['creatorName']} to ${payment['friends'].map((friend) => friend['name']).join(', ')}"),
+                    title: Text(
+                        "From ${payment['creatorName']} to ${payment['friends'].map((friend) => friend['name']).join(', ')}"),
                     trailing: Text(
                       "${payment['totalAmount']} €",
                       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -468,10 +430,6 @@ class _GroupOverviewState extends State<GroupOverview> {
       ),
     );
   }
-
-
-
-
 
   Widget _buildStatisticsTab() {
     return FutureBuilder<Map<String, double>>(
@@ -490,13 +448,15 @@ class _GroupOverviewState extends State<GroupOverview> {
               color: _getCategoryColor(entry.key),
               value: entry.value,
               title: '${entry.key}\n€${entry.value.toStringAsFixed(2)}',
-              titleStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+              titleStyle:
+                  const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
             );
           }).toList();
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const Text(
                   "Spending by Category",
@@ -504,15 +464,19 @@ class _GroupOverviewState extends State<GroupOverview> {
                 ),
                 const SizedBox(height: 16.0),
                 Expanded(
-                  child: PieChart(
-                    PieChartData(
-                      sections: pieSections,
-                      centerSpaceRadius: 50,
-                      sectionsSpace: 4,
-                      borderData: FlBorderData(show: true),
+                  child: SizedBox(
+        //            width: 400,
+          //          height: 400,
+                    child: PieChart(
+                      PieChartData(
+                        sections: pieSections,
+                        centerSpaceRadius: 50,
+                        sectionsSpace: 4,
+                        borderData: FlBorderData(show: true),
+                      ),
                     ),
                   ),
-                ),
+                )
               ],
             ),
           );
@@ -520,8 +484,6 @@ class _GroupOverviewState extends State<GroupOverview> {
       },
     );
   }
-
-
 
 // Assign unique colors for each category
   Color _getCategoryColor(String category) {
@@ -538,6 +500,4 @@ class _GroupOverviewState extends State<GroupOverview> {
         return Colors.grey;
     }
   }
-
-
 }

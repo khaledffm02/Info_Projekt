@@ -9,7 +9,9 @@ class StartScreen extends StatelessWidget {
   final void Function() SignUp; //LogIn Variable that cann be use in a button
   @override
   Widget build(context) {
-    return Center(
+    return Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -48,6 +50,6 @@ class StartScreen extends StatelessWidget {
 
         ],
       ),
-    );
+    ),);
   }
 }

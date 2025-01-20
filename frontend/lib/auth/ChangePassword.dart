@@ -23,6 +23,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
   Widget build(BuildContext context) {
     return Material(
         child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0), // 16 Pixel Padding von den Seiten
             child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.center,
