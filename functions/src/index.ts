@@ -53,7 +53,8 @@ export const groupCreate = onRequest(
       response.send({success: false});
       return;
     }
-    await groupManager.createGroup(userID, member.currency);
+    const groupName = request.query.groupName as string;
+    await groupManager.createGroup(userID, member.currency, groupName);
     response.send({success: true});
   }
 );

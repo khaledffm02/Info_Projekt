@@ -13,7 +13,7 @@ import { getAuth } from "firebase-admin/auth";
 export class GroupManager {
   constructor(readonly db: FirebaseFirestore.Firestore) {}
 
-  async createGroup(creatorID: string, currency: string): Promise<string> {
+  async createGroup(creatorID: string, currency: string, name?: string): Promise<string> {
     const creationTimestamp = Date.now();
     const groupCode = randomString(6).toUpperCase();
     const memberIDs = {[creatorID]: true};
@@ -23,6 +23,7 @@ export class GroupManager {
       groupCode,
       memberIDs,
       currency,
+      name: name || `Group ${groupCode}`,
     };
     const groupRef = await this.db.collection("groups").add(groupJSON);
     return groupRef.id;
