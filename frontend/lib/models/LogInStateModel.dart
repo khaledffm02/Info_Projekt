@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/Currency.dart';
+
+
 
 class LogInStateModel extends ChangeNotifier {
-  int _maxLoginAttempts = 3;
 
   int _failedLoginAttempts = 0;
 

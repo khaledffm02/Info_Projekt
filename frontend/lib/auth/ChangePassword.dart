@@ -25,9 +25,17 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
         child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16.0), // 16 Pixel Padding von den Seiten
             child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
+        const Text(
+          ' Change Your Password',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
         // Old password
         TextField(
           controller: _oldPasswordController,

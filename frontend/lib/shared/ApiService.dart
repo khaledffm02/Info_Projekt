@@ -16,15 +16,17 @@ class ApiService {
           .createUserWithEmailAndPassword(email: email, password: password);
 
       final idToken = await credential.user?.getIdToken() ?? '';
+      print(idToken);
+
       if (idToken.isEmpty) {
         throw Exception('Failed to retrieve ID Token.');
       }
 
       final url = Uri.parse(
         'https://userregistration-icvq5uaeva-uc.a.run.app'
-            '?idToken=${Uri.encodeComponent(idToken)}'
-            '&firstName=${Uri.encodeComponent(firstname)}'
-            '&lastName=${Uri.encodeComponent(lastname)}',
+        '?idToken=${Uri.encodeComponent(idToken)}'
+        '&firstName=${Uri.encodeComponent(firstname)}'
+        '&lastName=${Uri.encodeComponent(lastname)}',
       );
 
       final response = await http.get(url);
@@ -51,11 +53,12 @@ class ApiService {
       if (idToken.isEmpty) {
         throw Exception('Failed to retrieve ID Token.');
       }
+      print(idToken);
 
       // Step 3: Send ID Token to the login API endpoint
       final url = Uri.parse(
         'https://userlogin-icvq5uaeva-uc.a.run.app'
-            '?idToken=${Uri.encodeComponent(idToken)}',
+        '?idToken=${Uri.encodeComponent(idToken)}',
       );
 
       final response = await http.get(url);
@@ -75,7 +78,7 @@ class ApiService {
       // Endpoint-URL
       final url = Uri.parse(
         'https://sendnewpassword-icvq5uaeva-uc.a.run.app'
-            '?email=${Uri.encodeComponent(email)}',
+        '?email=${Uri.encodeComponent(email)}',
       );
 
       // Sende die Anfrage
@@ -141,8 +144,8 @@ class ApiService {
 
   static void resetLoginAttempts(email) async {
     try {
-      final url =
-      Uri.parse('https://resetloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri.encodeComponent(email)}');
+      final url = Uri.parse(
+          'https://resetloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri.encodeComponent(email)}');
       final response = await http.get(url);
       print('Status Code: ${response.statusCode}');
     } catch (e) {
@@ -408,12 +411,12 @@ class ApiService {
     }
   }
 
-
   // get memberbalance
 
-
-  static Future<Map<String, dynamic>> getMemberbalance(String groupId, String uid) async {
-    const String endpointURL = "https://getgroupbalance-icvq5uaeva-uc.a.run.app";
+  static Future<Map<String, dynamic>> getMemberbalance(
+      String groupId, String uid) async {
+    const String endpointURL =
+        "https://getgroupbalance-icvq5uaeva-uc.a.run.app";
 
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -437,7 +440,8 @@ class ApiService {
         final balances = responseData['balances'] ?? {};
         return balances; // Return the map directly
       } else {
-        print("API Error - Status: ${response.statusCode}, Body: ${response.body}");
+        print(
+            "API Error - Status: ${response.statusCode}, Body: ${response.body}");
         throw Exception("Failed to retrieve balance: ${response.statusCode}");
       }
     } catch (e) {
@@ -446,12 +450,11 @@ class ApiService {
     }
   }
 
-
-
   // get groupbalance
 
   static getGroupBalance(String groupId, String uid) async {
-    const String endpointURL = "https://getgroupbalance-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+    const String endpointURL =
+        "https://getgroupbalance-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
 
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -459,10 +462,8 @@ class ApiService {
         throw Exception("User is not authenticated.");
       }
 
-
       // Get the ID token from the current user
       final idToken = await user.getIdToken();
-
 
       final url = Uri.parse(endpointURL).replace(queryParameters: {
         'idToken': idToken,
@@ -514,18 +515,17 @@ class ApiService {
     }
   }
 
-
   // add payment
 
-
-  static Future<void> addPayment({
-    //required String transactionId,
-    required String groupId,
-    required String? toId,
-    required String fromId,
-    required double amount
-  }) async {
-    const String endpointURL = "https://addpayment-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+  static Future<void> addPayment(
+      {
+      //required String transactionId,
+      required String groupId,
+      required String? toId,
+      required String fromId,
+      required double amount}) async {
+    const String endpointURL =
+        "https://addpayment-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
 
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -559,10 +559,4 @@ class ApiService {
       rethrow;
     }
   }
-
-
-
-
-
-
 }

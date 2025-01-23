@@ -86,9 +86,11 @@ class LogInScreen extends WatchingWidget {
         DialogHelper.showDialogCustom(
           context: context,
           title: 'Success',
-          content: 'Logged in successfully!',
+          content: 'Logged in successfully! ',
+
           onConfirm: () {
             Navigator.of(context).pop();
+                     //Get idToken
             Navigator.pushNamed(context, '/Dashboard');
             //endpoint attempts_reset
           },
