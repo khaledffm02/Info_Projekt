@@ -258,7 +258,7 @@ export class GroupManager {
       Date.now() - currencyDoc.data()?.timestamp > 1 * 60 * 1000
     ) {
       const base_currency = "EUR";
-      const currencies = "USD,GBP,JPY,CNY";
+      const currencies = "USD,GBP,JPY,CNY,EUR,CHF";
       const url = `https://api.freecurrencyapi.com/v1/latest?${new URLSearchParams(
         {apikey, base_currency, currencies}
       ).toString()}`;
