@@ -42,7 +42,7 @@ groupChange
 
 groupCreate
   - https://groupcreate-icvq5uaeva-uc.a.run.app
-  - Parameters: idToken
+  - Parameters: idToken, groupName
 
 groupDelete
   - https://groupdelete-icvq5uaeva-uc.a.run.app
@@ -67,6 +67,10 @@ resetLoginAttempts
 scheduledFunctionCrontab
   - */5 * * * *
   - (no parameters internally fetches groupIDs and sends reminders)
+
+sendInvitation: 
+  - https://sendinvitation-icvq5uaeva-uc.a.run.app
+  - Parameters: idToken, email, groupID
 
 sendNewPassword
   - https://sendnewpassword-icvq5uaeva-uc.a.run.app
