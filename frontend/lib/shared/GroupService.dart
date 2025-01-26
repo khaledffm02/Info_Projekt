@@ -68,7 +68,6 @@ class GroupService {
 
 
 
-
   static Future<List<Map<String, dynamic>>> getGroupMembers(String groupId) async {
     try {
       final groupDoc = await FirebaseFirestore.instance
@@ -136,7 +135,7 @@ class GroupService {
       // Extract transactions map from the group
       final Map<String, dynamic> transactions = groupSnapshot['transactions'];
 
-      if (transactions == null || transactions.isEmpty) {
+      if (transactions.isEmpty) {
         return []; // No transactions in this group
       }
 
@@ -194,7 +193,7 @@ class GroupService {
 
       final Map<String, dynamic> transactions = groupSnapshot['transactions'];
 
-      if (transactions == null || transactions.isEmpty) {
+      if (transactions.isEmpty) {
         return []; // No transactions in this group
       }
 

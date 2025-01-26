@@ -2,112 +2,23 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart'; // ApiService importieren
 import 'package:frontend/shared/DialogHelper.dart';
-import 'package:watch_it/watch_it.dart';
-import 'dart:async';
 
-import '../models/LogInStateModel.dart';
-import '../shared/CustomDrawer.dart';
-import 'package:frontend/shared/CustomDrawer.dart';
-import 'package:frontend/start/Dashboard.dart';
-import 'dart:developer' as developer;
-import 'package:logger/logger.dart';
 
-class LogInScreen extends WatchingWidget {
-  LogInScreen({super.key});
+class LogInScreen extends StatefulWidget {
+  const LogInScreen({super.key});
 
+  @override
+  State<LogInScreen> createState() => _LogInScreenState();
+}
+
+class _LogInScreenState extends State<LogInScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login(BuildContext context, bool otpMode) async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      DialogHelper.showDialogCustom(
-        context: context,
-        title: 'Error',
-        content: 'All fields are required.',
-      );
-      return;
-    }
-//ToDo:what will shown with >4 try in Snackbar
-    try {
-      var loginSuccess = await ApiService.loginUser(email, password);
-
-      if (loginSuccess == false) {
-        await ApiService.increaseLoginAttempts(email);
-        developer.log('Testmessage', name: 'Info');
-        var getLoginResponse = await ApiService.getLoginAttempts(email);
-        di<LogInStateModel>().failedLoginAttempts = getLoginResponse;
-        print(di<LogInStateModel>().failedLoginAttempts);
-        if (di<LogInStateModel>().failedLoginAttempts == 3) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text(
-                  'You don not log correctly for the 3rd time. We send a One Time Password to your Email'),
-            ),
-          );
-          try {
-            ApiService.resetPassword(email);
-          } catch (e) {
-            print("Email  was not sent: $e");
-          }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                //'Log in failed. It is your  ${di<LogInStateModel>().failedLoginAttempts+1} atempt(s)',
-                'Log in failed. It is your atempt(s)  ' +
-                    getLoginResponse.toString(),
-              ),
-            ),
-          ); //print( di<LogInStateModel>().failedLoginAttempts.toString() + ". + 1 Fehlerhafte Anmeldung ");
-        }
-
-        return;
-      }
-      ApiService.resetLoginAttempts(email);
-      di<LogInStateModel>().failedLoginAttempts =
-          await ApiService.getLoginAttempts(email);
-      print(di<LogInStateModel>().failedLoginAttempts);
-      final user = FirebaseAuth.instance.currentUser;
-      if (user?.emailVerified != true) {
-        DialogHelper.showDialogCustom(
-          context: context,
-          title: 'Error',
-          content:
-              "You didn't confirm the email. Please click the link in your email to verify.",
-        );
-        await FirebaseAuth.instance.signOut();
-      } else if (otpMode == false) {
-        di<LogInStateModel>().otpMode =
-            false; //otpMode was already "false" but in the setter, we also reset the counter "_failedLoginAttempts"
-
-        DialogHelper.showDialogCustom(
-          context: context,
-          title: 'Success',
-          content: 'Logged in successfully! ',
-
-          onConfirm: () {
-            Navigator.of(context).pop();
-                     //Get idToken
-            Navigator.pushNamed(context, '/Dashboard');
-            //endpoint attempts_reset
-          },
-        );
-      } else if (otpMode == true) {
-        print("otp mode true ");
-        Navigator.pushNamed(context, '/ChangePassword');
-        //endpoints attemöpt_reset
-      }
-    } catch (e) {
-      //todo
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
-    final otpMode = watchPropertyValue((LogInStateModel x) => x.otpMode);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
@@ -143,10 +54,46 @@ class LogInScreen extends WatchingWidget {
               ),
             ),
             const SizedBox(height: 16.0),
-
             ElevatedButton(
               onPressed: () async {
-                _login(context, otpMode);
+                final email = _emailController.text.trim();
+                final password = _passwordController.text;
+
+                if (email.isEmpty || password.isEmpty) {
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Error',
+                    content: 'All fields are required.',
+                  );
+                  return;
+                }
+
+                try {
+                  // Direkt ApiService.loginUser aufrufen
+                  await ApiService.loginUser(email, password);
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Success',
+                    content: 'Logged in successfully!',
+                    onConfirm: () {
+                      final user = FirebaseAuth.instance.currentUser;
+
+                      if (user != null) {
+                        print('Benutzer ist angemeldet: ${user.uid}');
+                      } else {
+                        print('Kein Benutzer angemeldet.');
+                      }
+                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, '/Dashboard');
+                    },
+                  );
+                } catch (e) {
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Error',
+                    content: 'Failed to log in: $e',
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),

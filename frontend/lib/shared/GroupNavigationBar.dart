@@ -3,11 +3,16 @@ import 'package:flutter/material.dart';
 class GroupNavigationBar extends StatelessWidget {
   final String groupName;
   final List<Map<String, dynamic>> members;
+  final String groupId;
+  final String groupCode;
+
 
   const GroupNavigationBar({
     super.key,
     required this.groupName,
     required this.members,
+    required this.groupId,
+    required this.groupCode,
   });
 
   @override
@@ -33,6 +38,8 @@ class GroupNavigationBar extends StatelessWidget {
               arguments: {
                 'members': members, // Passing members as arguments
                 'groupName' : groupName,
+                'groupId' : groupId,
+                'groupCode': groupCode
               },
             );
             break;
@@ -44,6 +51,8 @@ class GroupNavigationBar extends StatelessWidget {
               arguments: {
                 'members': members,
                 'groupName': groupName,
+                'groupId' : groupId,
+                'groupCode': groupCode
               },
             );
 
