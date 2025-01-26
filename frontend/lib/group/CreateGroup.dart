@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart';
 
+import '../shared/DialogHelper.dart';
+
 class CreateGroup extends StatefulWidget {
   const CreateGroup({super.key});
 
@@ -12,12 +14,12 @@ class CreateGroup extends StatefulWidget {
 
 class _CreateGroupState extends State<CreateGroup> {
   final TextEditingController _groupNameController = TextEditingController();
-  String _selectedCurrency = 'EUR'; // Default currency is Euro (EUR)
 
-  // List of available currencies
+  /*
+
+  String _selectedCurrency = 'EUR'; // Default currency is Euro (EUR)
   final List<String> _currencies = ['EUR', 'USD', 'GBP', 'JPY', 'INR'];
 
-  // Function to open currency selection dialog
   void _selectCurrency(BuildContext context) async {
     final selectedCurrency = await showDialog<String>(
       context: context,
@@ -43,6 +45,7 @@ class _CreateGroupState extends State<CreateGroup> {
       });
     }
   }
+*/
 
   @override
   Widget build(BuildContext context) {
@@ -51,71 +54,12 @@ class _CreateGroupState extends State<CreateGroup> {
         title: const Text("Create Group"),
         backgroundColor: Colors.black12,
         centerTitle: true,
-        actions: [
-          TextButton(
-            onPressed: () {
-              if (_groupNameController.text.isEmpty ){
-
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Error'),
-                      content: const Text('Please enter a group Name'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                          child: const Text('OK'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-
-              }
-
-
-              else  {
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Success'),
-                      content: const Text('You have created a new group'),
-                      actions: [
-                        TextButton(
-                          onPressed: () async{
-                            await ApiService.createGroup(context);
-                            Navigator.pushNamed(context, '/Dashboard');
-                          },
-                          child: const Text('OK'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-
-              }
-
-              //print("Group Name: ${_groupNameController.text}, Currency: $_selectedCurrency");
-              // Navigator.pop(context);
-            },
-
-
-            child: const Text(
-              "Create",
-              style: TextStyle(color: Colors.white),
-            ),
-          ),
-        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          //crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
               controller: _groupNameController,
@@ -124,6 +68,45 @@ class _CreateGroupState extends State<CreateGroup> {
                 border: OutlineInputBorder(),
               ),
             ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async{
+                if (_groupNameController.text.isEmpty ){
+                  DialogHelper.showDialogCustom(
+                      context: context,
+                      title: 'Error',
+                      content: 'Please enter a group Name');
+                  return;// Show the error message
+                }
+                else  {
+                  try{
+                    await ApiService.createGroup(context, _groupNameController.text);
+                    // Show success dialog
+                    DialogHelper.showDialogCustom(
+                      context: context,
+                      title: 'Success',
+                      content: 'You have created a new Group',
+                      onConfirm: () {
+                        Navigator.pushNamed(
+                            context,
+                            '/Dashboard'
+                        );
+                      },
+
+                    );
+                  } catch (error) {
+                    DialogHelper.showDialogCustom(
+                      context: context,
+                      title: 'Error',
+                      content: error.toString(), // Show the error message
+                    );
+                  }
+                }
+              },
+              child: const Text('Create Group'),
+            ),
+
+           /*
             const SizedBox(height: 16.0),
             Center(
                 child: SizedBox(
@@ -143,6 +126,9 @@ class _CreateGroupState extends State<CreateGroup> {
 
                 )
             ),
+          */
+
+
           ],
         ),
       ),

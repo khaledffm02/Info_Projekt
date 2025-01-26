@@ -11,6 +11,8 @@ import 'package:frontend/auth/SignUp.dart';
 import 'package:frontend/StartScreen.dart';
 import 'package:frontend/start/Dashboard.dart';
 
+import 'GroupSettings.dart';
+
 class FairShare extends StatefulWidget {
   const FairShare({super.key});
 
@@ -59,12 +61,20 @@ class _FairShareState extends State<FairShare> {
           return GroupOverview(
             groupId: arguments['groupId'], // Use `groupId` for consistent routing
             groupName: arguments['groupName'], // Pass group name if available
+            groupCode: arguments['groupCode'] // Pass invitation Code
           );
         },
 
+
+
         '/CreateExpense': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
-          return CreateExpense(members: arguments['members'], groupName: arguments['groupName']);
+          return CreateExpense(
+              members: arguments['members'],
+              groupName: arguments['groupName'],
+              groupId: arguments['groupId'],
+              groupCode: arguments['groupCode']
+          );
         },
 
 
@@ -73,8 +83,21 @@ class _FairShareState extends State<FairShare> {
           final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
           return AddPayment(
             members: arguments['members'],
-            groupName: arguments['groupName']);
+            groupName: arguments['groupName'],
+              groupId: arguments['groupId'],
+              groupCode: arguments['groupCode']
+          );
         },
+
+        '/GroupSettings': (context) {
+          final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
+          return GroupSettings(
+            groupId: arguments['groupId'],
+            groupName : arguments['groupName'],
+            groupCode: arguments['groupCode'],
+          );
+        },
+
 
       },
 

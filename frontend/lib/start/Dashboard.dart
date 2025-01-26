@@ -41,6 +41,7 @@ class _DashboardState extends State<Dashboard> {
         _isloadingtotalowedto = false;
       });
 
+      /*
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -49,8 +50,10 @@ class _DashboardState extends State<Dashboard> {
                 "Net balance: ${netBalance >= 0 ? '€$netBalance (You owe)' : '€${netBalance.abs()} (You are owed)'}",
           ),
         ),
-      );
 
+
+      );
+*/
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -160,7 +163,8 @@ class _DashboardState extends State<Dashboard> {
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
-                    title: Text(group['id']), // Display group document ID
+                    //title: Text(group['id']), // Display group document ID
+                    title: Text(group['data']['name']), // Display group document ID
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       // Navigate to GroupOverview
@@ -169,7 +173,8 @@ class _DashboardState extends State<Dashboard> {
                         '/GroupOverview',
                         arguments: {
                           'groupId': group['id'], // Pass the group ID
-                          'groupName': group['data']['name'] ?? group['id'], // Use group name or fallback to ID
+                          'groupName': group['data']['name'] ?? group['id'],// Use group name or fallback to ID
+                          'groupCode': group['data']['groupCode']
                         },
                       );
 

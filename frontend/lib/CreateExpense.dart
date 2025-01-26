@@ -9,8 +9,10 @@ import 'package:number_editing_controller/number_editing_controller.dart';
 class CreateExpense extends StatefulWidget {
   final List<Map<String, dynamic>> members; //// List of group members
   final String groupName;
-  const CreateExpense({super.key, required this.members, required this.groupName});
-  //const CreateExpense({super.key, required this.members});
+  final String groupId;
+  final String groupCode;
+
+  const CreateExpense({super.key, required this.members, required this.groupName, required this.groupId, required this.groupCode});
 
   @override
   _CreateExpenseState createState() => _CreateExpenseState();
@@ -99,99 +101,7 @@ class _CreateExpenseState extends State<CreateExpense> {
     }
   }
 
-  /*
 
-  void _distributeAmount() async {
-    final amount = double.tryParse(_amountController.text) ?? 0.0;
-    final result = await showDialog<Map<String, double>>(
-      context: context,
-      builder: (BuildContext context) {
-        return Dialog(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text(
-                  "Distribute Amount",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16.0),
-                ...widget.members.map((member) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(member['name']),
-                      SizedBox(
-                        width: 100.0,
-                        child: TextField(
-                          keyboardType: TextInputType.number,
-                          decoration: InputDecoration(
-                            //hintText: "0.00",
-                            hintText: hintText[member['name']],
-                          border: const OutlineInputBorder(),
-                          ),
-                          onChanged: (value) {
-                            double? memberAmount = double.tryParse(value);
-                            if (memberAmount != null) {
-                              setState(() {
-                                distributedAmounts[member['name']] = memberAmount;
-                                 hintText[member['name']] =
-                                memberAmount.toStringAsFixed(2); // Update only for this member.
-
-
-
-                              });
-                            }
-                            print("amount: {$distributedAmounts}");
-
-                          },
-                        ),
-                      ),
-                    ],
-                  );
-                }),
-                const SizedBox(height: 16.0),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context, distributedAmounts);
-                  },
-                  child: const Text("Done"),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    // check if the distributed amount equals the total amount
-    if (result != 0) {
-     // final totalDistributed = result?.values.fold(
-     //     0.0, (sum, value) => sum + value);
-
-      final totalDistributed = distributedAmounts.values
-          .map((value) => roundToTwo(value)) // Ensure all values are rounded
-          .reduce((a, b) => roundToTwo(a + b));
-
-
-      if (totalDistributed != amount) {
-        DialogHelper.showDialogCustom(
-            context: context,
-            title: 'Warning',
-            content: 'Distributed money ($totalDistributed €) does not equal the total amount ($amount €).'
-        );
-      }
-
-      if (result != null) {
-        setState(() {
-          distributedAmounts = result;
-        });
-      }
-    }
-
-  }
-*/
 
   void _distributeAmount() async {
     final totalAmount = double.tryParse(_amountController.text) ?? 0.0;
@@ -473,7 +383,7 @@ class _CreateExpenseState extends State<CreateExpense> {
 
       // Prepare the request body
       final Map<String, dynamic> requestBody = {
-        "groupID": widget.groupName,
+        "groupID": widget.groupId,
         "title": _titleController.text,
         "category": selectedCategory,
         "user": userParam,
@@ -499,10 +409,9 @@ class _CreateExpenseState extends State<CreateExpense> {
               context,
               '/GroupOverview',
               arguments: {
-                'groupId': widget.groupName,
-                // Pass the group ID
+                'groupId': widget.groupId,
                 'groupName': widget.groupName,
-                // Use group name or fallback to ID
+                'groupCode': widget.groupCode
               },
             );
           },
@@ -557,7 +466,7 @@ class _CreateExpenseState extends State<CreateExpense> {
 
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black12,
+                      //backgroundColor: Colors.black12,
                     ),
                     child: Text(selectedPayer ?? "Payer"),
                   ),
@@ -566,7 +475,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                     onPressed: _selectCategory,
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black12,
+                     // backgroundColor: Colors.black12,
                     ),
                     child: Text(selectedCategory ?? "Category"),
                   ),
@@ -575,7 +484,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                     onPressed: _distributeAmount,
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.black12,
+                     // backgroundColor: Colors.black12,
                     ),
                     child: const Text("Receiver"),
                   ),
@@ -603,7 +512,7 @@ class _CreateExpenseState extends State<CreateExpense> {
           onPressed: () async {
             _prepareAndSendTransaction();
           },
-          backgroundColor: Colors.black12,
+          //backgroundColor: Colors.black12,
           child: const Icon(Icons.save),
         ),
       );

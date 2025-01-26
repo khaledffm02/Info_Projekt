@@ -7,13 +7,16 @@ import 'package:frontend/shared/DialogHelper.dart';
 class AddPayment extends StatefulWidget {
   final List<Map<String, dynamic>> members; // List of group members
   final String groupName; // Group ID for reference
+  final String groupId; // Group ID for reference
+  final String groupCode;
 
 
   const AddPayment({
     super.key,
     required this.members,
     required this.groupName,
-
+    required this.groupId,
+    required this.groupCode
   });
 
   @override
@@ -44,7 +47,7 @@ class _AddPaymentState extends State<AddPayment> {
     try {
       // Call your API method to mark the payment as completed
       await ApiService.addPayment(
-        groupId: widget.groupName,
+        groupId: widget.groupId,
         toId: selectedMemberId!, // Use the selected member ID
         fromId: currentUserId,
         amount: amount,
@@ -59,12 +62,12 @@ class _AddPaymentState extends State<AddPayment> {
             context,
             '/GroupOverview',
             arguments: {
-              'groupId': widget.groupName, // Pass the group ID
+              'groupId': widget.groupId, // Pass the group ID
               'groupName': widget.groupName, // Use group name or fallback to ID
+              'groupCode': widget.groupCode
+
             },
           );
-
-
 
         },
 
@@ -93,7 +96,7 @@ class _AddPaymentState extends State<AddPayment> {
           children: [
             const Text(
               "Select Member",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
@@ -117,7 +120,7 @@ class _AddPaymentState extends State<AddPayment> {
             const SizedBox(height: 16),
             const Text(
               "Enter Amount (€)",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -133,12 +136,12 @@ class _AddPaymentState extends State<AddPayment> {
               child: ElevatedButton(
                 onPressed: _submitPayment,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.black12,
+                  //backgroundColor: Colors.black12,
                   padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 ),
                 child: const Text(
                   "Send Payment",
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 16.0),
                 ),
               ),
             ),

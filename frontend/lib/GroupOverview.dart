@@ -5,14 +5,17 @@ import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/shared/GroupNavigationBar.dart';
 import 'package:frontend/shared/GroupService.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:frontend/GroupSettings.dart';
 import 'ViewTransaction.dart';
 
 
 
 class GroupOverview extends StatefulWidget {
   final String groupId; // Group ID passed from Dashboard.dart
+  final String groupName;
+  final String groupCode;
 
-  const GroupOverview({super.key, required this.groupId, required groupName});
+  const GroupOverview({super.key, required this.groupId, required this.groupName, required this.groupCode});
 
   @override
   _GroupOverviewState createState() => _GroupOverviewState();
@@ -34,7 +37,6 @@ class _GroupOverviewState extends State<GroupOverview> {
 
 
 
-
   @override
   void initState() {
     super.initState();
@@ -49,10 +51,6 @@ class _GroupOverviewState extends State<GroupOverview> {
   void getMemberbalance() async {
     try {
       final balance = await ApiService.getMemberbalance(widget.groupId, currentUserId);
-
-      print("\n\n");
-      print(transactions);
-      print("\n\n");
 
 
       setState(() {
@@ -169,9 +167,10 @@ class _GroupOverviewState extends State<GroupOverview> {
       });
 
     } catch (e) {
-      print("Error: $e");
+      //print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to load transactions: $e")),
+        //SnackBar(content: Text("Failed to load transactions: $e")),
+        SnackBar(content: Text("No own expenses found")),
       );
       setState(() {
         isLoadingTransactions = false;
@@ -191,9 +190,10 @@ class _GroupOverviewState extends State<GroupOverview> {
       });
 
     } catch (e) {
-      print("Error: $e");
+      //print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to load other transactions: $e")),
+       // SnackBar(content: Text("Failed to load other transactions: $e")),
+        SnackBar(content: Text("No other expenses found")),
       );
       setState(() {
         isLoadingotherTransactions = false;
@@ -211,7 +211,29 @@ class _GroupOverviewState extends State<GroupOverview> {
       child: Scaffold(
         drawer: const CustomDrawer(),
         appBar: AppBar(
-          title: Text(widget.groupId), // Display the group ID (can be replaced with a name if available)
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+               /* Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const GroupSettings()),
+                );
+                  */
+                Navigator.pushNamed(
+                  context,
+                  '/GroupSettings',
+                  arguments: {
+                    'groupId': widget.groupId,
+                    'groupName': widget.groupName,
+                    'groupCode' : widget.groupCode
+                  },
+                );
+
+              },
+            ),
+          ],
+          title: Text(widget.groupName), // Display the group ID (can be replaced with a name if available)
           backgroundColor: Colors.black12,
           centerTitle: true,
           bottom: const TabBar(
@@ -235,8 +257,10 @@ class _GroupOverviewState extends State<GroupOverview> {
           ],
         ),
         bottomNavigationBar: GroupNavigationBar(
-          groupName: widget.groupId, // Pass group ID
+          groupName: widget.groupName, // Pass group ID
           members: members,
+          groupId: widget.groupId,
+          groupCode: widget.groupCode
         ),
       ),
     );
@@ -251,20 +275,21 @@ class _GroupOverviewState extends State<GroupOverview> {
         itemBuilder: (context, index) {
           final member = members[index];
 
-          // Skip if the member ID matches the current user ID
-          if (member['id'] == currentUserId) {
-            return const SizedBox.shrink(); // Return an empty widget
-          }
-
           final memberId = member['id']; // Assume 'id' is the key for the member ID
+
+          final isCurrentUser = memberId == currentUserId;
           final memberBalance = Memberbalance[memberId]?.toStringAsFixed(2) ?? "0.00";
+
+
 
           return Card(
             elevation: 2.0,
             margin: const EdgeInsets.symmetric(vertical: 8.0),
             child: ListTile(
               title: Text(member['name']),
-              trailing: Text(
+              trailing: isCurrentUser
+                  ? null // No trailing widget for the current user
+                  : Text(
                 "$memberBalance €",
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
@@ -541,3 +566,12 @@ class _GroupOverviewState extends State<GroupOverview> {
 
 
 }
+
+
+/*
+          // Skip if the member ID matches the current user ID
+          if (member['id'] == currentUserId) {
+            return const SizedBox.shrink(); // Return an empty widget
+          }
+
+           */
