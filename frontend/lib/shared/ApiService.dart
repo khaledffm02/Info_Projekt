@@ -153,7 +153,9 @@ class ApiService {
     }
   }
 
-  static Future<void> createGroup(BuildContext context) async {
+  //create group
+
+  static Future<void> createGroup(BuildContext context, String groupName) async {
     try {
       // Get the current user from Firebase Authentication
       final user = FirebaseAuth.instance.currentUser;
@@ -168,6 +170,7 @@ class ApiService {
       final url = Uri.parse('https://groupcreate-icvq5uaeva-uc.a.run.app')
           .replace(queryParameters: {
         'idToken': idToken,
+        'groupName' : groupName
       });
 
       // Make the API call
@@ -559,4 +562,111 @@ class ApiService {
       rethrow;
     }
   }
+
+
+
+  static Future<void> leaveGroup({required String groupID}) async {
+
+
+    const String endpointURL = "https://groupleave-icvq5uaeva-uc.a.run.app";
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+      final idToken = await user.getIdToken();
+
+      final url = Uri.parse(endpointURL).replace(queryParameters: {
+        'idToken': idToken,
+        'groupID': groupID,
+      });
+
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        print("Group successfully left!");
+      } else {
+        print("Failed to leave Group: ${response.statusCode}");
+        print(response.body);
+      }
+    } catch (e) {
+      print("Error leaving Group: $e");
+      rethrow;
+    }
+  }
+
+
+  static Future<void> sendInvitation({required String email, required String groupID}) async {
+
+    const String endpointURL = "https://sendinvitation-icvq5uaeva-uc.a.run.app";
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+      final idToken = await user.getIdToken();
+
+      final url = Uri.parse(endpointURL).replace(queryParameters: {
+        'idToken': idToken,
+        'email': email,
+        'groupID': groupID,
+      });
+
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        print("Invitation successfully send!");
+      } else {
+        print("Failed to send invitation: ${response.statusCode}");
+        print(response.body);
+      }
+    } catch (e) {
+      print("Error sending invitation: $e");
+      rethrow;
+    }
+  }
+
+  static Future<void> sendReminders({required String groupID}) async {
+
+    const String endpointURL = "https://sendreminders-icvq5uaeva-uc.a.run.app";
+
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+      final idToken = await user.getIdToken();
+
+      final url = Uri.parse(endpointURL).replace(queryParameters: {
+        'idToken': idToken,
+        'groupID': groupID,
+      });
+
+      print(url);
+
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        print("Reminders successfully set!");
+      } else {
+        print("Failed to set reminders: ${response.statusCode}");
+        print(response.body);
+      }
+    } catch (e) {
+      print("Error setting reminders: $e");
+      rethrow;
+    }
+
+
+
+  }
+
+
 }
