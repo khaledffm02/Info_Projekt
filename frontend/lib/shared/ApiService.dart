@@ -4,13 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/models/Currency.dart';
+import 'package:frontend/shared/CurrencyConvertingHelper.dart';
 import 'package:http/http.dart' as http;
 
 import 'DialogHelper.dart';
 
 class ApiService {
-  static Future<void> registerUser(
-      String email, String password, String firstname, String lastname) async {
+  static Future<void> registerUser(String email, String password,
+      String firstname, String lastname) async {
     try {
       final credential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: email, password: password);
@@ -24,16 +26,17 @@ class ApiService {
 
       final url = Uri.parse(
         'https://userregistration-icvq5uaeva-uc.a.run.app'
-        '?idToken=${Uri.encodeComponent(idToken)}'
-        '&firstName=${Uri.encodeComponent(firstname)}'
-        '&lastName=${Uri.encodeComponent(lastname)}',
+            '?idToken=${Uri.encodeComponent(idToken)}'
+            '&firstName=${Uri.encodeComponent(firstname)}'
+            '&lastName=${Uri.encodeComponent(lastname)}',
       );
 
       final response = await http.get(url);
 
       if (response.statusCode != 200) {
         throw Exception(
-            'Failed to register user. Server responded with status: ${response.statusCode}');
+            'Failed to register user. Server responded with status: ${response
+                .statusCode}');
       }
       await credential.user
           ?.sendEmailVerification(); //Trigger for verification Email for registration
@@ -58,7 +61,7 @@ class ApiService {
       // Step 3: Send ID Token to the login API endpoint
       final url = Uri.parse(
         'https://userlogin-icvq5uaeva-uc.a.run.app'
-        '?idToken=${Uri.encodeComponent(idToken)}',
+            '?idToken=${Uri.encodeComponent(idToken)}',
       );
 
       final response = await http.get(url);
@@ -78,7 +81,7 @@ class ApiService {
       // Endpoint-URL
       final url = Uri.parse(
         'https://sendnewpassword-icvq5uaeva-uc.a.run.app'
-        '?email=${Uri.encodeComponent(email)}',
+            '?email=${Uri.encodeComponent(email)}',
       );
 
       // Sende die Anfrage
@@ -89,7 +92,8 @@ class ApiService {
         return true; // Erfolg
       } else {
         throw Exception(
-            'Failed to reset password. Server responded with status: ${response.statusCode}');
+            'Failed to reset password. Server responded with status: ${response
+                .statusCode}');
       }
     } catch (e) {
       print('Error: $e');
@@ -101,7 +105,8 @@ class ApiService {
     try {
       // Construct the URL with the email parameter
       final url = Uri.parse(
-          'https://getloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri.encodeComponent(email)}');
+          'https://getloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri
+              .encodeComponent(email)}');
 
       // Perform the GET request
       final response = await http.get(url);
@@ -134,7 +139,8 @@ class ApiService {
   static Future<int?> increaseLoginAttempts(email) async {
     try {
       final url = Uri.parse(
-          'https://increaseloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri.encodeComponent(email)}');
+          'https://increaseloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri
+              .encodeComponent(email)}');
       final response = await http.get(url);
       print('Status Code: ${response.statusCode}');
     } catch (e) {
@@ -145,7 +151,8 @@ class ApiService {
   static void resetLoginAttempts(email) async {
     try {
       final url = Uri.parse(
-          'https://resetloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri.encodeComponent(email)}');
+          'https://resetloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri
+              .encodeComponent(email)}');
       final response = await http.get(url);
       print('Status Code: ${response.statusCode}');
     } catch (e) {
@@ -329,7 +336,8 @@ class ApiService {
       } else {
         // Fehlerbehandlung bei nicht erfolgreicher Antwort
         throw Exception(
-            "Failed to delete user. Server returned: ${response.statusCode} - ${response.body}");
+            "Failed to delete user. Server returned: ${response
+                .statusCode} - ${response.body}");
       }
     } catch (e) {
       print("Error: $e");
@@ -413,8 +421,8 @@ class ApiService {
 
   // get memberbalance
 
-  static Future<Map<String, dynamic>> getMemberbalance(
-      String groupId, String uid) async {
+  static Future<Map<String, dynamic>> getMemberbalance(String groupId,
+      String uid) async {
     const String endpointURL =
         "https://getgroupbalance-icvq5uaeva-uc.a.run.app";
 
@@ -441,7 +449,8 @@ class ApiService {
         return balances; // Return the map directly
       } else {
         print(
-            "API Error - Status: ${response.statusCode}, Body: ${response.body}");
+            "API Error - Status: ${response.statusCode}, Body: ${response
+                .body}");
         throw Exception("Failed to retrieve balance: ${response.statusCode}");
       }
     } catch (e) {
@@ -457,6 +466,7 @@ class ApiService {
         "https://getgroupbalance-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
 
     try {
+      CurrencyConvertingHelper currencyConvertingHelper = new CurrencyConvertingHelper();
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception("User is not authenticated.");
@@ -477,7 +487,9 @@ class ApiService {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
 
         // Extract the "balances" map
-        final Map<String, dynamic> balances = responseData['balances'] ?? {};
+        Map<String, dynamic> balances = responseData['balances'] ?? {};
+
+        balances = await currencyConvertingHelper.convert(balances, groupId);
 
         double totalOwedToOthers = 0.0; // Positive balances
         double totalOwedByOthers = 0.0; // Negative balances
@@ -517,13 +529,12 @@ class ApiService {
 
   // add payment
 
-  static Future<void> addPayment(
-      {
-      //required String transactionId,
-      required String groupId,
-      required String? toId,
-      required String fromId,
-      required double amount}) async {
+  static Future<void> addPayment({
+    //required String transactionId,
+    required String groupId,
+    required String? toId,
+    required String fromId,
+    required double amount}) async {
     const String endpointURL =
         "https://addpayment-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
 
@@ -559,4 +570,42 @@ class ApiService {
       rethrow;
     }
   }
+
+  static Future<Map<String, dynamic>>? getRates() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    print("API: current User is:" + user.toString());
+    if (user == null) {
+      throw Exception("No user is logged in.");
+    }
+
+
+    // ID-Token des Benutzers abrufen
+    String? idToken = await user.getIdToken();
+    print("API:  Currentuser IDTocken is:" + idToken!);
+    // GET-Request senden (idToken als Query-Parameter)
+    final uri = Uri.parse(
+        'https://updaterates-icvq5uaeva-uc.a.run.app?idToken=$idToken');
+    final response = await http.get(uri);
+
+    if (response.statusCode == 200) {
+      final docSnapshot = await FirebaseFirestore.instance
+          .collection('settings')
+          .doc('currencies')
+          .get();
+
+      if (docSnapshot.exists) {
+        final data = docSnapshot.data();
+        if (data != null) {
+          return data; // Währungsraten als Map zurückgeben
+        } else {
+          throw Exception("Currencies document data is null.");
+        }
+      } else {
+        throw Exception("Currencies document not found!");
+      }
+    }else{
+      throw Exception("Status Code of the response " + response.statusCode.toString());
+    }
+  }
 }
+

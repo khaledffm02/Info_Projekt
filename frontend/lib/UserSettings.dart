@@ -1,19 +1,20 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/auth/ChangePassword.dart';
+import 'package:frontend/models/Currency.dart';
+import 'package:frontend/models/LogInStateModel.dart';
 import 'package:frontend/shared/ApiService.dart';
+import 'package:watch_it/watch_it.dart';
 
-enum ColorLabel {
-  blue('Blue', Colors.blue),
-  pink('Pink', Colors.pink),
-  green('Green', Colors.green),
-  yellow('Orange', Colors.orange),
-  grey('Grey', Colors.grey);
+import 'models/CurrencyStateModel.dart';
 
-  const ColorLabel(this.label, this.color);
-
-  final String label;
-  final Color color;
+enum CurrencyLabel {
+  EUR,
+  USD,
+  GBP,
+  JPY,
+  CNY,
+  CHF
 }
 
 class UserSettings extends StatefulWidget {
@@ -24,8 +25,8 @@ class UserSettings extends StatefulWidget {
 }
 
 class _UserSettingsState extends State<UserSettings> {
-  final TextEditingController colorController = TextEditingController();
-  ColorLabel? selectedColor;
+  final TextEditingController currencyController = TextEditingController();
+  CurrencyLabel? selectedCurrency = CurrencyLabel.values.firstWhere((x) => x.name == di<CurrencyStateModel>().userCurrency);
 
   @override
   Widget build(BuildContext context) {
@@ -58,21 +59,22 @@ class _UserSettingsState extends State<UserSettings> {
   // Dropdown-Menü
   Widget _buildDropdownMenu() {
     return Center(
-      child: DropdownMenu<ColorLabel>(
-        initialSelection: ColorLabel.green,
-        controller: colorController,
+      child: DropdownMenu<CurrencyLabel>(
+        initialSelection: selectedCurrency,
+        controller: currencyController,
         label: const Text('Currency'),
-        onSelected: (ColorLabel? color) {
+        onSelected: (CurrencyLabel? currency) {
           setState(() {
-            selectedColor = color;
+            di<CurrencyStateModel>().userCurrency = currency!.name;
+            selectedCurrency = currency;
           });
         },
-        dropdownMenuEntries: ColorLabel.values
-            .map<DropdownMenuEntry<ColorLabel>>((ColorLabel color) {
-          return DropdownMenuEntry<ColorLabel>(
-            value: color,
-            label: color.label,
-            enabled: color.label != 'Grey',
+        dropdownMenuEntries: CurrencyLabel.values
+            .map<DropdownMenuEntry<CurrencyLabel>>(( currency) {
+          return DropdownMenuEntry<CurrencyLabel>(
+            value: currency,
+            label: currency.name,
+//            enabled: color.label != 'Grey',
           );
         }).toList(),
       ),

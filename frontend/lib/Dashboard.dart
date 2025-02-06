@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/group/GroupOverview.dart';
 import 'package:frontend/shared/GroupService.dart';
+import 'package:frontend/models/CurrencyStateModel.dart';
+import 'package:watch_it/watch_it.dart';
+
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -46,9 +49,8 @@ class _DashboardState extends State<Dashboard> {
         SnackBar(
           content: Text(
             "Owed to others: €$totalOwedToOthers\n"
-                "Owed by others: €${totalOwedByOthers.abs()}\n"
-                "Net balance: ${netBalance >= 0 ? '€$netBalance (You owe)' : '€${netBalance.abs()} (You are owed)'}",
-          ),
+                "Owed by others: ${di<CurrencyStateModel>().userCurrency}${totalOwedByOthers.abs()}\n"
+                "Net balance: ${netBalance >= 0 ? '${di<CurrencyStateModel>().userCurrency} $netBalance (You owe)' : '${di<CurrencyStateModel>().userCurrency} ${netBalance.abs()} (You are owed)'}",          ),
         ),
       );
 

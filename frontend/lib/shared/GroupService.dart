@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'ApiService.dart';
 
 class GroupService {
-
   // Fetch all groups the current user is a member of
   static Future<List<Map<String, dynamic>>> getUserGroups() async {
     try {
@@ -34,28 +33,28 @@ class GroupService {
     }
   }
 
-
   static Future<Map<String, double>> calculateTotalBalanceForUser() async {
     try {
       // Fetch all groups the user is part of
       final userGroups = await getUserGroups();
 
       // Extract group IDs
-      final groupIds = userGroups.map((group) => group['id'] as String).toList();
+      final groupIds =
+          userGroups.map((group) => group['id'] as String).toList();
 
       double totalOwedToOthers = 0.0;
       double totalOwedByOthers = 0.0;
 
       for (String groupId in groupIds) {
-        final balances = await ApiService.getGroupBalance(groupId, FirebaseAuth.instance.currentUser!.uid);
+        final balances = await ApiService.getGroupBalance(
+            groupId, FirebaseAuth.instance.currentUser!.uid);
         totalOwedToOthers += balances['owedToOthers']!;
         totalOwedByOthers += balances['owedByOthers']!;
       }
 
-
-
       return {
-        'totalOwedToOthers': totalOwedToOthers < 0 ? totalOwedToOthers * -1 : totalOwedToOthers ,
+        'totalOwedToOthers':
+            totalOwedToOthers < 0 ? totalOwedToOthers * -1 : totalOwedToOthers,
         'totalOwedByOthers': totalOwedByOthers,
       };
     } catch (e) {
@@ -64,12 +63,8 @@ class GroupService {
     }
   }
 
-
-
-
-
-
-  static Future<List<Map<String, dynamic>>> getGroupMembers(String groupId) async {
+  static Future<List<Map<String, dynamic>>> getGroupMembers(
+      String groupId) async {
     try {
       final groupDoc = await FirebaseFirestore.instance
           .collection('groups')
@@ -99,7 +94,13 @@ class GroupService {
           if (userDoc.exists) {
             members.add({
               'id': userId,
-              'name': userDoc.data()?['firstName'],
+              'name': userDoc.data()?['firstName'] ?? "deleted user",
+              'amount': 0.0, // Placeholder for amount, can be updated later
+            });
+          } else {
+            members.add({
+              'id': userId,
+              'name':  "deleted user",
               'amount': 0.0, // Placeholder for amount, can be updated later
             });
           }
@@ -113,8 +114,8 @@ class GroupService {
     }
   }
 
-
-  static Future<List<Map<String, dynamic>>> getOwnTransactions(String groupId) async {
+  static Future<List<Map<String, dynamic>>> getOwnTransactions(
+      String groupId) async {
     try {
       // Get current user ID
       final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
@@ -124,7 +125,8 @@ class GroupService {
       }
 
       // Reference the Firestore database
-      final CollectionReference groupRef = FirebaseFirestore.instance.collection('groups');
+      final CollectionReference groupRef =
+          FirebaseFirestore.instance.collection('groups');
 
       // Fetch transactions for the specified group
       final DocumentSnapshot groupSnapshot = await groupRef.doc(groupId).get();
@@ -150,7 +152,8 @@ class GroupService {
           final friends = transactionData['friends'];
 
           // Fetch the creator's name
-          final creatorName = await _getUserName(transactionData['user']['userID']);
+          final creatorName =
+              await _getUserName(transactionData['user']['userID']);
 
           // Fetch the friends' data with names
           final friendsWithNames = await _getFriendsOwe(friends); // Now async
@@ -177,15 +180,16 @@ class GroupService {
     }
   }
 
-
-  static Future<List<Map<String, dynamic>>> getOtherTransactions(String groupId) async {
+  static Future<List<Map<String, dynamic>>> getOtherTransactions(
+      String groupId) async {
     try {
       final String currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
       if (currentUserId.isEmpty) {
         throw Exception("User not authenticated");
       }
 
-      final CollectionReference groupRef = FirebaseFirestore.instance.collection('groups');
+      final CollectionReference groupRef =
+          FirebaseFirestore.instance.collection('groups');
       final DocumentSnapshot groupSnapshot = await groupRef.doc(groupId).get();
 
       if (!groupSnapshot.exists) {
@@ -223,12 +227,11 @@ class GroupService {
             'creatorID': creatorId,
             'totalAmount': transactionData['user']['value'],
             'friends': friendsWithNames, // Updated with names
-           // 'friendsOwe': friendsWithNames, // Updated with names
+            // 'friendsOwe': friendsWithNames, // Updated with names
             'involvementStatus': involvementStatus,
           });
         }
       }
-
 
       return otherTransactions;
     } catch (e) {
@@ -237,8 +240,8 @@ class GroupService {
     }
   }
 
-
-  static Future<List<Map<String, dynamic>>> _getFriendsOwe(Map<String, dynamic> friends) async {
+  static Future<List<Map<String, dynamic>>> _getFriendsOwe(
+      Map<String, dynamic> friends) async {
     List<Map<String, dynamic>> friendsOweList = [];
 
     for (var friendId in friends.keys) {
@@ -260,19 +263,22 @@ class GroupService {
   }
 
   static Future<String> _getUserName(String userId) async {
-   try {
+    try {
       // Fetch user data from the 'users' collection by userID
-      final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
 
       if (userSnapshot.exists) {
-        return userSnapshot['firstName'] ?? 'Unknown'; // Return the first name, default to 'Unknown' if not found
+        return userSnapshot['firstName'] ??
+            'Unknown'; // Return the first name, default to 'Unknown' if not found
       } else {
         return 'Unknown';
       }
     } catch (e) {
-      print("Error fetching user name: $e");
+      print("Error fetching firstname for userId $userId : $e");
       return 'Unknown'; // Return 'Unknown' in case of error
     }
   }
-
 }

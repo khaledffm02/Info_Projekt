@@ -10,7 +10,7 @@ import 'package:frontend/group/JoinGroup.dart';
 import 'package:frontend/auth/LogIn.dart';
 import 'package:frontend/auth/SignUp.dart';
 import 'package:frontend/StartScreen.dart';
-import 'package:frontend/start/Dashboard.dart';
+import 'package:frontend/Dashboard.dart';
 import 'package:frontend/AddPayment.dart';
 import 'package:frontend/UserSettings.dart';
 

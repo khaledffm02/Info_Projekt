@@ -2,13 +2,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart'; // ApiService importieren
 import 'package:frontend/shared/DialogHelper.dart';
+import 'package:frontend/shared/RatesService.dart';
 import 'package:watch_it/watch_it.dart';
 import 'dart:async';
 
 import '../models/LogInStateModel.dart';
 import '../shared/CustomDrawer.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
-import 'package:frontend/start/Dashboard.dart';
+import 'package:frontend/Dashboard.dart';
 import 'dart:developer' as developer;
 import 'package:logger/logger.dart';
 
@@ -35,6 +36,13 @@ class LogInScreen extends WatchingWidget {
       var loginSuccess = await ApiService.loginUser(email, password);
 
       if (loginSuccess == false) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+                "User doesn't exist"
+            ),
+          ),
+        );
         await ApiService.increaseLoginAttempts(email);
         developer.log('Testmessage', name: 'Info');
         var getLoginResponse = await ApiService.getLoginAttempts(email);
@@ -66,6 +74,7 @@ class LogInScreen extends WatchingWidget {
 
         return;
       }
+      RatesService.UpdateRates();
       ApiService.resetLoginAttempts(email);
       di<LogInStateModel>().failedLoginAttempts =
           await ApiService.getLoginAttempts(email);
