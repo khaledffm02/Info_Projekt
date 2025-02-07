@@ -7,8 +7,12 @@ RESOLVED Issue - Initial issue with addPayment. Not reflecting newly added payme
 - *Details:* Parameter name changed from `groupID` to `groupId` exclusively within the function's parameter list and internal logic. Same for 'fromId', 'toId'.
 
 
-Open Issue - Photo Upload function not properly uploading or displaying.
+RESOLVED Issue - Photo Upload function not properly uploading or displaying. Not in this iteration of project. 
+
 
 RESOLVED Issue - Verified to frontend getLoginAttempts endpoint is functioning properly, and found the initial frontend input error.
 - An existing email address, in the system, must be used to call the endpoint, with a false password. If not, the response is "user not found".
 - *Scope:* Applies only to getLoginAttempts, however is linked to the functioning of the other two login attempt endpoints.
+
+Resolved Issue - Issue with new member of a group which contained transaction previously being given a charge upon entry into new group.
+- Performed various tests outside of the applocation system. Conclusion, backend endpoint was properly working. Frontend implementation error.
