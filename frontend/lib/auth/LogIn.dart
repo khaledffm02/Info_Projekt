@@ -10,30 +10,21 @@ import '../models/LogInStateModel.dart';
 import '../shared/CustomDrawer.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/Dashboard.dart';
-import 'dart:developer' as developer;
 import 'package:logger/logger.dart';
+import 'dart:developer' as developer;
 
-class LogInScreen extends WatchingWidget {
-  LogInScreen({super.key});
+class LogInScreen extends StatefulWidget {
+  const LogInScreen({super.key});
 
+  @override
+  State<LogInScreen> createState() => _LogInScreenState();
+}
+
+class _LogInScreenState extends State<LogInScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  void _login(BuildContext context, bool otpMode) async {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text;
 
-    if (email.isEmpty || password.isEmpty) {
-      DialogHelper.showDialogCustom(
-        context: context,
-        title: 'Error',
-        content: 'All fields are required.',
-      );
-      return;
-    }
-//ToDo:what will shown with >4 try in Snackbar
-    try {
-      var loginSuccess = await ApiService.loginUser(email, password);
 
       if (loginSuccess == false) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -41,8 +32,8 @@ class LogInScreen extends WatchingWidget {
             content: Text(
                 "User doesn't exist"
             ),
-          ),
         );
+          ),
         await ApiService.increaseLoginAttempts(email);
         developer.log('Testmessage', name: 'Info');
         var getLoginResponse = await ApiService.getLoginAttempts(email);
@@ -116,7 +107,6 @@ class LogInScreen extends WatchingWidget {
 
   @override
   Widget build(BuildContext context) {
-    final otpMode = watchPropertyValue((LogInStateModel x) => x.otpMode);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Login"),
@@ -152,10 +142,46 @@ class LogInScreen extends WatchingWidget {
               ),
             ),
             const SizedBox(height: 16.0),
-
             ElevatedButton(
               onPressed: () async {
-                _login(context, otpMode);
+                final email = _emailController.text.trim();
+                final password = _passwordController.text;
+
+                if (email.isEmpty || password.isEmpty) {
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Error',
+                    content: 'All fields are required.',
+                  );
+                  return;
+                }
+
+                try {
+                  // Direkt ApiService.loginUser aufrufen
+                  await ApiService.loginUser(email, password);
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Success',
+                    content: 'Logged in successfully!',
+                    onConfirm: () {
+                      final user = FirebaseAuth.instance.currentUser;
+
+                      if (user != null) {
+                        print('Benutzer ist angemeldet: ${user.uid}');
+                      } else {
+                        print('Kein Benutzer angemeldet.');
+                      }
+                      Navigator.of(context).pop();
+                      Navigator.pushNamed(context, '/Dashboard');
+                    },
+                  );
+                } catch (e) {
+                  DialogHelper.showDialogCustom(
+                    context: context,
+                    title: 'Error',
+                    content: 'Failed to log in: $e',
+                  );
+                }
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),

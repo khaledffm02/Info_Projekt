@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/CustomDrawer.dart';
-import 'package:frontend/group/GroupOverview.dart';
 import 'package:frontend/shared/GroupService.dart';
 import 'package:frontend/models/CurrencyStateModel.dart';
 import 'package:watch_it/watch_it.dart';
@@ -19,7 +18,7 @@ class _DashboardState extends State<Dashboard> {
   late double totalowedto;
   late double totalowedby;
   bool _isloadingtotalowedto = true;
-  bool _isloadingtotalowedby = true;
+  final bool _isloadingtotalowedby = true;
 
 
   @override
@@ -45,6 +44,7 @@ class _DashboardState extends State<Dashboard> {
         _isloadingtotalowedto = false;
       });
 
+      /*
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -52,8 +52,10 @@ class _DashboardState extends State<Dashboard> {
                 "Owed by others: ${di<CurrencyStateModel>().userCurrency}${totalOwedByOthers.abs()}\n"
                 "Net balance: ${netBalance >= 0 ? '${di<CurrencyStateModel>().userCurrency} $netBalance (You owe)' : '${di<CurrencyStateModel>().userCurrency} ${netBalance.abs()} (You are owed)'}",          ),
         ),
-      );
 
+
+      );
+*/
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -109,7 +111,7 @@ class _DashboardState extends State<Dashboard> {
             flex: 0,
             child:
             _isloadingtotalowedto
-              ? const Center(child: CircularProgressIndicator()) :
+                ? const Center(child: CircularProgressIndicator()) :
             ListView.builder(
               shrinkWrap: true, // Prevents scrolling within the small list
               padding: const EdgeInsets.all(16.0),
@@ -163,7 +165,8 @@ class _DashboardState extends State<Dashboard> {
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
-                    title: Text(group['id']), // Display group document ID
+                    //title: Text(group['id']), // Display group document ID
+                    title: Text(group['data']['name']), // Display group document ID
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
                       // Navigate to GroupOverview
@@ -172,7 +175,8 @@ class _DashboardState extends State<Dashboard> {
                         '/GroupOverview',
                         arguments: {
                           'groupId': group['id'], // Pass the group ID
-                          'groupName': group['data']['name'] ?? group['id'], // Use group name or fallback to ID
+                          'groupName': group['data']['name'] ?? group['id'],// Use group name or fallback to ID
+                          'groupCode': group['data']['groupCode']
                         },
                       );
 
