@@ -57,12 +57,6 @@ class _GroupOverviewState extends State<GroupOverview> {
     try {
       final balance = await ApiService.getMemberbalance(widget.groupId, currentUserId);
 
-
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("member balance:  $balance")),
-      );
-
       setState(() {
         Memberbalance = balance;
       });
