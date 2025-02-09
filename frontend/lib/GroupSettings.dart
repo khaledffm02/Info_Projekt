@@ -62,6 +62,8 @@ class _GroupSettingsState extends State<GroupSettings> {
       ),
       body: ListView(
         children: [
+
+          /*
           ListTile(
             leading: const Icon(Icons.notifications),
             title: const Text("Reminders"),
@@ -106,6 +108,8 @@ class _GroupSettingsState extends State<GroupSettings> {
             },
           ),
           const Divider(),
+
+*/
 
           ListTile(
             leading: const Icon(Icons.person_add),
