@@ -53,8 +53,8 @@ class GroupService {
       }
 
       return {
-        'totalOwedToOthers':
-            totalOwedToOthers < 0 ? totalOwedToOthers * -1 : totalOwedToOthers,
+       // 'totalOwedToOthers': totalOwedToOthers < 0 ? totalOwedToOthers * -1 : totalOwedToOthers,
+        'totalOwedToOthers': totalOwedToOthers,
         'totalOwedByOthers': totalOwedByOthers,
       };
     } catch (e) {

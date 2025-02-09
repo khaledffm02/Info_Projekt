@@ -520,9 +520,9 @@ class ApiService {
           if (userId == uid) {
             final double balanceValue = balance.toDouble();
             if (balanceValue < 0) {
-              totalOwedToOthers += balanceValue;
-            } else if (balanceValue > 0) {
               totalOwedByOthers += balanceValue;
+            } else if (balanceValue > 0) {
+              totalOwedToOthers += balanceValue;
             }
           }
 
