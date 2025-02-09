@@ -131,7 +131,7 @@ class _DashboardState extends State<Dashboard> {
                   child: ListTile(
                     title: Text(label),
                     trailing: Text(
-                      "${amount.toStringAsFixed(2)} €",
+                      "${amount.toStringAsFixed(2)} "+ di<CurrencyStateModel>().userCurrency,
                       style: const TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),

@@ -148,7 +148,7 @@ class ApiService {
     }
   }
 
-  static void resetLoginAttempts(email) async {
+  static Future <void> resetLoginAttempts(email) async {
     try {
       final url = Uri.parse(
           'https://resetloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri

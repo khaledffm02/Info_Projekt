@@ -4,7 +4,7 @@ import 'package:frontend/shared/ApiService.dart';
 import 'package:watch_it/watch_it.dart';
 
 class RatesService {
-  static void UpdateRates() async {
+  static Future <void> UpdateRates() async {
     var rates = await ApiService.getRates();
 
     if (rates != null) {

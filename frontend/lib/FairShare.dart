@@ -12,7 +12,6 @@ import 'package:frontend/auth/SignUp.dart';
 import 'package:frontend/StartScreen.dart';
 import 'package:frontend/Dashboard.dart';
 import 'package:frontend/AddPayment.dart';
-import 'package:frontend/UserSettings.dart';
 
 import 'GroupSettings.dart';
 
