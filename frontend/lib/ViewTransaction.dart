@@ -7,12 +7,14 @@ class ViewTransaction extends StatefulWidget {
   final Map<String, dynamic> transaction;
   final Creator;
   final groupId;
+  final groupName;
+  final groupCode;
 
   const ViewTransaction({
     super.key,
     required this.transaction,
     required this.Creator,
-    required this.groupId,
+    required this.groupId, required this.groupName, required this.groupCode,
   });
 
   @override
@@ -50,7 +52,9 @@ class _ViewTransactionState extends State<ViewTransaction> {
           (f) => f['friendId'] == currentUserId,
       orElse: () => <String, dynamic>{},
     );
-    final amountOwed = currentUserFriend['amountOwed'] ?? 0.0;
+    var amountOwed = currentUserFriend['amountOwed'] ?? 0.0;
+    amountOwed = amountOwed is int ? amountOwed.toDouble() : amountOwed;
+
 
     return Scaffold(
       appBar: AppBar(
@@ -118,10 +122,12 @@ class _ViewTransactionState extends State<ViewTransaction> {
         final friend = friends[index];
         final friendId = friend['friendId'];
         final friendName = friend['name'];
-        final amountOwed = friend['amountOwed'];
         final isConfirmed = friend['isConfirmed'];
-        final isPaid = friend['isPaid'] ?? false; // Add `isPaid` flag for payment status
         final creatorName = transaction['creatorName'];
+
+        var amountOwed = friend['amountOwed'] ?? 0.0;
+        amountOwed = amountOwed is int ? amountOwed.toDouble() : amountOwed;
+
 
         // Check if the current user matches the friendId
         final isCurrentUser = friendId == currentUserId;
@@ -235,6 +241,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
           ),
         ],
       ),
+
     );
 
     if (confirm == true) {
@@ -244,9 +251,10 @@ class _ViewTransactionState extends State<ViewTransaction> {
 
   Future<void> _addPayment(String friendId, double amountOwed) async {
     try {
+
       final creatorId = widget.transaction['creatorID'];
 
-      // Call your API method to mark the payment as completed
+
       await ApiService.addPayment(
         groupId: widget.groupId,
         toId: creatorId,
@@ -264,7 +272,8 @@ class _ViewTransactionState extends State<ViewTransaction> {
             '/GroupOverview',
             arguments: {
               'groupId': widget.groupId, // Pass the group ID
-              'groupName': widget.groupId, // Use group name or fallback to ID
+              'groupName': widget.groupName,
+              'groupCode': widget.groupCode,
             },
           );
         },

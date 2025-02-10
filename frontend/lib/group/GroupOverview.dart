@@ -11,6 +11,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:frontend/GroupSettings.dart';
 import 'package:frontend/ViewTransaction.dart';
 
+import '../shared/DialogHelper.dart';
+
 
 
 class GroupOverview extends StatefulWidget {
@@ -55,7 +57,6 @@ class _GroupOverviewState extends State<GroupOverview> {
     try {
       final balance = await ApiService.getMemberbalance(widget.groupId, currentUserId);
 
-
       setState(() {
         Memberbalance = balance;
       });
@@ -74,21 +75,20 @@ class _GroupOverviewState extends State<GroupOverview> {
 
 
 
-
-
+/*
 
   Future<Map<String, double>> processTransactionData() async {
     try {
       final transactions = await GroupService.getOwnTransactions(widget.groupId);
+
+      print(transactions);
 
       if (transactions.isEmpty) {
         print("No transactions found.");
         return {'No Data': 0.0};
       }
 
-      Map<String, double> categoryTotals = {};
-
-
+      Map<String, double> categoryTotals= {};
 
 
       for (var transaction in transactions) {
@@ -102,6 +102,7 @@ class _GroupOverviewState extends State<GroupOverview> {
 
 
         double amount;
+
         if (category == 'payment') {
           amount = totalAmount as double;
         }
@@ -136,6 +137,60 @@ class _GroupOverviewState extends State<GroupOverview> {
 
 
   }
+
+*/
+
+
+  Future<Map<String, double>> processTransactionData() async {
+    try {
+      final transactions = await GroupService.getOwnTransactions(widget.groupId);
+
+      print(transactions);
+
+      if (transactions.isEmpty) {
+        print("No transactions found.");
+        return {'No Data': 0.0};
+      }
+
+      Map<String, double> categoryTotals = {};
+
+      for (var transaction in transactions) {
+        final category = transaction['category'];
+        final totalAmount = transaction['totalAmount'];
+
+        if (category == null || totalAmount == null) {
+          print("Invalid transaction data: $transaction");
+          continue;
+        }
+
+        double amount;
+
+        // Check if totalAmount is an int, and safely cast to double
+        if (category == 'payment') {
+          // Ensure totalAmount is treated as a double
+          amount = totalAmount is int ? totalAmount.toDouble() : totalAmount as double;
+        } else {
+          final friend = transaction['friends']?.firstWhere(
+                (friend) => friend['friendId'] == currentUserId,
+          );
+          // Safely cast amountOwed to double if friend is found
+          amount = friend != null && friend['amountOwed'] != null
+              ? (friend['amountOwed'] is int ? friend['amountOwed'].toDouble() : friend['amountOwed'] as double)
+              : 0.0;
+        }
+
+        categoryTotals[category] = (categoryTotals[category] ?? 0) + amount;
+      }
+
+      print("Processed category totals: $categoryTotals");
+
+      return categoryTotals;
+    } catch (e) {
+      print("Error in processTransactionData: $e");
+      return {'Error': 0.0};
+    }
+  }
+
 
 
 
@@ -270,38 +325,94 @@ class _GroupOverviewState extends State<GroupOverview> {
   }
 
   Widget _buildOverviewTab() {
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
-      child: ListView.builder(
-        itemCount: members.length,
-        itemBuilder: (context, index) {
-          final member = members[index];
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: members.length,
+              itemBuilder: (context, index) {
 
-          final memberId = member['id']; // Assume 'id' is the key for the member ID
+                final sortedMembers = List.from(members);
+                sortedMembers.sort((a, b) {
+                  // Check if the current user is in the list and move them to the top
+                  final memberId = FirebaseAuth.instance.currentUser?.uid ?? '';
+                  if (a['id'] == memberId) return -1; // Move current user to top
+                  if (b['id'] == memberId) return 1; // Move current user to top
+                  return 0; // Keep order for other members
+                });
 
-          final isCurrentUser = memberId == currentUserId;
-          final memberBalance = Memberbalance[memberId]?.toStringAsFixed(2) ?? "0.00";
 
 
+                final member = sortedMembers[index];
+                final memberId = member['id'];
+                final isCurrentUser = memberId == currentUserId;
+                final memberBalance = Memberbalance[memberId]?.toStringAsFixed(2) ?? "0.00";
 
-          return Card(
-            elevation: 2.0,
-            margin: const EdgeInsets.symmetric(vertical: 8.0),
-            child: ListTile(
-              title: Text(member['name']),
-              trailing: isCurrentUser
-                  ? null // No trailing widget for the current user
-                  : Text(
-                "$memberBalance €",
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
+                return Card(
+                  elevation: 2.0,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: ListTile(
+                    title: Text(member['name']),
+                    trailing: Text(
+                      "$memberBalance €",
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    tileColor: isCurrentUser ? Colors.black12 : null, // Set color for the current user
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+          ElevatedButton(
+            onPressed: () {
+
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Reminders"),
+                  content: const Text("Send reminders for this group?"),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+
+                        try{
+                          await ApiService.sendReminders(groupID: widget.groupId, );
+                          Navigator.of(context).pop(); // Close the dialog
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Reminders were send")),
+                          );
+
+                        } catch (error){
+                          DialogHelper.showDialogCustom(
+                            context: context,
+                            title: 'Error',
+                            content: error.toString(), // Show the error message
+                          );
+                        }
+                      },
+                      child: const Text("Yes"),
+                    ),
+                  ],
+                ),
+              );
+
+
+            },
+            child: Text("Send Reminders"),
+          ),
+        ],
       ),
     );
   }
+
 
   Widget _buildTransactionsTab() {
     List<Map<String, dynamic>> filteredTransactions = transactions.where((transaction) {
@@ -346,6 +457,8 @@ class _GroupOverviewState extends State<GroupOverview> {
                             transaction: transaction,
                             Creator: transaction['creatorID'] == currentUserId,
                             groupId: widget.groupId,
+                            groupName : widget.groupName,
+                            groupCode : widget.groupCode,
                           ),
                         ),
                       );
@@ -397,6 +510,8 @@ class _GroupOverviewState extends State<GroupOverview> {
                             transaction: transaction,
                             Creator: transaction['creatorID'] == currentUserId,
                             groupId: widget.groupId,
+                            groupName: widget.groupName,
+                            groupCode: widget.groupCode,
                           ),
                         ),
                       );
@@ -530,16 +645,20 @@ class _GroupOverviewState extends State<GroupOverview> {
                   "Spending by Category",
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
-                const SizedBox(height: 16.0),
+                const SizedBox(height: 8.0),
                 Expanded(
-                  child: PieChart(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 8.0), // Adjust top padding here to move closer
+
+                    child: PieChart(
                     PieChartData(
                       sections: pieSections,
-                      centerSpaceRadius: 50,
-                      sectionsSpace: 4,
+                      centerSpaceRadius: 40,
+                      sectionsSpace: 2,
                       borderData: FlBorderData(show: false),
                     ),
                   ),
+                ),
                 ),
               ],
             ),

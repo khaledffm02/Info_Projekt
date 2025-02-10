@@ -168,22 +168,21 @@ class _CreateExpenseState extends State<CreateExpense> {
 
                             // Percentage input field
                             Expanded(
-                              flex: 1,
+                              flex: 2,  // Increased column width to give more space
                               child: TextField(
                                 keyboardType: TextInputType.number,
                                 controller: percentageControllers[memberName],
                                 decoration: const InputDecoration(
                                   hintText: "0%",
                                   border: OutlineInputBorder(),
-                                  labelText: "%",
+                                  labelText: "% (Percentage)",
                                 ),
                                 onChanged: (value) {
                                   final percentage = double.tryParse(value);
                                   if (percentage != null) {
                                     setState(() {
                                       final amount =
-                                      roundToTwo(
-                                          (percentage / 100) * totalAmount);
+                                      roundToTwo((percentage / 100) * totalAmount);
                                       distributedAmounts[memberName] = amount;
                                       amountControllers[memberName]!.text =
                                           amount.toStringAsFixed(2);
@@ -192,6 +191,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                                 },
                               ),
                             ),
+
                             const SizedBox(width: 8.0),
 
                             // Amount input field

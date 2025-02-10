@@ -497,6 +497,8 @@ class ApiService {
         double totalOwedToOthers = 0.0; // Positive balances
         double totalOwedByOthers = 0.0; // Negative balances
 
+        /*
+
         balances.forEach((userId, balance) {
           if (userId == uid) {
             // Skip the user's own ID
@@ -511,6 +513,26 @@ class ApiService {
             totalOwedByOthers += balanceValue;
           }
         });
+        */
+
+
+        balances.forEach((userId, balance) {
+          if (userId == uid) {
+            final double balanceValue = balance.toDouble();
+            if (balanceValue < 0) {
+              totalOwedByOthers += balanceValue;
+            } else if (balanceValue > 0) {
+              totalOwedToOthers += balanceValue;
+            }
+          }
+
+         else{
+
+           return;
+          }
+
+        });
+
 
         print(
             "Processed group balance for $groupId: Owed to others: $totalOwedToOthers, Owed by others: $totalOwedByOthers");

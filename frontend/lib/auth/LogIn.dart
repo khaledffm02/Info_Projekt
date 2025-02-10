@@ -7,7 +7,6 @@ import 'package:watch_it/watch_it.dart';
 import 'dart:async';
 import '../models/LogInStateModel.dart';
 import '../shared/CustomDrawer.dart';
-import 'package:frontend/shared/CustomDrawer.dart';
 import 'package:frontend/Dashboard.dart';
 import 'dart:developer' as developer;
 import 'package:timer_button/timer_button.dart';
@@ -81,7 +80,7 @@ class LogInScreen extends WatchingWidget {
       await RatesService.UpdateRates();
       await ApiService.resetLoginAttempts(email);
       di<LogInStateModel>().failedLoginAttempts =
-          await ApiService.getLoginAttempts(email);
+      await ApiService.getLoginAttempts(email);
       print(di<LogInStateModel>().failedLoginAttempts);
 
       final user = FirebaseAuth.instance.currentUser;
@@ -90,7 +89,7 @@ class LogInScreen extends WatchingWidget {
           context: context,
           title: 'Error',
           content:
-              "You didn't confirm the email. Please click the link in your email to verify.",
+          "You didn't confirm the email. Please click the link in your email to verify.",
         );
         await FirebaseAuth.instance.signOut();
       } else if (otpMode == false) {}
@@ -178,3 +177,6 @@ class LogInScreen extends WatchingWidget {
     );
   }
 }
+
+
+
