@@ -21,128 +21,134 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          // 16 Pixel Padding von den Seiten
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const Text(
-                  ' Change Your Password',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+    return Center(
+      // padding: const EdgeInsets.symmetric(horizontal: 16.0), noch von Cointainer
+      // 16 Pixel Padding von den Seiten
+      child: Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.9, // Begrenzte Breite
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+          child: Column(
+            mainAxisSize: MainAxisSize.min, // Minimale Größe für bessere Zentrierung
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Text(
+                ' Change Your Password',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                // Old password
-                TextField(
-                  controller: _oldPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Enter your old Password',
-                    border: OutlineInputBorder(),
-                  ),
+              ),
+              // Old password
+              TextField(
+                controller: _oldPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Enter your old Password',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 16),
-                // New password
-                TextField(
-                  controller: _newPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Enter new Password',
-                    border: OutlineInputBorder(),
-                  ),
+              ),
+              const SizedBox(height: 16),
+              // New password
+              TextField(
+                controller: _newPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Enter new Password',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: _confirmPasswordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm new Password',
-                    border: OutlineInputBorder(),
-                  ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _confirmPasswordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Confirm new Password',
+                  border: OutlineInputBorder(),
                 ),
-                const SizedBox(height: 16),
-                // Button for changing password
-                ElevatedButton(
-                  onPressed: () async {
-                    final oldPassword = _oldPasswordController.text.trim();
-                    final newPassword = _newPasswordController.text.trim();
-                    final confirmPassword =
-                        _confirmPasswordController.text.trim();
+              ),
+              const SizedBox(height: 16),
+              // Button for changing password
+              ElevatedButton(
+                onPressed: () async {
+                  final oldPassword = _oldPasswordController.text.trim();
+                  final newPassword = _newPasswordController.text.trim();
+                  final confirmPassword =
+                      _confirmPasswordController.text.trim();
 
-                    if (newPassword.isEmpty || confirmPassword.isEmpty) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text('The new password cannot be empty')),
+                  if (newPassword.isEmpty || confirmPassword.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('The new password cannot be empty')),
+                    );
+                    return;
+                  }
+
+                  if (newPassword != confirmPassword) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Passwords do not match')),
+                    );
+                    return;
+                  }
+
+                  if (Validator.validatePassword(newPassword)) {
+                    final user = FirebaseAuth.instance.currentUser;
+                    final emailTrimmed = user?.email?.trim();
+                    if (user != null) {
+                      final credential = EmailAuthProvider.credential(
+                        email: emailTrimmed ?? '',
+                        password: oldPassword,
                       );
-                      return;
-                    }
-
-                    if (newPassword != confirmPassword) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Passwords do not match')),
-                      );
-                      return;
-                    }
-
-                    if (Validator.validatePassword(newPassword)) {
-                      final user = FirebaseAuth.instance.currentUser;
-                      final emailTrimmed = user?.email?.trim();
-                      if (user != null) {
-                        final credential = EmailAuthProvider.credential(
-                          email: emailTrimmed ?? '',
-                          password: oldPassword,
-                        );
-
-                        try {
-                          await user.reauthenticateWithCredential(credential);
-                          print('Reauthentication successful!');
-                        } catch (e) {
-                          print('Error during reauthentication: $e');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text(
-                                    'Reauthentication failed. Check your old password.')),
-                          );
-                          return;
-                        }
-                      }
 
                       try {
-                        await user?.updatePassword(newPassword);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Password changed successfully'),
-                          ),
-                        );
-                        di<LogInStateModel>().otpMode = false;
-                        Navigator.pushNamed(context, '/Dashboard');
+                        await user.reauthenticateWithCredential(credential);
+                        print('Reauthentication successful!');
                       } catch (e) {
-                        print("Error updating password: $e");
+                        print('Error during reauthentication: $e');
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                               content: Text(
-                                  'An error occurred while changing the password.')),
+                                  'Reauthentication failed. Check your old password.')),
                         );
+                        return;
                       }
-                    } else {
-                      DialogHelper.showDialogCustom(
-                          context: context,
-                          title: "Error",
-                          content:
-                              'Password must be at least 12 characters long, include both uppercase and lowercase letters, and contain at least one special character');
                     }
-                  },
-                  child: const Text('Change Password'),
-                ),
-              ],
-            ),
-          )),
+
+                    try {
+                      await user?.updatePassword(newPassword);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Password changed successfully'),
+                        ),
+                      );
+                      di<LogInStateModel>().otpMode = false;
+                      Navigator.pushNamed(context, '/Dashboard');
+                    } catch (e) {
+                      print("Error updating password: $e");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text(
+                                'An error occurred while changing the password.')),
+                      );
+                    }
+                  } else {
+                    DialogHelper.showDialogCustom(
+                        context: context,
+                        title: "Error",
+                        content:
+                            'Password must be at least 12 characters long, include both uppercase and lowercase letters, and contain at least one special character');
+                  }
+                },
+                child: const Text('Change Password'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

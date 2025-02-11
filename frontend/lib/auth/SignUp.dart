@@ -124,7 +124,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           fontWeight: FontWeight.bold),
                                     ),
                                     Text(
-                                      'If you choose to delete your account, all associated personal data, including participation in groups, will be permanently removed. Group data relevant to remaining members will remain intact without your personal information.\n',
+                                      'If you choose to delete your account, all associated personal data, including participation in groups, will be permanently removed. Group data relevant to remaining members will remain intact without your personal information.\nIf a User deletes their account with an outstanding balance, we reserve the right to hold information in our databases for the purpose of debt collection\n',
                                       style:
                                           TextStyle(fontSize: 16, height: 1.5),
                                     ),

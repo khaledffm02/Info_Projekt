@@ -58,7 +58,7 @@ class _FairShareState extends State<FairShare> {
         '/Dashboard': (context) => const Dashboard(),
         '/UserSettings' : (context) => const UserSettings(),
         '/StartScreen': (context) => StartScreen(switchToLogInScreen, switchToSignUpScreen),
-        '/ChangePassword' : (context)  => ChangePasswordWidget(),
+        '/ChangePassword' : (context)  => const ChangePasswordWidget(),
 
         '/GroupOverview': (context) {
           final arguments = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>;
