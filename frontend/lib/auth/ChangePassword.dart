@@ -5,6 +5,7 @@ import 'package:frontend/shared/Validator.dart';
 import 'package:watch_it/watch_it.dart';
 
 import '../models/LogInStateModel.dart';
+import '../shared/ApiService.dart';
 
 class ChangePasswordWidget extends StatefulWidget {
   const ChangePasswordWidget({super.key});
@@ -22,16 +23,14 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      // padding: const EdgeInsets.symmetric(horizontal: 16.0), noch von Cointainer
-      // 16 Pixel Padding von den Seiten
       child: Card(
         elevation: 5,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
         child: Container(
-          width: MediaQuery.of(context).size.width * 0.9, // Begrenzte Breite
+          width: MediaQuery.of(context).size.width * 0.9,
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
           child: Column(
-            mainAxisSize: MainAxisSize.min, // Minimale Größe für bessere Zentrierung
+            mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -125,6 +124,9 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                           content: Text('Password changed successfully'),
                         ),
                       );
+                      await ApiService.resetLoginAttempts(emailTrimmed);
+                      di<LogInStateModel>().failedLoginAttempts =
+                      await ApiService.getLoginAttempts(emailTrimmed!);
                       di<LogInStateModel>().otpMode = false;
                       Navigator.pushNamed(context, '/Dashboard');
                     } catch (e) {
@@ -140,7 +142,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                         context: context,
                         title: "Error",
                         content:
-                            'Password must be at least 12 characters long, include both uppercase and lowercase letters, and contain at least one special character');
+                            'Password must be at least 12 characters long, include both uppercase and lowercase letters, and contain at least one of the following special characters: @\$!%*?&');
                   }
                 },
                 child: const Text('Change Password'),

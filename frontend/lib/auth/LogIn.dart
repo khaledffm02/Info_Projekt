@@ -6,11 +6,7 @@ import 'package:frontend/shared/RatesService.dart';
 import 'package:watch_it/watch_it.dart';
 import 'dart:async';
 import '../models/LogInStateModel.dart';
-import '../shared/CustomDrawer.dart';
-import 'package:frontend/Dashboard.dart';
 import 'dart:developer' as developer;
-import 'package:timer_button/timer_button.dart';
-import 'package:logger/logger.dart';
 
 class LogInScreen extends WatchingWidget {
   LogInScreen({super.key});
@@ -18,7 +14,7 @@ class LogInScreen extends WatchingWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  bool otpMode = false; // Standardmäßig deaktiviert
+  bool otpMode = false; //default
 
   Future<void> _login(BuildContext context, bool otpMode) async {
     final email = _emailController.text.trim();
@@ -37,19 +33,10 @@ class LogInScreen extends WatchingWidget {
       var loginSuccess = await ApiService.loginUser(email, password);
 
       if (loginSuccess == false) {
-        /*     ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("User doesn't exist"),
-          ),
-        );
-*/
+
         await ApiService.increaseLoginAttempts(email);
-        developer.log('Testmessage', name: 'Info');
-
-        var getLoginResponse = await ApiService.getLoginAttempts(email);
-        di<LogInStateModel>().failedLoginAttempts = getLoginResponse;
-
-        print(di<LogInStateModel>().failedLoginAttempts);
+        var failedLoginAttempts = await ApiService.getLoginAttempts(email);
+        di<LogInStateModel>().failedLoginAttempts = failedLoginAttempts;
 
         if (di<LogInStateModel>().failedLoginAttempts == 3) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -69,7 +56,7 @@ class LogInScreen extends WatchingWidget {
             SnackBar(
               content: Text(
                 'Log in failed. It is your attempt(s) ' +
-                    getLoginResponse.toString(),
+                    failedLoginAttempts.toString(),
               ),
             ),
           );
@@ -78,9 +65,6 @@ class LogInScreen extends WatchingWidget {
       }
 
       await RatesService.UpdateRates();
-      await ApiService.resetLoginAttempts(email);
-      di<LogInStateModel>().failedLoginAttempts =
-      await ApiService.getLoginAttempts(email);
       print(di<LogInStateModel>().failedLoginAttempts);
 
       final user = FirebaseAuth.instance.currentUser;
@@ -92,9 +76,12 @@ class LogInScreen extends WatchingWidget {
           "You didn't confirm the email. Please click the link in your email to verify.",
         );
         await FirebaseAuth.instance.signOut();
-      } else if (otpMode == false) {}
+      }
 
       if (otpMode == false) {
+        await ApiService.resetLoginAttempts(email);
+        di<LogInStateModel>().failedLoginAttempts =
+        await ApiService.getLoginAttempts(email);
         di<LogInStateModel>().otpMode = false;
         DialogHelper.showDialogCustom(
           context: context,
@@ -108,7 +95,6 @@ class LogInScreen extends WatchingWidget {
       } else if (otpMode == true) {
         print("OTP mode active");
         Navigator.pushNamed(context, '/ChangePassword');
-        //toDo: reset attempt_reset
       }
     } catch (e) {
       DialogHelper.showDialogCustom(

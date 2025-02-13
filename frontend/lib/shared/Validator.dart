@@ -13,8 +13,12 @@ class Validator {
   // Passwort-Validierungsmethode
   static bool validatePassword(String password) {
     // Passwort muss mindestens 12 Zeichen lang sein, Groß- und Kleinbuchstaben sowie ein Sonderzeichen enthalten
-    final passwordRegex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$');
-    if (!passwordRegex.hasMatch(password)) {
+    final passwordRegexMinor = RegExp(r'[a-z]');
+    final passwordRegexMajor = RegExp(r'[A-Z]');
+    final passwordRegexSpecialChar = RegExp(r'[@$!%*?&]');
+    if (!passwordRegexMinor.hasMatch(password) ||
+        !passwordRegexMajor.hasMatch(password) ||
+        !passwordRegexSpecialChar.hasMatch(password)) {
 
       return false;
     }

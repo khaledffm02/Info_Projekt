@@ -33,12 +33,10 @@ class ForgotPassword extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async {
-                // Revalidating beim Klicken auf den Button
                 final email = _emailController.text;
                 final errorMessage = Validator.validateEmail(email);
 
-                if (errorMessage != null) {
-                  // Zeige Fehlermeldung, falls die E-Mail ungültig ist
+                if (errorMessage != null) { //It shows Errormessage if the email is not correct
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -62,20 +60,17 @@ class ForgotPassword extends StatelessWidget {
                   }catch(e){
                     print("Email  was not sent: $e");
                   }
-
                   try {
-
-
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Erfolgreich'),
-                        content: Text('„Falls die E-Mail-Adresse existiert, haben wir Ihnen eine Nachricht an $email mit Anweisungen zum Zurücksetzen des Passworts gesendet.“'),
+                        title: const Text('Success'),
+                        content: Text('„If your email exists, the email will be sent to  $email with instruction to reset your passwort.“'),
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.pop(context); // Erste Aktion: Dialog schließen
-                              Navigator.pushNamed(context, '/LogInScreen'); // Zweite Aktion: Navigation zum Login-Screen
+                              Navigator.pop(context);
+                              Navigator.pushNamed(context, '/LogInScreen');
                             },
                             child: const Text('OK'),
                           ),
@@ -87,7 +82,7 @@ class ForgotPassword extends StatelessWidget {
                       context: context,
                       builder: (context) => AlertDialog(
                         title: const Text('Fehler'),
-                        content: const Text('Das Senden der OTP-E-Mail ist fehlgeschlagen.'),
+                        content: const Text('Sending the OTP email has failed.'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),

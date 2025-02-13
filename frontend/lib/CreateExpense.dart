@@ -38,11 +38,12 @@ class _CreateExpenseState extends State<CreateExpense> {
   void initState() {
     super.initState();
     // Initialize distributedAmounts with 0.00 for all members
-
+    distributedAmounts.clear();  // Leere die Liste zuerst
     for (var member in widget.members) {
-      distributedAmounts[member['name']] = 0.0;
+      if (!member['name'].toString().startsWith("deleted")) {
+        distributedAmounts[member['name']] = 0.0;
+      }
     }
-
     print(widget.groupName);
   }
 
@@ -56,7 +57,7 @@ class _CreateExpenseState extends State<CreateExpense> {
       builder: (BuildContext context) {
         return SimpleDialog(
           title: const Text("Select Payer"),
-          children: widget.members.map((member) {
+          children: widget.members.where((member) => !member['name'].toString().startsWith("deleted")).map((member) {
             return SimpleDialogOption(
               onPressed: () {
                 Navigator.pop(context, member['name']);
@@ -149,7 +150,7 @@ class _CreateExpenseState extends State<CreateExpense> {
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 16.0),
-                      ...widget.members.map((member) {
+                      ...widget.members.where((member) => !member['name'].toString().startsWith("deleted")).map((member) {
                         final memberName = member['name'];
 
                         return Row(

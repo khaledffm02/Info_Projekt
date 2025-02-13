@@ -135,6 +135,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
         return ListTile(
           title: Text("Friend: $friendName"),
           subtitle: Text("Owes: $amountOwed €"),
+          //ToDO: neue Variable für ansicht in andere currency
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -230,6 +231,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
         content: Text(
           "Do you confirm that you paid $creatorName €$amountOwed?",
         ),
+        //ToDo Show in Other currency
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),

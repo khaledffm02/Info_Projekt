@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/models/CurrencyStateModel.dart';
 import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/DialogHelper.dart';
+import 'package:watch_it/watch_it.dart';
 
 
 class AddPayment extends StatefulWidget {
@@ -45,13 +47,14 @@ class _AddPaymentState extends State<AddPayment> {
     }
 
     try {
-      // Call your API method to mark the payment as completed
+      // Call API method to mark the payment as completed
       await ApiService.addPayment(
         groupId: widget.groupId,
         toId: selectedMemberId!, // Use the selected member ID
         fromId: currentUserId,
         amount: amount,
       );
+
 
       DialogHelper.showDialogCustom(
         context: context,
@@ -101,7 +104,7 @@ class _AddPaymentState extends State<AddPayment> {
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
               value: selectedMemberId, // Bind selectedMemberId
-              items: widget.members.where((member) => member['id'] != currentUserId).map((member) {
+              items: widget.members.where((member) => member['id'] != currentUserId && !member['name'].toString().startsWith("deleted")).map((member) {
                 return DropdownMenuItem<String>(
                   value: member['id'], // Use member ID as the value
                   child: Text(member['name']), // Display member name

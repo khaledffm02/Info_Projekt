@@ -23,7 +23,6 @@ class LogInStateModel extends ChangeNotifier {
   bool get otpMode => _otpMode;
 
   set otpMode(bool value) {
-   // _failedLoginAttempts = 0;   ist in logIn implementiert
     _otpMode = value;
 
     notifyListeners();

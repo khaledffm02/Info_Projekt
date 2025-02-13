@@ -47,18 +47,14 @@ class ApiService {
 
   static Future<bool> loginUser(String email, String password) async {
     try {
-      // Step 1: Sign in user with Firebase Authentication
       final credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
 
-      // Step 2: Retrieve the Firebase ID Token
       final idToken = await credential.user?.getIdToken() ?? '';
       if (idToken.isEmpty) {
         throw Exception('Failed to retrieve ID Token.');
       }
-      print(idToken);
 
-      // Step 3: Send ID Token to the login API endpoint
       final url = Uri.parse(
         'https://userlogin-icvq5uaeva-uc.a.run.app'
             '?idToken=${Uri.encodeComponent(idToken)}',
@@ -84,12 +80,10 @@ class ApiService {
             '?email=${Uri.encodeComponent(email)}',
       );
 
-      // Sende die Anfrage
       final response = await http.get(url);
 
-      // Überprüfe den Status der Antwort
       if (response.statusCode == 200) {
-        return true; // Erfolg
+        return true;
       } else {
         throw Exception(
             'Failed to reset password. Server responded with status: ${response
@@ -97,30 +91,24 @@ class ApiService {
       }
     } catch (e) {
       print('Error: $e');
-      return false; // Rückgabe false bei Fehler
+      return false;
     }
   }
 
   static Future<int> getLoginAttempts(String email) async {
     try {
-      // Construct the URL with the email parameter
       final url = Uri.parse(
           'https://getloginattempts-icvq5uaeva-uc.a.run.app?email=${Uri
               .encodeComponent(email)}');
 
-      // Perform the GET request
       final response = await http.get(url);
 
-      // Print the response details for debugging
       print('Status Code: ${response.statusCode}');
       print('Response Body: ${response.body}');
 
-      // Check if the response is successful
       if (response.statusCode == 200 && response.body.isNotEmpty) {
-        // Decode the response and directly access "attempts"
         final decodedBody = json.decode(response.body);
         if (decodedBody['loginAttempts'] != null) {
-          //   print("Rückgabewert: Api" + decodedBody['loginAttempts']);
           return int.parse(decodedBody['loginAttempts'].toString());
         } else {
           print('Key "attempts" not found in the response');
@@ -268,12 +256,7 @@ class ApiService {
       throw Exception("The new passwords do not match.");
     }
 
-    // Validierung des neuen Passworts
-/*    final errorMessage = Validator.validatePassword(newPassword);
-    if (errorMessage != null) {
-      throw Exception("Error: $errorMessage");
-    }
-*/
+
     try {
       // Erstelle die Anmeldeinformationen (Credential)
       final credential = EmailAuthProvider.credential(
@@ -283,7 +266,7 @@ class ApiService {
       print(user.email);
       print(credential.toString());
 
-      // Re-Authentifizierung
+      // Reauthentifizierung
       await user.reauthenticateWithCredential(credential);
       print("Test2");
       // Passwort aktualisieren
@@ -304,9 +287,7 @@ class ApiService {
   static const String deleteUserUrl =
       'https://userdelete-icvq5uaeva-uc.a.run.app';
 
-  /// Methode zur Benutzerlöschung (GET-Request)
   static Future<void> deleteUser({required BuildContext context}) async {
-    // Hole den aktuellen Benutzer
     User? user = FirebaseAuth.instance.currentUser;
     print("API: current User is:" + user.toString());
     if (user == null) {
@@ -314,30 +295,24 @@ class ApiService {
     }
 
     try {
-      // ID-Token des Benutzers abrufen
       String? idToken = await user.getIdToken();
-      print("API:  Currentuser IDTocken is:" + idToken!);
-      // GET-Request senden (idToken als Query-Parameter)
+
       final uri = Uri.parse('$deleteUserUrl?idToken=$idToken');
       final response = await http.get(uri);
 
-      // Überprüfe die Antwort
       if (response.statusCode == 200) {
         print("User successfully deleted");
         print(response.statusCode);
         await user.delete();
         print("User successfully deleted from Firebase Authentication");
 
-        // Optional: Benutzer aus Firebase abmelden
 
-        // Bestätigung anzeigen
         DialogHelper.showDialogCustom(
           context: context,
           title: "User Deleted",
           content: "Your account has been successfully deleted.",
         );
       } else {
-        // Fehlerbehandlung bei nicht erfolgreicher Antwort
         throw Exception(
             "Failed to delete user. Server returned: ${response
                 .statusCode} - ${response.body}");

@@ -42,7 +42,7 @@ class _UserSettingsState extends State<UserSettings> {
               const ChangePasswordWidget(), // Passwort ändern
               const SizedBox(height: 40.0),
               _buildDropdownMenu(), // Dropdown-Menü
-              const SizedBox(height: 40.0),
+              const SizedBox(height: 200.0),
               _buildDeleteAccountButton(), // Button: Konto löschen
             ],
           ),
@@ -88,52 +88,53 @@ class _UserSettingsState extends State<UserSettings> {
           final netBalance = totalOwedByOthers + totalOwedToOthers;
           print(netBalance);
           if (netBalance != 0) {
-            // Zeige Warnung an, wenn NetBalance nicht 0 ist
-            final bool? decision = await showDialog<bool>(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Outstanding Balance'),
-                  content: Text.rich(TextSpan(children: [
-                    TextSpan(
-                      text:
-                          'You have an outstanding balance of \$${netBalance.toStringAsFixed(2)}. Do you still want to delete your account?\n',
-                      style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.redAccent[900]),
-                    ),
-                    const TextSpan(
-                      text:
-                      'Your name will be delete from the group & interface, however we reserve the right to hold information in our databases for the purpose of debt collection\n Do you still want to delete your account?',
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black),
-                    ), // Größerer Text
-                    ]
-                  ),),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(false); // Abbrechen
-                      },
-                      child: const Text('Back'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(true); // Bestätigen
-                      },
-                      child: const Text('Delete Account'),
-                    ),
-                  ],
-                );
-              },
-            );
+    // Zeige Warnung an, wenn NetBalance nicht 0 ist
+    final bool? decision = await showDialog<bool>(
+    context: context,
+    builder: (BuildContext context) {
+    return AlertDialog(
+    title: const Text('Outstanding Balance'),
+    content: Text.rich(TextSpan(children: [
+    TextSpan(
+    text:
+    'You have an outstanding balance of \$${netBalance.toStringAsFixed(2)}. Do you still want to delete your account?\n',
+    style: TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: Colors.redAccent[900]),
+    ),
+    const TextSpan(
+    text:
+    'Your name will be delete from the group & interface, however we reserve the right to hold information in our databases for the purpose of debt collection\n Do you still want to delete your account?',
+    style: TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.bold,
+    color: Colors.black),
+    ), // Größerer Text
+    ]
+    ),),
+    actions: [
+    TextButton(
+    onPressed: () {
+    Navigator.of(context).pop(false); // Abbrechen
+    },
+    child: const Text('Back'),
+    ),
+    ElevatedButton(
+    onPressed: () {
+    Navigator.of(context).pop(true); // Bestätigen
+    },
+    child: const Text('Delete Account'),
+    ),
+    ],
+    );
+    },
+    );
 
-            if (decision != true) {
-              return; // Falls der Nutzer „Back“
-            }
+    if (decision != true) {
+    return; // Falls der Nutzer „Back“
+    }
+    }
 
             final bool? confirmed = await showDialog<bool>(
               context: context,
@@ -174,7 +175,7 @@ class _UserSettingsState extends State<UserSettings> {
                 );
               }
             }
-          }
+
         },
       ),
     );

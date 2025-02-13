@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:frontend/shared/ApiService.dart'; // Importiere den ApiService
+import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/DialogHelper.dart';
-
 import '../shared/Validator.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -19,7 +17,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  bool isChecked = false; // Zustand der Checkbox
+  bool isChecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +81,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     value: isChecked,
                     onChanged: (bool? value) {
                       setState(() {
-                        isChecked = value ?? false; // Zustand aktualisieren
+                        isChecked = value ?? false;
                       });
                     },
                   ),
@@ -146,9 +144,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 TextButton(
                                   onPressed: () {
                                     Navigator.of(context)
-                                        .pop(); // Fenster schließen
+                                        .pop();
                                   },
-                                  child: const Text("Schließen"),
+                                  child: const Text("Close"),
                                 ),
                               ],
                             );
@@ -156,7 +154,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         );
                       },
                       child: const Text(
-                        'In Order to use our App you have to accept our Term and Conditions  You can see them HIER',
+                        'In Order to use our App, you have to accept our Terms and Conditions.  You can see them HERE',
                         style: TextStyle(
                           color: Colors.black,
                         ),
