@@ -1,0 +1,224 @@
+import 'package:flutter/material.dart';
+import 'package:frontend/shared/ApiService.dart';
+import 'package:frontend/shared/DialogHelper.dart';
+
+class GroupSettings extends StatefulWidget {
+  final String groupId;
+  final String groupName;
+  final String groupCode;
+
+  const GroupSettings({super.key, required this.groupId, required this.groupName, required this.groupCode});
+
+  @override
+  _GroupSettingsState createState() => _GroupSettingsState();
+}
+
+class _GroupSettingsState extends State<GroupSettings> {
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+
+  Future<void> _leaveGroup() async {
+
+    try{
+
+      await ApiService.leaveGroup(groupID: widget.groupId);
+
+      // Show success dialog
+      DialogHelper.showDialogCustom(
+        context: context,
+        title: 'Return',
+        content: 'Going back to Dashboard',
+        onConfirm: () {
+          Navigator.pushNamed(
+            context,
+            '/Dashboard'
+          );
+        },
+
+      );
+    } catch (error) {
+      DialogHelper.showDialogCustom(
+        context: context,
+        title: 'Error',
+        content: error.toString(), // Show the error message
+      );
+    }
+
+  }
+
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Group Settings"),
+        backgroundColor: Colors.black12,
+        centerTitle: true,
+      ),
+      body: ListView(
+        children: [
+
+          /*
+          ListTile(
+            leading: const Icon(Icons.notifications),
+            title: const Text("Reminders"),
+            onTap: () {
+
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Reminders"),
+                  content: const Text("Activate reminders for this group?"),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+
+                        try{
+                          await ApiService.sendReminders(groupID: widget.groupId, );
+                          Navigator.of(context).pop(); // Close the dialog
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("Reminders set for this group")),
+                          );
+
+                        } catch (error){
+                          DialogHelper.showDialogCustom(
+                            context: context,
+                            title: 'Error',
+                            content: error.toString(), // Show the error message
+                          );
+                        }
+                      },
+                      child: const Text("Yes"),
+                    ),
+                  ],
+                ),
+              );
+
+            },
+          ),
+          const Divider(),
+
+*/
+
+          ListTile(
+            leading: const Icon(Icons.person_add),
+            title: const Text("Invite Friends"),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  String email = ''; // Store the email input
+
+                  return AlertDialog(
+                    title: const Text("Invite Friend"),
+                    content: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text("Enter your friend's email address to send an invite."),
+                        const SizedBox(height: 16.0),
+                        TextField(
+                          decoration: const InputDecoration(
+                            labelText: "Email Address",
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (value) {
+                            email = value; // Update email input
+                          },
+                        ),
+                      ],
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the dialog
+                        },
+                        child: const Text("Cancel"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          // Logic to handle sending the invite
+                          if (email.isNotEmpty) {
+                            try{
+                            await ApiService.sendInvitation( email: email, groupID: widget.groupId, );
+                            Navigator.of(context).pop(); // Close the dialog
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Invite sent to $email")),
+                            );
+
+                                } catch (error){
+                                DialogHelper.showDialogCustom(
+                                context: context,
+                                title: 'Error',
+                                content: error.toString(), // Show the error message
+                          );
+
+                            }
+
+
+
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text("Email address cannot be empty")),
+                            );
+                            return;
+                          }
+
+                        },
+                        child: const Text("Send"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+
+
+
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.exit_to_app),
+            title: const Text("Leave Group"),
+            onTap: () {
+              // Show confirmation dialog
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Leave Group"),
+                  content: const Text("You can only leave with neutral balance"),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                       _leaveGroup();
+                      },
+                      child: const Text("Leave"),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+}
+

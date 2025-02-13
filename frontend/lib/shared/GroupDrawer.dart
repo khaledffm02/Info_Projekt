@@ -1,8 +1,7 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class CustomDrawer extends StatelessWidget {
-  const CustomDrawer({super.key});
+class GroupDrawer extends StatelessWidget {
+  const GroupDrawer({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +28,16 @@ class CustomDrawer extends StatelessWidget {
               Navigator.pushNamed(context, '/Dashboard');
             },
           ),
+          /*
+          ListTile(
+            leading: const Icon(Icons.receipt),
+            title: const Text('New expense'),
+            onTap: () {
+              Navigator.pushNamed(context, '/newExpense');
+            },
+          ),
 
+           */
           ListTile(
             leading: const Icon(Icons.group_add),
             title: const Text('Create a group'),
@@ -45,36 +53,24 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('User Settings'),
+            leading: const Icon(Icons.history),
+            title: const Text('Transaction History'),
             onTap: () {
-              Navigator.pushNamed(context, '/UserSettings');
+              Navigator.pushNamed(context, '/transactionHistory');
             },
           ),
-
-
           ListTile(
-            leading: const Icon(Icons.logout),
+            leading: const Icon(Icons.person_add),
+            title: const Text('Invite a friend'),
+            onTap: () {
+              Navigator.pushNamed(context, '/InviteFriend');
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person_add),
             title: const Text('Sign out'),
-            onTap: () async {
-              try {
-                //sign out the current user
-                await FirebaseAuth.instance.signOut();
-
-                // check if user got sign out
-                final currentUser = FirebaseAuth.instance.currentUser;
-                print('Current user after sign out: $currentUser');
-
-
-                Navigator.pushReplacementNamed(context, '/StartScreen');  //from stack deleted
-              } catch (e) {
-                print('Fehler beim Abmelden: $e');
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('An error occurred while logging out. Please try again')),   //small pop up with message
-
-
-                );
-              }
+            onTap: () {
+              Navigator.pushNamed(context, '/User-sign-out');
             },
           )
         ],

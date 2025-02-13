@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/Validator.dart';
 
 
@@ -31,13 +32,11 @@ class ForgotPassword extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
-                // Revalidating beim Klicken auf den Button
+              onPressed: () async {
                 final email = _emailController.text;
                 final errorMessage = Validator.validateEmail(email);
 
-                if (errorMessage != null) {
-                  // Zeige Fehlermeldung, falls die E-Mail ungültig ist
+                if (errorMessage != null) { //It shows Errormessage if the email is not correct
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -56,25 +55,43 @@ class ForgotPassword extends StatelessWidget {
                     },
                   );
                 } else {
-                  // Zeigt Bestätigung, falls die E-Mail gültig ist
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
+                  try {
+                    ApiService.resetPassword(email);
+                  }catch(e){
+                    print("Email  was not sent: $e");
+                  }
+                  try {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
                         title: const Text('Success'),
-                        content: Text('Password reset link sent to $email'),
+                        content: Text('„If your email exists, the email will be sent to  $email with instruction to reset your passwort.“'),
                         actions: [
                           TextButton(
                             onPressed: () {
-                              Navigator.of(context).pop();
+                              Navigator.pop(context);
                               Navigator.pushNamed(context, '/LogInScreen');
                             },
                             child: const Text('OK'),
                           ),
                         ],
-                      );
-                    },
-                  );
+                      ),
+                    );
+                  } catch (error) {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Fehler'),
+                        content: const Text('Sending the OTP email has failed.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                 }
               },
               child: const Text('Validate Email'),

@@ -1,96 +1,168 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/shared/CustomDrawer.dart';
-import 'package:frontend/shared/Validator.dart';
+import 'package:frontend/shared/ApiService.dart';
+import 'package:frontend/shared/DialogHelper.dart';
+import 'package:frontend/shared/RatesService.dart';
+import 'package:watch_it/watch_it.dart';
+import 'dart:async';
+import '../models/LogInStateModel.dart';
+import 'dart:developer' as developer;
 
-class LogInScreen extends StatefulWidget {
-  const LogInScreen({super.key});
+class LogInScreen extends WatchingWidget {
+  LogInScreen({super.key});
 
-  @override
-  State<LogInScreen> createState() {
-    return _LogInScreenState();
-  }
-}
-
-class _LogInScreenState extends State<LogInScreen> {
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  bool otpMode = false; //default
 
+  Future<void> _login(BuildContext context, bool otpMode) async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      DialogHelper.showDialogCustom(
+        context: context,
+        title: 'Error',
+        content: 'All fields are required.',
+      );
+      return;
+    }
+//ToDo with more that 4 Try in snackbar
+    try {
+      var loginSuccess = await ApiService.loginUser(email, password);
+
+      if (loginSuccess == false) {
+
+        await ApiService.increaseLoginAttempts(email);
+        var failedLoginAttempts = await ApiService.getLoginAttempts(email);
+        di<LogInStateModel>().failedLoginAttempts = failedLoginAttempts;
+
+        if (di<LogInStateModel>().failedLoginAttempts == 3) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                  'You did not log in correctly for the 3rd time. We sent a One Time Password to your Email.'),
+            ),
+          );
+
+          try {
+            await ApiService.resetPassword(email);
+          } catch (e) {
+            print("Email was not sent: $e");
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Log in failed. It is your attempt(s) ' +
+                    failedLoginAttempts.toString(),
+              ),
+            ),
+          );
+        }
+        return;
+      }
+
+      await RatesService.UpdateRates();
+      print(di<LogInStateModel>().failedLoginAttempts);
+
+      final user = FirebaseAuth.instance.currentUser;
+      if (user?.emailVerified != true) {
+        DialogHelper.showDialogCustom(
+          context: context,
+          title: 'Error',
+          content:
+          "You didn't confirm the email. Please click the link in your email to verify.",
+        );
+        await FirebaseAuth.instance.signOut();
+      }
+
+      if (otpMode == false) {
+        await ApiService.resetLoginAttempts(email);
+        di<LogInStateModel>().failedLoginAttempts =
+        await ApiService.getLoginAttempts(email);
+        di<LogInStateModel>().otpMode = false;
+        DialogHelper.showDialogCustom(
+          context: context,
+          title: 'Success',
+          content: 'Logged in successfully!',
+          onConfirm: () {
+            Navigator.of(context).pop();
+            Navigator.pushNamed(context, '/Dashboard');
+          },
+        );
+      } else if (otpMode == true) {
+        print("OTP mode active");
+        Navigator.pushNamed(context, '/ChangePassword');
+      }
+    } catch (e) {
+      DialogHelper.showDialogCustom(
+        context: context,
+        title: 'Error',
+        content: 'Failed to log in: $e',
+      );
+    }
+  }
 
   @override
-  Widget build(context) {
+  Widget build(BuildContext context) {
+    otpMode = watchPropertyValue((LogInStateModel x) => x.otpMode);
     return Scaffold(
       appBar: AppBar(
-          title: Text("Login"),
-          backgroundColor: Colors.black12,
-          centerTitle: true,
+        title: const Text("Login"),
+        centerTitle: true,
       ),
-      drawer: CustomDrawer(),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextField(
-                controller: _usernameController,
-                decoration: InputDecoration(
-                labelText: 'Username',
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Welcome Back!',
+              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 32.0),
+            TextField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
                 border: OutlineInputBorder(),
-                )
-          ),
-
-                const SizedBox(height: 16.0), // Space between text fields
-
-                TextField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                      ),
-                ),
-              const SizedBox(height: 16.0), // Space between button and textfield
-              ElevatedButton(
-                  onPressed:(){
-                    final username = _usernameController.text;
-                    final password = _passwordController.text;
-                    print('Username: $username, Password: $password');
-                    // prints out your info in console
-                  },
-                  child: const Text('Login'),
-
+                prefixIcon: Icon(Icons.email),
               ),
-              const SizedBox(height: 16.0), // Space between button and textfield
-              ElevatedButton(
-                onPressed:(){
-                Navigator.pushNamed(context, '/ForgotPassword');
-                },
-                child: const Text('Forgot Password'),
-
-              )
-
-            ],
-          ),
-        )
+              keyboardType: TextInputType.emailAddress,
+            ),
+            const SizedBox(height: 16.0),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                labelText: 'Password',
+                border: OutlineInputBorder(),
+                prefixIcon: Icon(Icons.lock),
+              ),
+            ),
+            const SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () async {
+                _login(context, otpMode);
+              },
+              style: ElevatedButton.styleFrom(
+                minimumSize: const Size(double.infinity, 50),
+              ),
+              child: Text("Log in"),
+            ),
+            const SizedBox(height: 16.0),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, '/ForgotPassword'),
+              child: const Text('Forgot Password?'),
+            ),
+          ],
+        ),
       ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        items:[
-          BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-            label: 'Home'
-          ),
-
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings),
-              label: 'Settings'
-          ),
-        ]
-
-      ),
-       );
-
-
+    );
   }
 }
+
+
+
