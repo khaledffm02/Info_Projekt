@@ -40,7 +40,7 @@ Fairshare is an app designed to simplify the process of sharing and managing exp
     - Authentication
     - Firestore
     - Firebase Hosting (optional)
-  - JavaScript for backend logic
+  - JavaScript for backend logic (in Backend branch)
 - **Configuration**: `flutter_dotenv` for environment variables.
 
 ## 🛠️ Installation
@@ -53,8 +53,8 @@ Fairshare is an app designed to simplify the process of sharing and managing exp
 
 2. **Clone the Repository**:
    ```bash
-   git clone https://github.com/<username>/fairshare.git
-   cd fairshare
+   git clone https://github.com/khaledffm02/Info_Projekt.git]
+   cd Info_Projekt/frontend
 3. **Set Up Firebase:**
     Link the project to Firebase.
     Add your google-services.json (for Android) and GoogleService-Info.plist (for iOS) files to the respective directories.
