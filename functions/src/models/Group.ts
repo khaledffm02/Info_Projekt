@@ -16,6 +16,10 @@ export type GroupJSON = {
 export class Group {
   constructor(readonly id: string, readonly data: GroupJSON) {}
 
+  get memberCount() {
+    return Object.keys(this.data.memberIDs).length;
+  }
+
   getBalances(): Record<string, number> {
     const balances: Record<string, number> = {};
     // eslint-disable-next-line guard-for-in
