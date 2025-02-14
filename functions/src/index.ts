@@ -182,10 +182,10 @@ export const sendNewPassword = onRequest(
     await sendMail({
       account: emailAccount.value(),
       password: emailPassword.value(),
-      from: "splidapp@project.com",
+      from: "Fairshare@project.com",
       text: `Your new password is ${newPassword}`,
       to: email,
-      subject: "Your splid-like app password was reset",
+      subject: "Your Fairshare app password was reset",
       html: `<b>Your new password is ${newPassword}</b>`,
     });
 
@@ -322,12 +322,12 @@ export const addPayment = onRequest(
     await sendMail({
       account: emailAccount.value(),
       password: emailPassword.value(),
-      from: "splidapp@project.com",
-      text: `You have received a payment from ${fromUser.name} of ${value}`,
+      from: "Fairshare@project.com",
+      text: `You have received a payment from ${fromUser.name} of ${value} EUR`,
       to: toUser.email,
-      subject: "You have received a payment",
+      subject: "Faireshare: Payment Received",
       html: `
-<b>You have received a payment from ${fromUser.name} of ${value}</b>`,
+<b>You have received a payment from ${fromUser.name} of ${value} EUR.</b>`,
     });
 
     response.send({success: true, transactionID: id});
@@ -479,14 +479,14 @@ export const sendReminders = onRequest(
         await sendMail({
           account: emailAccount.value(),
           password: emailPassword.value(),
-          from: "splidapp@project.com",
-          text: `Reminder open balance of ${balance}`,
+          from: "Fairshare@project.com",
+          text: `Reminder open balance of ${balance} EUR`,
           to: email,
           subject: "Reminder of open balance",
           html: `<b>Hi ${user.name}, 
             you have open payments to take action on 
             in your group "${group.data.name}". 
-            Open: ${balance} ${group.data.currency}</b>`,
+            Open: ${balance} ${group.data.currency} EUR</b>`,
         });
       }
     }
@@ -563,7 +563,7 @@ export const sendInvitation = onRequest(
     await sendMail({
       account: emailAccount.value(),
       password: emailPassword.value(),
-      from: "splidapp@project.com",
+      from: "Fairshare@project.com",
       text: `Please enter the invitation code ${group.data.groupCode}`,
       to: email,
       subject: "Invitation to join a group",
