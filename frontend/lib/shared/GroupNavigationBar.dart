@@ -31,12 +31,11 @@ class GroupNavigationBar extends StatelessWidget {
       onTap: (index) {
         switch (index) {
           case 0:
-          // Navigate to Create Expense screen
             Navigator.pushNamed(
               context,
               '/CreateExpense',
               arguments: {
-                'members': members, // Passing members as arguments
+                'members': members,
                 'groupName' : groupName,
                 'groupId' : groupId,
                 'groupCode': groupCode
@@ -44,7 +43,6 @@ class GroupNavigationBar extends StatelessWidget {
             );
             break;
           case 1:
-          // Navigate to Group Settings screen
             Navigator.pushNamed(
               context,
               '/AddPayment',

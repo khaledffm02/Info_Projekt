@@ -1,4 +1,3 @@
-//Create Group
 
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart';
@@ -14,38 +13,6 @@ class CreateGroup extends StatefulWidget {
 
 class _CreateGroupState extends State<CreateGroup> {
   final TextEditingController _groupNameController = TextEditingController();
-
-  /*
-
-  String _selectedCurrency = 'EUR'; // Default currency is Euro (EUR)
-  final List<String> _currencies = ['EUR', 'USD', 'GBP', 'JPY', 'INR'];
-
-  void _selectCurrency(BuildContext context) async {
-    final selectedCurrency = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return SimpleDialog(
-          title: const Text('Select Currency'),
-          children: _currencies.map((currency) {
-            return SimpleDialogOption(
-              onPressed: () {
-                Navigator.pop(context, currency);
-              },
-              child: Text(currency),
-            );
-          }).toList(),
-        );
-      },
-    );
-
-    // Update selected currency if a selection was made
-    if (selectedCurrency != null) {
-      setState(() {
-        _selectedCurrency = selectedCurrency;
-      });
-    }
-  }
-*/
 
   @override
   Widget build(BuildContext context) {
@@ -105,30 +72,6 @@ class _CreateGroupState extends State<CreateGroup> {
               },
               child: const Text('Create Group'),
             ),
-
-           /*
-            const SizedBox(height: 16.0),
-            Center(
-                child: SizedBox(
-                  width: 100.0,
-                  child: GestureDetector(
-                    onTap: () => _selectCurrency(context),
-                    child: AbsorbPointer(
-                      child: TextField(
-                        decoration: const InputDecoration(
-                          labelText: 'Currency',
-                          border: OutlineInputBorder(),
-                        ),
-                        controller: TextEditingController(text: _selectedCurrency),
-                      ),
-                    ),
-                  ),
-
-                )
-            ),
-          */
-
-
           ],
         ),
       ),

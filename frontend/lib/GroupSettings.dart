@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/DialogHelper.dart';
+import 'package:frontend/shared/Validator.dart';
 
 class GroupSettings extends StatefulWidget {
   final String groupId;
   final String groupName;
   final String groupCode;
 
-  const GroupSettings({super.key, required this.groupId, required this.groupName, required this.groupCode});
+  final double memberBalance;
+
+  const GroupSettings({super.key, required this.groupId, required this.groupName, required this.groupCode, required this.memberBalance});
 
   @override
   _GroupSettingsState createState() => _GroupSettingsState();
@@ -22,16 +25,13 @@ class _GroupSettingsState extends State<GroupSettings> {
 
 
   Future<void> _leaveGroup() async {
-
     try{
-
       await ApiService.leaveGroup(groupID: widget.groupId);
 
-      // Show success dialog
       DialogHelper.showDialogCustom(
         context: context,
-        title: 'Return',
-        content: 'Going back to Dashboard',
+        title: 'Success',
+        content: 'You successfully left the group',
         onConfirm: () {
           Navigator.pushNamed(
             context,
@@ -44,7 +44,7 @@ class _GroupSettingsState extends State<GroupSettings> {
       DialogHelper.showDialogCustom(
         context: context,
         title: 'Error',
-        content: error.toString(), // Show the error message
+        content: error.toString(),
       );
     }
 
@@ -62,55 +62,6 @@ class _GroupSettingsState extends State<GroupSettings> {
       ),
       body: ListView(
         children: [
-
-          /*
-          ListTile(
-            leading: const Icon(Icons.notifications),
-            title: const Text("Reminders"),
-            onTap: () {
-
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("Reminders"),
-                  content: const Text("Activate reminders for this group?"),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Cancel"),
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-
-                        try{
-                          await ApiService.sendReminders(groupID: widget.groupId, );
-                          Navigator.of(context).pop(); // Close the dialog
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Reminders set for this group")),
-                          );
-
-                        } catch (error){
-                          DialogHelper.showDialogCustom(
-                            context: context,
-                            title: 'Error',
-                            content: error.toString(), // Show the error message
-                          );
-                        }
-                      },
-                      child: const Text("Yes"),
-                    ),
-                  ],
-                ),
-              );
-
-            },
-          ),
-          const Divider(),
-
-*/
-
           ListTile(
             leading: const Icon(Icons.person_add),
             title: const Text("Invite Friends"),
@@ -125,7 +76,7 @@ class _GroupSettingsState extends State<GroupSettings> {
                     content: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Text("Enter your friend's email address to send an invite."),
+                         Text("Enter your friend's email address to send an invite with Code ${widget.groupCode} "),
                         const SizedBox(height: 16.0),
                         TextField(
                           decoration: const InputDecoration(
@@ -141,14 +92,14 @@ class _GroupSettingsState extends State<GroupSettings> {
                     actions: [
                       TextButton(
                         onPressed: () {
-                          Navigator.of(context).pop(); // Close the dialog
+                          Navigator.of(context).pop();
                         },
                         child: const Text("Cancel"),
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          // Logic to handle sending the invite
-                          if (email.isNotEmpty) {
+                          if (email.isNotEmpty && Validator.validateEmail(email) == null) {
+
                             try{
                             await ApiService.sendInvitation( email: email, groupID: widget.groupId, );
                             Navigator.of(context).pop(); // Close the dialog
@@ -160,7 +111,7 @@ class _GroupSettingsState extends State<GroupSettings> {
                                 DialogHelper.showDialogCustom(
                                 context: context,
                                 title: 'Error',
-                                content: error.toString(), // Show the error message
+                                content: error.toString(),
                           );
 
                             }
@@ -169,7 +120,7 @@ class _GroupSettingsState extends State<GroupSettings> {
 
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Email address cannot be empty")),
+                              const SnackBar(content: Text("Email address is invalid")),
                             );
                             return;
                           }
@@ -191,12 +142,19 @@ class _GroupSettingsState extends State<GroupSettings> {
             leading: const Icon(Icons.exit_to_app),
             title: const Text("Leave Group"),
             onTap: () {
-              // Show confirmation dialog
+              if( widget.memberBalance != 0.00 ) {
+                DialogHelper.showDialogCustom(
+                  context: context,
+                  title: 'Error',
+                  content: 'Your balance in this group is not neutral (${widget.memberBalance}€).',
+                );
+              }
+             else {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text("Leave Group"),
-                  content: const Text("You can only leave with neutral balance"),
+                  content: const Text("You are about to leave this group"),
                   actions: [
                     TextButton(
                       onPressed: () {
@@ -213,7 +171,8 @@ class _GroupSettingsState extends State<GroupSettings> {
                   ],
                 ),
               );
-            },
+              }
+           },
           ),
         ],
       ),

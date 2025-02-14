@@ -1,4 +1,3 @@
-// group page
 
 import 'package:flutter/material.dart';
 

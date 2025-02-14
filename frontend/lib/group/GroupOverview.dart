@@ -1,5 +1,3 @@
-// groupoverview
-
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +8,8 @@ import 'package:frontend/shared/GroupService.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:frontend/GroupSettings.dart';
 import 'package:frontend/ViewTransaction.dart';
+import 'package:intl/intl.dart'; // Import for date formatting
+
 
 import '../shared/DialogHelper.dart';
 
@@ -75,81 +75,17 @@ class _GroupOverviewState extends State<GroupOverview> {
 
 
 
-/*
-
-  Future<Map<String, double>> processTransactionData() async {
-    try {
-      final transactions = await GroupService.getOwnTransactions(widget.groupId);
-
-      print(transactions);
-
-      if (transactions.isEmpty) {
-        print("No transactions found.");
-        return {'No Data': 0.0};
-      }
-
-      Map<String, double> categoryTotals= {};
 
 
-      for (var transaction in transactions) {
-        final category = transaction['category'];
-        final totalAmount = transaction['totalAmount'];
-
-        if (category == null || totalAmount == null) {
-          print("Invalid transaction data: $transaction");
-          continue;
-        }
-
-
-        double amount;
-
-        if (category == 'payment') {
-          amount = totalAmount as double;
-        }
-
-
-        else {
-          final friend = transaction['friends']?.firstWhere(
-                (friend) => friend['friendId'] == currentUserId,
-            /* orElse: () => null, */
-          );
-          amount = friend['amountOwed'] as double;
-        }
-
-
-        categoryTotals[category] = (categoryTotals[category] ?? 0) + amount;
-
-
-      }
-
-
-
-      print("Processed category totals: $categoryTotals");
-
-
-      return categoryTotals;
-
-
-    } catch (e) {
-      print("Error in processTransactionData: $e");
-      return {'Error': 0.0};
-    }
-
-
-  }
-
-*/
 
 
   Future<Map<String, double>> processTransactionData() async {
     try {
       final transactions = await GroupService.getOwnTransactions(widget.groupId);
 
-      print(transactions);
-
       if (transactions.isEmpty) {
         print("No transactions found.");
-        return {'No Data': 0.0};
+        return {};
       }
 
       Map<String, double> categoryTotals = {};
@@ -165,15 +101,15 @@ class _GroupOverviewState extends State<GroupOverview> {
 
         double amount;
 
-        // Check if totalAmount is an int, and safely cast to double
         if (category == 'payment') {
-          // Ensure totalAmount is treated as a double
+          // totalAmount is treated as a double
           amount = totalAmount is int ? totalAmount.toDouble() : totalAmount as double;
         } else {
           final friend = transaction['friends']?.firstWhere(
                 (friend) => friend['friendId'] == currentUserId,
+            orElse: () => <String, dynamic>{},
           );
-          // Safely cast amountOwed to double if friend is found
+          // cast amountOwed to double if friend is found
           amount = friend != null && friend['amountOwed'] != null
               ? (friend['amountOwed'] is int ? friend['amountOwed'].toDouble() : friend['amountOwed'] as double)
               : 0.0;
@@ -182,12 +118,11 @@ class _GroupOverviewState extends State<GroupOverview> {
         categoryTotals[category] = (categoryTotals[category] ?? 0) + amount;
       }
 
-      print("Processed category totals: $categoryTotals");
 
       return categoryTotals;
     } catch (e) {
       print("Error in processTransactionData: $e");
-      return {'Error': 0.0};
+      return {};
     }
   }
 
@@ -200,7 +135,6 @@ class _GroupOverviewState extends State<GroupOverview> {
   Future<void> _fetchGroupMembers() async {
     try {
       final fetchedMembers = await GroupService.getGroupMembers(widget.groupId);
-      //print(fetchedMembers);
       setState(() {
         members = fetchedMembers;
         isLoadingMembers = false;
@@ -225,9 +159,7 @@ class _GroupOverviewState extends State<GroupOverview> {
       });
 
     } catch (e) {
-      //print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        //SnackBar(content: Text("Failed to load transactions: $e")),
         SnackBar(content: Text("No own expenses found")),
       );
       setState(() {
@@ -248,9 +180,7 @@ class _GroupOverviewState extends State<GroupOverview> {
       });
 
     } catch (e) {
-      //print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        // SnackBar(content: Text("Failed to load other transactions: $e")),
         SnackBar(content: Text("No other expenses found")),
       );
       setState(() {
@@ -273,32 +203,29 @@ class _GroupOverviewState extends State<GroupOverview> {
             IconButton(
               icon: const Icon(Icons.settings),
               onPressed: () {
-                /* Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const GroupSettings()),
-                );
-                  */
+                 final memberBalance = Memberbalance[currentUserId] is int ? Memberbalance[currentUserId].toDouble() : Memberbalance[currentUserId] as double;
                 Navigator.pushNamed(
                   context,
                   '/GroupSettings',
                   arguments: {
                     'groupId': widget.groupId,
                     'groupName': widget.groupName,
-                    'groupCode' : widget.groupCode
+                    'groupCode' : widget.groupCode,
+                    'memberBalance': memberBalance != null ? memberBalance : 0.00
                   },
                 );
 
               },
             ),
           ],
-          title: Text(widget.groupName), // Display the group ID (can be replaced with a name if available)
+          title: Text(widget.groupName),
           backgroundColor: Colors.black12,
           centerTitle: true,
           bottom: const TabBar(
             tabs: [
               Tab(text: "Overview"),
-              Tab(text: "Expenses"), //renamed from transactions to expenses
-              Tab(text: "Payments"), // New Payments tab
+              Tab(text: "Expenses"),
+              Tab(text: "Payments"),
               Tab(text: "Statistics"),
             ],
             indicatorColor: Colors.white,
@@ -336,11 +263,10 @@ class _GroupOverviewState extends State<GroupOverview> {
 
                 final sortedMembers = List.from(members);
                 sortedMembers.sort((a, b) {
-                  // Check if the current user is in the list and move them to the top
                   final memberId = FirebaseAuth.instance.currentUser?.uid ?? '';
-                  if (a['id'] == memberId) return -1; // Move current user to top
-                  if (b['id'] == memberId) return 1; // Move current user to top
-                  return 0; // Keep order for other members
+                  if (a['id'] == memberId) return -1;
+                  if (b['id'] == memberId) return 1;
+                  return 0;
                 });
 
 
@@ -415,6 +341,8 @@ class _GroupOverviewState extends State<GroupOverview> {
 
 
   Widget _buildTransactionsTab() {
+    final DateFormat dateFormat = DateFormat('dd.MM.yyyy');
+
     List<Map<String, dynamic>> filteredTransactions = transactions.where((transaction) {
       return transaction['category'] != 'payment';
     }).toList();
@@ -442,12 +370,21 @@ class _GroupOverviewState extends State<GroupOverview> {
               itemCount: filteredTransactions.length,
               itemBuilder: (context, index) {
                 final transaction = filteredTransactions[index];
+
+                String formattedDate = 'unknown Date';
+                if (transaction['timestamp'] != null) {
+                  final timestamp = transaction['timestamp'];
+                  final dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+                  formattedDate = dateFormat.format(dateTime);
+                }
+
+
                 return Card(
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
                     title: Text(transaction['title']),
-                    subtitle: Text(transaction['category']),
+                    subtitle: Text("${transaction['category']} , $formattedDate"),
 
                     onTap: () {
                       Navigator.push(
@@ -492,17 +429,24 @@ class _GroupOverviewState extends State<GroupOverview> {
               itemCount: otherfilteredTransactions.length,
               itemBuilder: (context, index) {
                 final transaction = otherfilteredTransactions[index];
+
+                String formattedDate = 'unknown Date';
+                if (transaction['timestamp'] != null) {
+                  final timestamp = transaction['timestamp'];
+                  final dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+                  formattedDate = dateFormat.format(dateTime);
+                }
+
+
                 return Card(
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
                     title: Text(transaction['title']),
-                    // subtitle: Text(transaction['category']), //Example of additional detail
-                    subtitle: Text(transaction['involvementStatus']),
+                    subtitle: Text("${transaction['involvementStatus']} , $formattedDate"),
                     onTap: transaction['involvementStatus'] == "involved" && transaction['category'] != "payment"  ||
                         transaction['creatorID'] == currentUserId
                         ? () {
-                      print(transaction);
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -534,14 +478,15 @@ class _GroupOverviewState extends State<GroupOverview> {
   }
 
   Widget _buildPaymentsTab() {
+
+    final DateFormat dateFormat = DateFormat('dd.MM.yyyy');
+
     // Filter payments for "My Payments" and "Other Payments"
     List<Map<String, dynamic>> myPayments = transactions.where((transaction) {
       return transaction['category'] == 'payment' && transaction['creatorID'] == currentUserId;
     }).toList();
 
-    print("\n\n");
-    print(myPayments);
-    print("\n\n");
+
 
     List<Map<String, dynamic>> otherPayments = othertransactions.where((transaction) {
       return transaction['category'] == 'payment';
@@ -566,11 +511,21 @@ class _GroupOverviewState extends State<GroupOverview> {
               itemCount: myPayments.length,
               itemBuilder: (context, index) {
                 final payment = myPayments[index];
+
+                String formattedDate = 'unknown Date';
+                if (payment['timestamp'] != null) {
+                  final timestamp = payment['timestamp'];
+                  final dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+                  formattedDate = dateFormat.format(dateTime);
+                }
+
+
                 return Card(
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
                     title: Text("to ${payment['friends'].map((friend) => friend['name']).join(', ')}"),
+                    subtitle: Text("$formattedDate"), // Added date subtitle
                     trailing: Text(
                       "${payment['totalAmount']} €",
                       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -593,11 +548,21 @@ class _GroupOverviewState extends State<GroupOverview> {
               itemCount: otherPayments.length,
               itemBuilder: (context, index) {
                 final payment = otherPayments[index];
+
+                // Convert timestamp to readable date
+                String formattedDate = "Unknown Date";
+                if (payment['meta']?['timestamp'] != null) {
+                  final timestamp = payment['meta']['timestamp'];
+                  final dateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+                  formattedDate = dateFormat.format(dateTime);
+                }
+
                 return Card(
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
                     title: Text("From ${payment['creatorName']} to ${payment['friends'].map((friend) => friend['name']).join(', ')}"),
+                    subtitle: Text("Date: $formattedDate"), // Added date subtitle
                     trailing: Text(
                       "${payment['totalAmount']} €",
                       style: const TextStyle(fontWeight: FontWeight.bold),
@@ -624,8 +589,6 @@ class _GroupOverviewState extends State<GroupOverview> {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           return Center(child: Text("Error: ${snapshot.error}"));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text("No spending data available"));
         } else {
           final categoryTotals = snapshot.data!;
           final pieSections = categoryTotals.entries.map((entry) {
@@ -648,7 +611,7 @@ class _GroupOverviewState extends State<GroupOverview> {
                 const SizedBox(height: 8.0),
                 Expanded(
                   child: Padding(
-                    padding: const EdgeInsets.only(top: 8.0), // Adjust top padding here to move closer
+                    padding: const EdgeInsets.only(top: 8.0),
 
                     child: PieChart(
                     PieChartData(
@@ -669,8 +632,6 @@ class _GroupOverviewState extends State<GroupOverview> {
   }
 
 
-
-// Assign unique colors for each category
   Color _getCategoryColor(String category) {
     switch (category) {
       case 'payment':
@@ -688,12 +649,3 @@ class _GroupOverviewState extends State<GroupOverview> {
 
 
 }
-
-
-/*
-          // Skip if the member ID matches the current user ID
-          if (member['id'] == currentUserId) {
-            return const SizedBox.shrink(); // Return an empty widget
-          }
-
-           */
