@@ -104,6 +104,8 @@ export const groupJoin = onRequest(
     const group = await groupManager.getGroupByCode(groupCode);
     if (!group) {
       response.send({success: false});
+    } else if (group.memberCount >= 10) {
+      response.send({success: false, message: "Too many members"});
     } else {
       await groupManager.addMember(group.id, userID);
       response.send({success: true});
