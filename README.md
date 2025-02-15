@@ -54,6 +54,7 @@ Fairshare is an app designed to simplify the process of sharing and managing exp
 2. **Clone the Repository**:
    ```bash
    git clone https://github.com/khaledffm02/Info_Projekt.git
+   cd Info_Projekt\frontend
    flutter pub get
 
 4. **Run the App:**
