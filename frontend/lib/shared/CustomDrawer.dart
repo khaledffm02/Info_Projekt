@@ -58,19 +58,17 @@ class CustomDrawer extends StatelessWidget {
             title: const Text('Sign out'),
             onTap: () async {
               try {
-                //sign out the current user
                 await FirebaseAuth.instance.signOut();
 
-                // check if user got sign out
                 final currentUser = FirebaseAuth.instance.currentUser;
                 print('Current user after sign out: $currentUser');
 
 
-                Navigator.pushReplacementNamed(context, '/StartScreen');  //from stack deleted
+                Navigator.pushReplacementNamed(context, '/StartScreen');
               } catch (e) {
                 print('Fehler beim Abmelden: $e');
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('An error occurred while logging out. Please try again')),   //small pop up with message
+                  SnackBar(content: Text('An error occurred while logging out. Please try again')),
 
 
                 );

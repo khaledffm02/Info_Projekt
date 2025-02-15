@@ -142,7 +142,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                         context: context,
                         title: "Error",
                         content:
-                            'Password must be at least 12 characters long, include both uppercase and lowercase letters, and contain at least one of the following special characters: @\$!%*?&');
+                            'Password must be at least 12 characters long, include both uppercase and lowercase letters, and contain at least one number and one of the following special characters: @\$!%*?&');
                   }
                 },
                 child: const Text('Change Password'),

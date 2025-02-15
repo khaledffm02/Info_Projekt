@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/models/CurrencyStateModel.dart';
 import 'package:frontend/shared/ApiService.dart';
+import 'package:frontend/shared/CurrencyConvertingHelper.dart';
 import 'package:frontend/shared/DialogHelper.dart';
 import 'package:watch_it/watch_it.dart';
 
@@ -55,11 +56,16 @@ class _AddPaymentState extends State<AddPayment> {
         amount: amount,
       );
 
+      String amountConvertedToUserCurrency = "";
+      if (di<CurrencyStateModel>().userCurrency != "EUR"){
+        var currencyConvertingHelper = new CurrencyConvertingHelper();
+        amountConvertedToUserCurrency = " (${currencyConvertingHelper.convertSingleAmountToUserCurrency(amount, "EUR").toStringAsFixed(2)} ${di<CurrencyStateModel>().userCurrency})";
+      }
 
       DialogHelper.showDialogCustom(
         context: context,
         title: 'Success',
-        content: 'The Payment was sent',
+        content: 'The Payment of ${amount.toStringAsFixed(2)}€${amountConvertedToUserCurrency} has been sent',
         onConfirm: () {
           Navigator.pushNamed(
             context,

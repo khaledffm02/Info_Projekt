@@ -1,27 +1,29 @@
-import 'package:flutter/material.dart';
 
 class Validator {
-  // E-Mail-Validierungsmethode
+
   static String? validateEmail(String email) {
-    final emailRegex = RegExp(r'.+@.+\..+'); // Einfache Regex für E-Mail-Formatprüfung
+    final emailRegex = RegExp(r'.+@.+\..+');         //Redex for Email Format
     if (!emailRegex.hasMatch(email)) {
       return 'Please enter a valid email address';
     }
-    return null; // E-Mail ist gültig
+    return null;
   }
 
-  // Passwort-Validierungsmethode
   static bool validatePassword(String password) {
-    // Passwort muss mindestens 12 Zeichen lang sein, Groß- und Kleinbuchstaben sowie ein Sonderzeichen enthalten
+   // The password must be at least 12 characters long and include uppercase and lowercase letters, at least one digit, and at least special character.
+
     final passwordRegexMinor = RegExp(r'[a-z]');
     final passwordRegexMajor = RegExp(r'[A-Z]');
+    final passwordRegexNumber = RegExp(r'\d');
     final passwordRegexSpecialChar = RegExp(r'[@$!%*?&]');
     if (!passwordRegexMinor.hasMatch(password) ||
         !passwordRegexMajor.hasMatch(password) ||
-        !passwordRegexSpecialChar.hasMatch(password)) {
+        !passwordRegexNumber.hasMatch(password) ||
+        !passwordRegexSpecialChar.hasMatch(password) ||
+        password.length<12) {
 
       return false;
     }
-    return true; // Passwort ist gültig
+    return true;
   }
 }

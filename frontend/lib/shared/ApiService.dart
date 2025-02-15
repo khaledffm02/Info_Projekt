@@ -39,7 +39,7 @@ class ApiService {
                 .statusCode}');
       }
       await credential.user
-          ?.sendEmailVerification(); //Trigger for verification Email for registration
+          ?.sendEmailVerification();
     } catch (e) {
       rethrow;
     }
@@ -152,16 +152,13 @@ class ApiService {
 
   static Future<void> createGroup(BuildContext context, String groupName) async {
     try {
-      // Get the current user from Firebase Authentication
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception("User is not authenticated.");
       }
 
-      // Get the ID token from the current user
       final idToken = await user.getIdToken();
 
-      // Build the API request URL with the idToken as a query parameter
       final url = Uri.parse('https://groupcreate-icvq5uaeva-uc.a.run.app')
           .replace(queryParameters: {
         'idToken': idToken,
@@ -171,17 +168,14 @@ class ApiService {
       // Make the API call
       final response = await http.get(url);
 
-      // Check if the response indicates success
       if (response.statusCode != 200) {
         throw Exception("Failed to create group: ${response.body}");
       }
 
-      // Notify the user about the successful group creation
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Group created successfully!")),
       );
     } catch (e) {
-      // Log and notify the user of the error
       print("Error creating group: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
@@ -242,7 +236,6 @@ class ApiService {
     required String confirmPassword,
     required BuildContext context,
   }) async {
-    // Hole den aktuellen Benutzer
     User? user = FirebaseAuth.instance.currentUser;
 
     if (user == null) {
@@ -251,14 +244,12 @@ class ApiService {
       print(user.toString());
     }
 
-    // Überprüfen, ob die Passwörter übereinstimmen
     if (newPassword != confirmPassword) {
       throw Exception("The new passwords do not match.");
     }
 
 
     try {
-      // Erstelle die Anmeldeinformationen (Credential)
       final credential = EmailAuthProvider.credential(
         email: user.email ?? '',
         password: "test",
@@ -266,20 +257,17 @@ class ApiService {
       print(user.email);
       print(credential.toString());
 
-      // Reauthentifizierung
       await user.reauthenticateWithCredential(credential);
       print("Test2");
-      // Passwort aktualisieren
       await user.updatePassword(newPassword);
       print("test3");
-      // Erfolgsmeldung zurückgeben
+
       DialogHelper.showDialogCustom(
         context: context,
         title: "Confirmation",
         content: "Your password has been successfully changed.",
       );
     } catch (e) {
-      // Fehler werfen
       throw Exception("Failed to change password: $e");
     }
   }
@@ -467,7 +455,7 @@ class ApiService {
         // Extract the "balances" map
         Map<String, dynamic> balances = responseData['balances'] ?? {};
 
-        balances = await currencyConvertingHelper.convert(balances, groupId);
+        balances = await currencyConvertingHelper.convertUseridBalanceMap(balances, groupId);
 
         double totalOwedToOthers = 0.0; // Positive balances
         double totalOwedByOthers = 0.0; // Negative balances
@@ -573,16 +561,15 @@ class ApiService {
 
   static Future<Map<String, dynamic>>? getRates() async {
     User? user = FirebaseAuth.instance.currentUser;
-    print("API: current User is:" + user.toString());
     if (user == null) {
       throw Exception("No user is logged in.");
     }
 
 
-    // ID-Token des Benutzers abrufen
+
     String? idToken = await user.getIdToken();
     print("API:  Currentuser IDTocken is:" + idToken!);
-    // GET-Request senden (idToken als Query-Parameter)
+
     final uri = Uri.parse(
         'https://updaterates-icvq5uaeva-uc.a.run.app?idToken=$idToken');
     final response = await http.get(uri);
@@ -596,7 +583,7 @@ class ApiService {
       if (docSnapshot.exists) {
         final data = docSnapshot.data();
         if (data != null) {
-          return data; // Währungsraten als Map zurückgeben
+          return data;
         } else {
           throw Exception("Currencies document data is null.");
         }

@@ -6,7 +6,8 @@ import 'package:watch_it/watch_it.dart';
 
 class CurrencyConvertingHelper {
 String groupCurrencyName = "";
-   Future<Map<String, dynamic>> convert (Map<String, dynamic> sourceBalances, String groupId) async{
+
+   Future<Map<String, dynamic>> convertUseridBalanceMap (Map<String, dynamic> sourceBalances, String groupId) async{
 
 
      final docSnapshot = await FirebaseFirestore.instance
@@ -16,11 +17,9 @@ String groupCurrencyName = "";
 
 
      if (docSnapshot.exists) {
-       // Abrufen der Daten als Map
        Map<String, dynamic>? data = docSnapshot.data() as Map<String, dynamic>?;
 
        if (data != null && data.containsKey('currency')) {
-         // Zugriff auf das Feld 'currency'
          groupCurrencyName = data['currency'];
          print('Currency: $groupCurrencyName'); // Gibt 'EUR' aus
        } else {
@@ -35,13 +34,21 @@ String groupCurrencyName = "";
 
 
     sourceBalances.forEach((userId, balance) {
-      sourceBalances[userId] = CurrencyConversion(balance, groupRate, userRate);
+      sourceBalances[userId] = _CurrencyConversion(balance, groupRate, userRate);
     });
         }
    return sourceBalances;
  }
 
-  double CurrencyConversion(balance, double groupRate, double userRate) {
+double convertSingleAmountToUserCurrency(double amount, String? currencyName){
+     if (currencyName == null || currencyName.isEmpty) currencyName = "EUR";
+
+     var fromRate = di<CurrencyStateModel>().getRateOfCurrency(currencyName);
+     var toRate = di<CurrencyStateModel>().getRateOfCurrency(di<CurrencyStateModel>().userCurrency);
+     return _CurrencyConversion(amount, fromRate, toRate);
+}
+
+  double _CurrencyConversion(balance, double groupRate, double userRate) {
 return double.parse((balance * userRate / groupRate).toStringAsFixed(2));
   }
 }

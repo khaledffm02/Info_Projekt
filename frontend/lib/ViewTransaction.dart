@@ -1,7 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart';
+import 'package:frontend/shared/CurrencyConvertingHelper.dart';
 import 'package:frontend/shared/DialogHelper.dart';
+import 'package:watch_it/watch_it.dart';
+
+import 'models/CurrencyStateModel.dart';
 
 class ViewTransaction extends StatefulWidget {
   final Map<String, dynamic> transaction;
@@ -167,12 +171,20 @@ class _ViewTransactionState extends State<ViewTransaction> {
       String creatorName,
       double amountOwed,
       ) async {
+    String amountConvertedToUserCurrency = "";
+    if (di<CurrencyStateModel>().userCurrency != "EUR") {
+      var currencyConvertingHelper = new CurrencyConvertingHelper();
+      amountConvertedToUserCurrency =
+      " (${currencyConvertingHelper.convertSingleAmountToUserCurrency(
+          amountOwed, "EUR").toStringAsFixed(2)} ${di<CurrencyStateModel>()
+          .userCurrency})";
+    }
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Confirm Transaction"),
         content: Text(
-          "Do you confirm that you owe $creatorName €$amountOwed?",
+          "Do you confirm that you owe $creatorName €$amountOwed$amountConvertedToUserCurrency?",
         ),
         actions: [
           TextButton(
@@ -218,18 +230,25 @@ class _ViewTransactionState extends State<ViewTransaction> {
     }
   }
 
+
+
   Future<void> _showPaymentDialog(
       BuildContext context,
       String friendId,
       String creatorName,
       double amountOwed,
       ) async {
+    String amountConvertedToUserCurrency = "";
+    if (di<CurrencyStateModel>().userCurrency != "EUR"){
+      var currencyConvertingHelper = new CurrencyConvertingHelper();
+      amountConvertedToUserCurrency = " (${currencyConvertingHelper.convertSingleAmountToUserCurrency(amountOwed, "EUR").toStringAsFixed(2)} ${di<CurrencyStateModel>().userCurrency})";
+    }
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Add Payment"),
         content: Text(
-          "Do you confirm that you paid $creatorName €$amountOwed?",
+          "Do you confirm that you paid $creatorName €$amountOwed$amountConvertedToUserCurrency?",
         ),
         //ToDo Show in Other currency
         actions: [

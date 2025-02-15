@@ -15,6 +15,8 @@ class LogInScreen extends WatchingWidget {
   final TextEditingController _passwordController = TextEditingController();
 
   bool otpMode = false; //default
+  bool isButtonDisabled = false;
+  Timer? _lockoutTimer;
 
   Future<void> _login(BuildContext context, bool otpMode) async {
     final email = _emailController.text.trim();
@@ -51,6 +53,17 @@ class LogInScreen extends WatchingWidget {
           } catch (e) {
             print("Email was not sent: $e");
           }
+        }else if(failedLoginAttempts>=4){
+          _disableLoginButton();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'Log in failed. You have reached $failedLoginAttempts attempts. Login disabled for 30 seconds.',
+              ),
+            ),
+          );
+
+
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -105,6 +118,13 @@ class LogInScreen extends WatchingWidget {
     }
   }
 
+  void _disableLoginButton() {
+    isButtonDisabled = true;
+    _lockoutTimer = Timer(const Duration(seconds: 30), () {
+      isButtonDisabled = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     otpMode = watchPropertyValue((LogInStateModel x) => x.otpMode);
@@ -144,13 +164,17 @@ class LogInScreen extends WatchingWidget {
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () async {
+              onPressed: isButtonDisabled
+                  ? null
+                  : () async {
                 _login(context, otpMode);
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: Text("Log in"),
+              child: isButtonDisabled
+                  ? const Text("Login Disabled (30s)")
+                  : const Text("Log in"),
             ),
             const SizedBox(height: 16.0),
             TextButton(
