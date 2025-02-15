@@ -53,13 +53,10 @@ Fairshare is an app designed to simplify the process of sharing and managing exp
 
 2. **Clone the Repository**:
    ```bash
-   git clone https://github.com/khaledffm02/Info_Projekt.git]
-   cd Info_Projekt/frontend
-3. **Set Up Firebase:**
-    Link the project to Firebase.
-    Add your google-services.json (for Android) and GoogleService-Info.plist (for iOS) files to the respective directories.
-    Configure the .env file with your Firebase settings. In The Projekt you find the .env.example
+   git clone https://github.com/khaledffm02/Info_Projekt.git
+   cd Info_Projekt\frontend
+   flutter pub get
+
 4. **Run the App:**
       ```bash
       flutter run -d chrome   //Web Version
-      flutter run             //Android
