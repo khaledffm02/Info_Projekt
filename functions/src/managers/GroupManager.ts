@@ -15,6 +15,7 @@ import { getAuth } from "firebase-admin/auth";
 export class GroupManager {
   constructor(readonly db: FirebaseFirestore.Firestore) {}
 
+  // Create Group
   async createGroup(creatorID: string, currency: string, name?: string): Promise<string> {
     const creationTimestamp = Date.now();
     const groupCode = randomString(6).toUpperCase();
@@ -31,6 +32,7 @@ export class GroupManager {
     return groupRef.id;
   }
 
+  // Get Group
   async getGroup(id: string): Promise<Group> {
     const groupDoc = await this.db.collection("groups").doc(id).get();
     if (!groupDoc.exists) {
@@ -39,6 +41,7 @@ export class GroupManager {
     return new Group(groupDoc.id, groupDoc.data() as GroupJSON);
   }
 
+  // Get Group By Code
   async getGroupByCode(groupCode: string): Promise<Group | undefined> {
     const group = await this.db
       .collection("groups")
@@ -51,6 +54,7 @@ export class GroupManager {
     return new Group(doc.id, doc.data() as GroupJSON);
   }
 
+  // Add Member (to group)
   async addMember(groupID: string, memberID: string): Promise<void> {
     const groupRef = this.db.collection("groups").doc(groupID);
     await groupRef.update({
@@ -58,6 +62,7 @@ export class GroupManager {
     });
   }
 
+  // Remove member
   async removeMember(groupID: string, memberID: string): Promise<void> {
     const groupRef = this.db.collection("groups").doc(groupID);
     await groupRef.update({
@@ -65,10 +70,12 @@ export class GroupManager {
     });
   }
 
+  // Delete Group
   async deleteGroup(id: string): Promise<void> {
     await this.db.collection("groups").doc(id).delete();
   }
 
+  // Get Groups For User
   async getGroupsForUser(userID: string): Promise<Group[]> {
     const groupDocs = await this.db
       .collection("groups")
@@ -79,6 +86,7 @@ export class GroupManager {
     );
   }
 
+  // Change/Edit Group
   async changeGroup(
     groupID: string,
     changes: { name?: string; currency?: string }
@@ -93,6 +101,7 @@ export class GroupManager {
     });
   }
 
+  // User Login
   async userLogin(
     userID: string,
     options?: { preferredCurrency: string }
@@ -121,6 +130,7 @@ export class GroupManager {
     }
   }
 
+  // User Registration
   async userRegistration(
     userID: string,
     options: { firstName: string; lastName: string; currency: string }
@@ -150,6 +160,7 @@ export class GroupManager {
     }
   }
 
+  // Get Member
   async getMember(
     userID: string
   ): Promise<undefined | { name: string; currency: string }> {
@@ -161,6 +172,7 @@ export class GroupManager {
     return {name, currency};
   }
 
+  // Create Transaction
   async createTransaction(
     groupID: string,
     meta: { title: string; category?: string; storageURL?: string },
@@ -195,6 +207,7 @@ export class GroupManager {
     return transactionID;
   }
 
+  // Delete Transaction
   async deleteTransaction(groupID: string, transactionID: string) {
     const groupRef = this.db.collection("groups").doc(groupID);
     await groupRef.update({
@@ -203,6 +216,7 @@ export class GroupManager {
     return;
   }
 
+  // Add File to Transaction
   async addFileToTransaction(
     groupID: string,
     transactionID: string,
@@ -216,6 +230,7 @@ export class GroupManager {
     return;
   }
 
+  // Confirm Transaction
   async confirmTransaction(
     groupID: string,
     transactionID: string,
@@ -244,7 +259,7 @@ export class GroupManager {
     });
     return;
   }
-
+ // Delete User
   async deleteUser(userID: string) {
     const userDoc = this.db.collection("users").doc(userID);
     await userDoc.delete();
@@ -274,6 +289,7 @@ export class GroupManager {
     }
   }
 
+  // Set Group Reminders
   async setGroupReminder(groupID: string) {
     const futureThreeDays = 3 * 24 * 60 * 60 * 1000;
     const remindersRef = this.db.collection("reminders").doc(groupID);
@@ -282,6 +298,7 @@ export class GroupManager {
     });
   }
 
+  // Get Group Reminders for Set Date
   async getGroupRemindersForDate(timestamp = Date.now()): Promise<string[]> {
     const remindersRef = this.db.collection("reminders");
     const reminders = await remindersRef
@@ -294,7 +311,7 @@ export class GroupManager {
     return groupsToRemind;
   }
 
-
+// Get Login Attempts
 async getLoginAttempts(email: string): Promise<number> {
   const user = await getAuth().getUserByEmail(email);
   const userDoc = await this.db.collection("users").doc(user.uid).get();
@@ -305,6 +322,7 @@ async getLoginAttempts(email: string): Promise<number> {
   return 0;
 }
 
+// Increase Login Attempts
 async increaseLoginAttempts(email: string): Promise<boolean> {
   const user = await getAuth().getUserByEmail(email);
   const userDoc = this.db.collection("users").doc(user.uid);
@@ -317,6 +335,7 @@ async increaseLoginAttempts(email: string): Promise<boolean> {
   return false;
 }
 
+// Reset Login Attempts
 async resetLoginAttempts(email: string): Promise<boolean> {
   const user = await getAuth().getUserByEmail(email);
   const userDoc = this.db.collection("users").doc(user.uid);
@@ -329,3 +348,5 @@ async resetLoginAttempts(email: string): Promise<boolean> {
   return false;
 }
 }
+
+// -r.
