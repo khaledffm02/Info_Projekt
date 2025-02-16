@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/DialogHelper.dart';
 import 'package:frontend/shared/RatesService.dart';
+import 'package:frontend/shared/Validator.dart';
 import 'package:frontend/shared/showUnclosableDialog.dart';
 import 'package:watch_it/watch_it.dart';
 import 'dart:async';
@@ -23,6 +24,13 @@ class LogInScreen extends WatchingWidget {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
 
+    if (Validator.validateEmail(email) == false) {
+      DialogHelper.showDialogCustom(
+          context: context, title: "Error", content: "Enter a valid email"
+      );
+      return;
+    }
+
     if (email.isEmpty || password.isEmpty) {
       DialogHelper.showDialogCustom(
         context: context,
@@ -31,11 +39,11 @@ class LogInScreen extends WatchingWidget {
       );
       return;
     }
+
     try {
       var loginSuccess = await ApiService.loginUser(email, password);
 
       if (loginSuccess == false) {
-
         await ApiService.increaseLoginAttempts(email);
         var failedLoginAttempts = await ApiService.getLoginAttempts(email);
         di<LogInStateModel>().failedLoginAttempts = failedLoginAttempts;
@@ -49,15 +57,11 @@ class LogInScreen extends WatchingWidget {
           );
 
           try {
-            await ApiService.resetPassword(email);
+            await ApiService.resetPassword(email); //One Time Password is sent
           } catch (e) {
-            print("Email was not sent: $e");
+            print("OTP  was not sent: $e");
           }
-        }else if(failedLoginAttempts>=4){
-
-
-
-
+        } else if (failedLoginAttempts >= 4) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -66,14 +70,11 @@ class LogInScreen extends WatchingWidget {
             ),
           );
           showUnclosableDialog(context);
-
-
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'Log in failed. It is your attempt(s) ' +
-                    failedLoginAttempts.toString(),
+                'Log in failed. It is your attempt(s) $failedLoginAttempts',
               ),
             ),
           );
@@ -82,7 +83,8 @@ class LogInScreen extends WatchingWidget {
       }
 
       await RatesService.UpdateRates();
-      di<LogInStateModel>().failedLoginAttempts = await ApiService.getLoginAttempts(email);
+      di<LogInStateModel>().failedLoginAttempts =
+          await ApiService.getLoginAttempts(email);
 
       final user = FirebaseAuth.instance.currentUser;
       if (user?.emailVerified != true) {
@@ -90,14 +92,15 @@ class LogInScreen extends WatchingWidget {
           context: context,
           title: 'Error',
           content:
-          "You didn't confirm the email. Please click the link in your email to verify.",
+              "You didn't confirm the email. Please click the link in your email to verify.",
         );
         await FirebaseAuth.instance.signOut();
       }
 
       if (otpMode == false) {
         await ApiService.resetLoginAttempts(email);
-        di<LogInStateModel>().failedLoginAttempts = await ApiService.getLoginAttempts(email);
+        di<LogInStateModel>().failedLoginAttempts =
+            await ApiService.getLoginAttempts(email);
         di<LogInStateModel>().otpMode = false;
         DialogHelper.showDialogCustom(
           context: context,
@@ -120,9 +123,6 @@ class LogInScreen extends WatchingWidget {
       );
     }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -162,14 +162,12 @@ class LogInScreen extends WatchingWidget {
               ),
             ),
             const SizedBox(height: 16.0),
-
-
             ElevatedButton(
               onPressed: isButtonDisabled
                   ? null
                   : () async {
-                _login(context, otpMode);
-              },
+                      _login(context, otpMode);
+                    },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),
@@ -177,7 +175,6 @@ class LogInScreen extends WatchingWidget {
                   ? const Text("Login Disabled (30s)")
                   : const Text("Log in"),
             ),
-
             const SizedBox(height: 16.0),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/ForgotPassword'),
@@ -189,6 +186,3 @@ class LogInScreen extends WatchingWidget {
     );
   }
 }
-
-
-

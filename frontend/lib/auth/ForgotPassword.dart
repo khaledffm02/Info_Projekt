@@ -34,15 +34,14 @@ class ForgotPassword extends StatelessWidget {
             ElevatedButton(
               onPressed: () async {
                 final email = _emailController.text;
-                final errorMessage = Validator.validateEmail(email);
 
-                if (errorMessage != null) { //It shows Errormessage if the email is not correct
+                if (Validator.validateEmail(email) == false) {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
                         title: const Text('Invalid Email'),
-                        content: Text(errorMessage),
+                        content: const Text("Enter a valid email"),
                         actions: [
                           TextButton(
                             onPressed: () {
@@ -56,7 +55,7 @@ class ForgotPassword extends StatelessWidget {
                   );
                 } else {
                   try {
-                    ApiService.resetPassword(email);
+                    ApiService.resetPassword(email);   //One Time Password wird verschickt
                   }catch(e){
                     print("Email  was not sent: $e");
                   }
@@ -81,7 +80,7 @@ class ForgotPassword extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Fehler'),
+                        title: const Text('Error'),
                         content: const Text('Sending the OTP email has failed.'),
                         actions: [
                           TextButton(

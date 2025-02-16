@@ -42,7 +42,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                   color: Colors.black,
                 ),
               ),
-              // Old password
+              // Old password / One Time Password
               TextField(
                 controller: _oldPasswordController,
                 obscureText: true,
@@ -89,7 +89,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
 
                   if (newPassword != confirmPassword) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Passwords do not match')),
+                      const SnackBar(content: Text('Passwords do not match')),
                     );
                     return;
                   }
@@ -102,7 +102,7 @@ class _ChangePasswordWidgetState extends State<ChangePasswordWidget> {
                         email: emailTrimmed ?? '',
                         password: oldPassword,
                       );
-
+                    // Check if old password / One Time Passwort match
                       try {
                         await user.reauthenticateWithCredential(credential);
                         print('Reauthentication successful!');

@@ -1,12 +1,12 @@
 
 class Validator {
 
-  static String? validateEmail(String email) {
+  static bool validateEmail(String email) {
     final emailRegex = RegExp(r'.+@.+\..+');         //Redex for Email Format
     if (!emailRegex.hasMatch(email)) {
-      return 'Please enter a valid email address';
+      return false ;
     }
-    return null;
+    return true;
   }
 
   static bool validatePassword(String password) {
