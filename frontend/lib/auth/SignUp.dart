@@ -212,7 +212,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             DialogHelper.showDialogCustom(
                               context: context,
                               title: 'Error',
-                              content: 'An error occurred: $e',
+                              content: '$e',
                             );
                           }
                         }else{
