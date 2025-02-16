@@ -1,3 +1,6 @@
+import {test,expect} from "bun:test"
+import {Group} from "../functions/src/models/Group"
+
 
 test('calculates member count correctly', () => {
   const group = new Group('group1', {
