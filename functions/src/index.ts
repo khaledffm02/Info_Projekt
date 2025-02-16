@@ -31,6 +31,7 @@ const db = getFirestore();
 const groupManager = new GroupManager(db);
 
 // Currency Rate
+// Updates the exchange rate of a specified currency
 
 export const currencyRate = onRequest(
   {cors: true, secrets: [discordApiKey]},
@@ -47,6 +48,7 @@ export const currencyRate = onRequest(
 );
 
 // Group Create
+// Creates a new user group with the given name
 export const groupCreate = onRequest(
   {cors: true},
   async (request, response) => {
@@ -63,6 +65,7 @@ export const groupCreate = onRequest(
 );
 
 // Group Change
+// Updates the name or currency of an existing group
 export const groupChange = onRequest(
   {cors: true},
   async (request, response) => {
@@ -88,6 +91,7 @@ export const groupChange = onRequest(
 );
 
 // Group Delete
+// Deletes a specified group
 export const groupDelete = onRequest(
   {cors: true},
   async (request, response) => {
@@ -98,6 +102,7 @@ export const groupDelete = onRequest(
 );
 
 // Group Join
+// Allows a user to join a group using an invitation code
 export const groupJoin = onRequest(
   {cors: true},
   async (request, response) => {
@@ -120,6 +125,7 @@ export const groupJoin = onRequest(
 );
 
 // Group Leave
+// Allows a user to leave a group if their balance is zero
 export const groupLeave = onRequest(
   {cors: true},
   async (request, response) => {
@@ -141,6 +147,7 @@ export const groupLeave = onRequest(
 );
 
 // User Login
+// Handles user login and sets a preferred currency
 export const userLogin = onRequest(
   {cors: true},
   async (request, response) => {
@@ -151,6 +158,7 @@ export const userLogin = onRequest(
 );
 
 // User Registration
+// Registers a new user with first and last name, assigning a default currency
 export const userRegistration = onRequest(
   {cors: true},
   async (request, response) => {
@@ -167,6 +175,7 @@ export const userRegistration = onRequest(
 );
 
 // User Delete
+// Deletes a user if they have no outstanding balances in any group
 export const userDelete = onRequest(
   {cors: true},
   async (request, response) => {
@@ -185,6 +194,7 @@ export const userDelete = onRequest(
 );
 
 // Send New Password
+// Sends a new password via email and updates the user's credentials
 export const sendNewPassword = onRequest(
   {cors: true, secrets: [emailAccount, emailPassword]},
   async (request, response) => {
@@ -206,6 +216,7 @@ export const sendNewPassword = onRequest(
 );
 
 // Create Transaction
+// Creates a new financial transaction within a group, ensuring balances match
 export const createTransaction = onRequest(
   {cors: true},
   async (request, response) => {
@@ -256,6 +267,7 @@ export const createTransaction = onRequest(
 );
 
 // Confirm Transaction
+// Confirms a pending transaction within a group
 export const confirmTransaction = onRequest(
   {cors: true},
   async (request, response) => {
@@ -277,6 +289,7 @@ export const confirmTransaction = onRequest(
 );
 
 // Delete Transaction
+// Deletes a specified transaction from a group
 export const deleteTransaction = onRequest(
   {cors: true},
   async (request, response) => {
@@ -297,6 +310,7 @@ export const deleteTransaction = onRequest(
 );
 
 // Add Payment
+// Records a payment between two users and sends a notification email
 export const addPayment = onRequest(
   {cors: true, secrets: [emailAccount, emailPassword]},
   async (request, response) => {
@@ -351,6 +365,7 @@ export const addPayment = onRequest(
 );
 
 // Add File to Transaction
+// Attaches a file to a specific transaction in a group
 export const addFileToTransaction = onRequest(
   {cors: true},
   async (request, response) => {
@@ -375,6 +390,7 @@ export const addFileToTransaction = onRequest(
 );
 
 // Get Group Balance
+// Retrieves the balance details of a group
 export const getGroupBalance = onRequest(
   {cors: true},
   async (request, response) => {
@@ -400,6 +416,7 @@ export const getGroupBalance = onRequest(
 );
 
 // Update Rates
+// Updates currency exchange rates using an external API
 export const updateRates = onRequest(
   {cors: true, secrets: [currencyKey]},
   async (request, response) => {
@@ -420,7 +437,8 @@ export const updateRates = onRequest(
   }
 );
 
-// extract Information
+// Extract Information
+// Extracts expense details from an uploaded receipt image using AI
 export const extractInformation = onRequest(
   {cors: true, secrets: [openaiToken]},
   async (request, response) => {
@@ -471,6 +489,7 @@ export const extractInformation = onRequest(
 );
 
 // Send Reminders
+// Sends reminder emails to users with outstanding balances in a group
 export const sendReminders = onRequest(
   {cors: true, secrets: [emailAccount, emailPassword]},
   async (request, response) => {
@@ -514,6 +533,7 @@ export const sendReminders = onRequest(
 );
 
 // Get Login Attempts
+// Retrieves the number of failed login attempts for a given email
 export const getLoginAttempts = onRequest(
   {cors: true},
   async (request, response) => {
@@ -529,6 +549,7 @@ export const getLoginAttempts = onRequest(
 );
 
 // Increase Login Attempts
+// Increments the failed login attempt count for a given email
 export const increaseLoginAttempts = onRequest(
   {cors: true},
   async (request, response) => {
@@ -544,6 +565,7 @@ export const increaseLoginAttempts = onRequest(
 );
 
 // Reset Login Attempts
+// Resets the failed login attempt count for a given email
 export const resetLoginAttempts = onRequest(
   {cors: true},
   async (request, response) => {
@@ -559,6 +581,7 @@ export const resetLoginAttempts = onRequest(
 );
 
 // Send Invitations
+// Sends an email invitation to a user to join a specific group using the group's invitation code
 export const sendInvitation = onRequest(
   {cors: true, secrets: [emailAccount, emailPassword]},
   async (request, response) => {
@@ -600,6 +623,7 @@ export const sendInvitation = onRequest(
 );
 
 // Scheduler
+// A scheduled function that runs every 5 minutes to send reminders to group mmbers with outstanding balances
 exports.scheduledFunctionCrontab = onSchedule("*/5 * * * *", async () => {
   const groups = await groupManager.getGroupRemindersForDate();
   const getEndpoint = (groupID: string) =>
