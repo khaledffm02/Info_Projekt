@@ -18,13 +18,12 @@ class _DashboardState extends State<Dashboard> {
   late double totalowedto;
   late double totalowedby;
   bool _isloadingtotalowedto = true;
-  final bool _isloadingtotalowedby = true;
 
 
   @override
   void initState() {
     super.initState();
-    _fetchGroups();// Fetch groups on widget initialization
+    _fetchGroups();
     _showTotalBalance();
     _showTotalBalance();
   }
@@ -36,7 +35,6 @@ class _DashboardState extends State<Dashboard> {
       final double totalOwedToOthers = balances['totalOwedToOthers']!;
       final double totalOwedByOthers = balances['totalOwedByOthers']!;
 
-      final double netBalance = totalOwedToOthers + totalOwedByOthers;
 
       setState(() {
         totalowedto = totalOwedToOthers;
@@ -44,18 +42,6 @@ class _DashboardState extends State<Dashboard> {
         _isloadingtotalowedto = false;
       });
 
-      /*
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Owed to others: €$totalOwedToOthers\n"
-                "Owed by others: ${di<CurrencyStateModel>().userCurrency}${totalOwedByOthers.abs()}\n"
-                "Net balance: ${netBalance >= 0 ? '${di<CurrencyStateModel>().userCurrency} $netBalance (You owe)' : '${di<CurrencyStateModel>().userCurrency} ${netBalance.abs()} (You are owed)'}",          ),
-        ),
-
-
-      );
-*/
 
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -66,10 +52,6 @@ class _DashboardState extends State<Dashboard> {
 
 
 
-
-
-
-  // Fetch groups from Firestore
   Future<void> _fetchGroups() async {
     try {
       final groups = await GroupService.getUserGroups();
@@ -98,7 +80,6 @@ class _DashboardState extends State<Dashboard> {
       ),
       body: Column(
         children: [
-          // Balance Section
           Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 4.0),
@@ -113,9 +94,9 @@ class _DashboardState extends State<Dashboard> {
             _isloadingtotalowedto
                 ? const Center(child: CircularProgressIndicator()) :
             ListView.builder(
-              shrinkWrap: true, // Prevents scrolling within the small list
+              shrinkWrap: true,
               padding: const EdgeInsets.all(16.0),
-              itemCount: 2, // Two items: "You owe" and "You are owed"
+              itemCount: 2,
               itemBuilder: (context, index) {
                 final data = [
                   {"label": "You owe", "amount": totalowedto},
@@ -140,7 +121,6 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
 
-          // Title for Groups Section
           Container(
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
@@ -150,7 +130,6 @@ class _DashboardState extends State<Dashboard> {
             ),
           ),
 
-          // Groups ListView
           Expanded(
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator())
@@ -165,17 +144,15 @@ class _DashboardState extends State<Dashboard> {
                   elevation: 2.0,
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   child: ListTile(
-                    //title: Text(group['id']), // Display group document ID
-                    title: Text(group['data']['name']), // Display group document ID
+                    title: Text(group['data']['name']),
                     trailing: const Icon(Icons.chevron_right),
                     onTap: () {
-                      // Navigate to GroupOverview
                       Navigator.pushNamed(
                         context,
                         '/GroupOverview',
                         arguments: {
-                          'groupId': group['id'], // Pass the group ID
-                          'groupName': group['data']['name'] ?? group['id'],// Use group name or fallback to ID
+                          'groupId': group['id'],
+                          'groupName': group['data']['name'] ?? group['id'],
                           'groupCode': group['data']['groupCode']
                         },
                       );

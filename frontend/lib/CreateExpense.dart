@@ -2,12 +2,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/DialogHelper.dart';
-import 'package:number_editing_controller/number_editing_controller.dart';
 
 
 
 class CreateExpense extends StatefulWidget {
-  final List<Map<String, dynamic>> members; //// List of group members
+  final List<Map<String, dynamic>> members;
   final String groupName;
   final String groupId;
   final String groupCode;
@@ -21,7 +20,6 @@ class CreateExpense extends StatefulWidget {
 class _CreateExpenseState extends State<CreateExpense> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _amountController = TextEditingController();
-  final Controller = NumberEditingTextController.currency(currencyName: 'EUR');
   String? selectedPayer;
   Map<String, double> distributedAmounts = {};
   String? selectedCategory;
@@ -31,20 +29,17 @@ class _CreateExpenseState extends State<CreateExpense> {
     'Entertainment',
     'Other'
   ];
-  Map<String, String> hintText = {};
 
 
   @override
   void initState() {
     super.initState();
-    // Initialize distributedAmounts with 0.00 for all members
-    distributedAmounts.clear();  // Leere die Liste zuerst
+    distributedAmounts.clear();
     for (var member in widget.members) {
       if (!member['name'].toString().startsWith("deleted")) {
         distributedAmounts[member['name']] = 0.0;
       }
     }
-    print(widget.groupName);
   }
 
   double roundToTwo(double value) {
@@ -112,7 +107,7 @@ class _CreateExpenseState extends State<CreateExpense> {
         DialogHelper.showDialogCustom(
             context: context,
             title: 'Error',
-            content: 'Please type in the total amount.'
+            content: 'Enter a valid total amount first.'
         );
         return;
       }
@@ -169,7 +164,7 @@ class _CreateExpenseState extends State<CreateExpense> {
 
                             // Percentage input field
                             Expanded(
-                              flex: 2,  // Increased column width to give more space
+                              flex: 2,
                               child: TextField(
                                 keyboardType: TextInputType.number,
                                 controller: percentageControllers[memberName],
@@ -221,13 +216,11 @@ class _CreateExpenseState extends State<CreateExpense> {
                               ),
                             ),
                             const SizedBox(width: 8.0),
-
-                            // Dynamic value display
                             Expanded(
                               flex: 2,
                               child: Text(
                                 "€${distributedAmounts[memberName]
-                                    ?.toStringAsFixed(2) /* ?? "0.00*/}",
+                                    ?.toStringAsFixed(2) }",
                                 style: const TextStyle(fontSize: 16.0),
                               ),
                             ),
@@ -288,13 +281,11 @@ class _CreateExpenseState extends State<CreateExpense> {
         return;
       }
 
-      // Map member IDs to names (this should be passed correctly from the previous screen)
       final Map<String, String> idToNameMap = {
         for (var member in widget.members) member['id']: member['name'],
       };
 
 
-      // Get the payer ID from the selected payer name
       String? payerID = idToNameMap.entries
           .firstWhere(
             (entry) => entry.value == selectedPayer,
@@ -311,13 +302,11 @@ class _CreateExpenseState extends State<CreateExpense> {
         return;
       }
 
-      // Calculate the payer's amount from distributedAmounts (their portion of the total)
-      final payerAmount = distributedAmounts[selectedPayer] ?? 0.0;
 
       // Prepare userParam for the payer (with correct amount)
       final Map<String, dynamic> userParam = {
         "id": payerID,
-        "value": amount /*- payerAmount*/,
+        "value": amount,
       };
 
 
@@ -371,18 +360,7 @@ class _CreateExpenseState extends State<CreateExpense> {
         return;
       }
 
-      /*
-    if (payerAmount <= 0)  {
-      DialogHelper.showDialogCustom(
-          context: context,
-          title: 'Error',
-          content: 'Write the users portion.'
-      );
-      return;
-    }
-*/
 
-      // Prepare the request body
       final Map<String, dynamic> requestBody = {
         "groupID": widget.groupId,
         "title": _titleController.text,
@@ -396,16 +374,13 @@ class _CreateExpenseState extends State<CreateExpense> {
 
 
       try {
-        // Call the API to join the group
         await ApiService.createTransaction(request);
 
-        // Show success dialog
         DialogHelper.showDialogCustom(
           context: context,
           title: 'Success',
           content: 'You created the transaction',
           onConfirm: () {
-            //Navigator.pushNamed(context, '/Dashboard'); // Navigate to the dashboard
             Navigator.pushNamed(
               context,
               '/GroupOverview',
@@ -419,11 +394,10 @@ class _CreateExpenseState extends State<CreateExpense> {
 
         );
       } catch (error) {
-        // Show error dialog if the group code is invalid or another error occurred
         DialogHelper.showDialogCustom(
           context: context,
           title: 'Error',
-          content: error.toString(), // Show the error message
+          content: error.toString(),
         );
       }
     }

@@ -1,4 +1,3 @@
-// new Join Group
 
 import 'package:flutter/material.dart';
 
@@ -35,15 +34,9 @@ class JoinGroup extends StatelessWidget {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: () async{
-                // Revalidating beim Klicken auf den Button
                 final code = _codeController.text;
-
-
                 try {
-                  // Call the API to join the group
                  await ApiService.joinGroup(context, code);
-
-                  // Show success dialog
                  DialogHelper.showDialogCustom(
                      context: context,
                      title: 'Success',
@@ -63,7 +56,6 @@ class JoinGroup extends StatelessWidget {
                   );
 
                 }
-
 
               },
               child: const Text('Validate Code'),

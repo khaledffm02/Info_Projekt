@@ -27,19 +27,18 @@ class ViewTransaction extends StatefulWidget {
 
 class _ViewTransactionState extends State<ViewTransaction> {
   late String currentUserId;
-  late bool isConfirmedByCurrentUser; // Variable to track if current user confirmed the transaction
+  late bool isConfirmedByCurrentUser;
 
   @override
   void initState() {
     super.initState();
-    // Get the current user's ID from Firebase Authentication
     currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
 
     // Check if the current user has already confirmed the transaction
     final friends = widget.transaction['friends'];
     final friend = friends.firstWhere(
           (f) => f['friendId'] == currentUserId,
-      orElse: () => <String, dynamic>{}, // Use Map<String, dynamic> as the fallback
+      orElse: () => <String, dynamic>{},
     );
     isConfirmedByCurrentUser = friend.isNotEmpty && friend['isConfirmed'] == true;
   }
@@ -49,9 +48,8 @@ class _ViewTransactionState extends State<ViewTransaction> {
     final transaction = widget.transaction;
     final friends = transaction['friends'];
     final bool isCreator = transaction['creatorID'] == currentUserId;
-    final groupId = widget.groupId;
 
-    // Find the friend that matches the current user and has an amount owed
+    // friend that matches the current user and has an amount owed
     final currentUserFriend = friends.firstWhere(
           (f) => f['friendId'] == currentUserId,
       orElse: () => <String, dynamic>{},
@@ -62,7 +60,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(transaction['title']), // Page header
+        title: Text(transaction['title']),
         centerTitle: true,
       ),
       body: Padding(
@@ -70,14 +68,12 @@ class _ViewTransactionState extends State<ViewTransaction> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            //if (!isCreator) ...[
               const Text(
                 "Friends' Shares:",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               _buildFriendsList(friends, isCreator, transaction),
-           // ],
             const SizedBox(height: 16),
             const Text(
               "Creator Info:",
@@ -94,8 +90,6 @@ class _ViewTransactionState extends State<ViewTransaction> {
             ),
             const SizedBox(height: 16),
 
-
-            // Show the Add Payment Button only if the current user owes money and the transaction is confirmed
             if (!isCreator && amountOwed > 0 && isConfirmedByCurrentUser) ...[
               ElevatedButton(
                 onPressed: () => _showPaymentDialog(
@@ -206,18 +200,16 @@ class _ViewTransactionState extends State<ViewTransaction> {
 
   Future<void> _confirmTransaction(String friendId) async {
     try {
-      // Call your API method to confirm the transaction in Firestore
       await ApiService.confirmTransaction(
         transactionId: widget.transaction['id'],
         groupId: widget.groupId,
       );
 
-      // Find the friend in the `friends` list and update their `isConfirmed` status
       setState(() {
         final friend = widget.transaction['friends']
             .firstWhere((f) => f['friendId'] == friendId);
         friend['isConfirmed'] = true;
-        isConfirmedByCurrentUser = true; // Update local confirmation state
+        isConfirmedByCurrentUser = true;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -292,7 +284,7 @@ class _ViewTransactionState extends State<ViewTransaction> {
             context,
             '/GroupOverview',
             arguments: {
-              'groupId': widget.groupId, // Pass the group ID
+              'groupId': widget.groupId,
               'groupName': widget.groupName,
               'groupCode': widget.groupCode,
             },

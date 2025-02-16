@@ -152,6 +152,7 @@ class ApiService {
 
   static Future<void> createGroup(BuildContext context, String groupName) async {
     try {
+
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception("User is not authenticated.");
@@ -165,7 +166,6 @@ class ApiService {
         'groupName' : groupName
       });
 
-      // Make the API call
       final response = await http.get(url);
 
       if (response.statusCode != 200) {
@@ -176,6 +176,7 @@ class ApiService {
         const SnackBar(content: Text("Group created successfully!")),
       );
     } catch (e) {
+
       print("Error creating group: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
@@ -185,13 +186,11 @@ class ApiService {
 
   static Future<void> joinGroup(BuildContext context, String groupCode) async {
     try {
-      // Get the current user from Firebase Authentication
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) {
         throw Exception("User is not authenticated.");
       }
 
-      // Check if the groupCode exists in Firestore
       final groupDoc = await FirebaseFirestore.instance
           .collection('groups') // Adjust this to your Firestore structure
           .where('groupCode', isEqualTo: groupCode)
@@ -202,25 +201,20 @@ class ApiService {
         throw Exception("Group with code $groupCode does not exist.");
       }
 
-      // Get the ID token from the current user
       final idToken = await user.getIdToken();
 
-      // Build the API request URL with the idToken as a query parameter
       final url = Uri.parse('https://groupjoin-icvq5uaeva-uc.a.run.app')
           .replace(queryParameters: {
         'idToken': idToken,
         'groupCode': groupCode,
       });
 
-      // Make the API call
       final response = await http.get(url);
 
-      // Check if the response indicates success
       if (response.statusCode != 200) {
         throw Exception("Failed to join group: ${response.body}");
       }
 
-      // Notify the user about the successful group creation
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Group joined successfully!")),
       );
@@ -361,7 +355,6 @@ class ApiService {
         throw Exception("User is not authenticated.");
       }
 
-      // Get the ID token from the current user
       final idToken = await user.getIdToken();
 
       final url = Uri.parse(endpointURL).replace(queryParameters: {
@@ -369,7 +362,6 @@ class ApiService {
         'request': requestBody,
       });
 
-      print(url);
 
       final response = await http.get(url);
 
@@ -385,7 +377,6 @@ class ApiService {
     }
   }
 
-  // get memberbalance
 
   static Future<Map<String, dynamic>> getMemberbalance(String groupId,
       String uid) async {
@@ -404,8 +395,6 @@ class ApiService {
         'groupID': groupId,
       });
 
-      print("Fetching balances...");
-      print("URL: $url");
 
       final response = await http.get(url);
 
@@ -425,7 +414,6 @@ class ApiService {
     }
   }
 
-  // get groupbalance
 
   static getGroupBalance(String groupId, String uid) async {
     const String endpointURL =
@@ -438,7 +426,6 @@ class ApiService {
         throw Exception("User is not authenticated.");
       }
 
-      // Get the ID token from the current user
       final idToken = await user.getIdToken();
 
       final url = Uri.parse(endpointURL).replace(queryParameters: {
@@ -449,34 +436,15 @@ class ApiService {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
-        // Parse the response body
+
         final Map<String, dynamic> responseData = jsonDecode(response.body);
 
-        // Extract the "balances" map
         Map<String, dynamic> balances = responseData['balances'] ?? {};
 
         balances = await currencyConvertingHelper.convertUseridBalanceMap(balances, groupId);
 
         double totalOwedToOthers = 0.0; // Positive balances
         double totalOwedByOthers = 0.0; // Negative balances
-
-        /*
-
-        balances.forEach((userId, balance) {
-          if (userId == uid) {
-            // Skip the user's own ID
-            return;
-          }
-
-          final double balanceValue = balance.toDouble();
-
-          if (balanceValue < 0) {
-            totalOwedToOthers += balanceValue;
-          } else if (balanceValue > 0) {
-            totalOwedByOthers += balanceValue;
-          }
-        });
-        */
 
 
         balances.forEach((userId, balance) {
@@ -497,10 +465,6 @@ class ApiService {
         });
 
 
-        print(
-            "Processed group balance for $groupId: Owed to others: $totalOwedToOthers, Owed by others: $totalOwedByOthers");
-
-        // Return the calculated balances
         return {
           'owedToOthers': totalOwedToOthers,
           'owedByOthers': totalOwedByOthers,
@@ -515,16 +479,14 @@ class ApiService {
     }
   }
 
-  // add payment
 
   static Future<void> addPayment({
-    //required String transactionId,
     required String groupId,
     required String? toId,
     required String fromId,
     required double amount}) async {
     const String endpointURL =
-        "https://addpayment-icvq5uaeva-uc.a.run.app"; // Replace with your actual endpoint
+        "https://addpayment-icvq5uaeva-uc.a.run.app";
 
     try {
       final user = FirebaseAuth.instance.currentUser;
@@ -538,12 +500,9 @@ class ApiService {
         'groupId': groupId,
         'idToken': idToken,
         'fromID': fromId,
-        //'transactionId': transactionId,
-        'toID': toId, // Include toId in the query parameters
-        'amount': amount.toString(), // Convert amount to string
+        'toID': toId,
+        'amount': amount.toString(),
       });
-
-      print(url);
 
       final response = await http.get(url);
 
@@ -681,7 +640,6 @@ class ApiService {
         'groupID': groupID,
       });
 
-      print(url);
 
       final response = await http.get(url);
 
