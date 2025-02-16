@@ -95,6 +95,7 @@ class LogInScreen extends WatchingWidget {
               "You didn't confirm the email. Please click the link in your email to verify.",
         );
         await FirebaseAuth.instance.signOut();
+        return;
       }
 
       if (otpMode == false) {
