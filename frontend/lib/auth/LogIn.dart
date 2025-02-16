@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/DialogHelper.dart';
 import 'package:frontend/shared/RatesService.dart';
+import 'package:frontend/shared/showUnclosableDialog.dart';
 import 'package:watch_it/watch_it.dart';
 import 'dart:async';
 import '../models/LogInStateModel.dart';
 import 'dart:developer' as developer;
+import 'package:timer_button/timer_button.dart';
 
 class LogInScreen extends WatchingWidget {
   LogInScreen({super.key});
@@ -16,7 +18,6 @@ class LogInScreen extends WatchingWidget {
 
   bool otpMode = false; //default
   bool isButtonDisabled = false;
-  Timer? _lockoutTimer;
 
   Future<void> _login(BuildContext context, bool otpMode) async {
     final email = _emailController.text.trim();
@@ -30,7 +31,6 @@ class LogInScreen extends WatchingWidget {
       );
       return;
     }
-//ToDo with more that 4 Try in snackbar
     try {
       var loginSuccess = await ApiService.loginUser(email, password);
 
@@ -54,7 +54,10 @@ class LogInScreen extends WatchingWidget {
             print("Email was not sent: $e");
           }
         }else if(failedLoginAttempts>=4){
-          _disableLoginButton();
+
+
+
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
@@ -62,6 +65,7 @@ class LogInScreen extends WatchingWidget {
               ),
             ),
           );
+          showUnclosableDialog(context);
 
 
         } else {
@@ -78,7 +82,7 @@ class LogInScreen extends WatchingWidget {
       }
 
       await RatesService.UpdateRates();
-      print(di<LogInStateModel>().failedLoginAttempts);
+      di<LogInStateModel>().failedLoginAttempts = await ApiService.getLoginAttempts(email);
 
       final user = FirebaseAuth.instance.currentUser;
       if (user?.emailVerified != true) {
@@ -93,8 +97,7 @@ class LogInScreen extends WatchingWidget {
 
       if (otpMode == false) {
         await ApiService.resetLoginAttempts(email);
-        di<LogInStateModel>().failedLoginAttempts =
-        await ApiService.getLoginAttempts(email);
+        di<LogInStateModel>().failedLoginAttempts = await ApiService.getLoginAttempts(email);
         di<LogInStateModel>().otpMode = false;
         DialogHelper.showDialogCustom(
           context: context,
@@ -118,12 +121,8 @@ class LogInScreen extends WatchingWidget {
     }
   }
 
-  void _disableLoginButton() {
-    isButtonDisabled = true;
-    _lockoutTimer = Timer(const Duration(seconds: 30), () {
-      isButtonDisabled = false;
-    });
-  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +162,8 @@ class LogInScreen extends WatchingWidget {
               ),
             ),
             const SizedBox(height: 16.0),
+
+
             ElevatedButton(
               onPressed: isButtonDisabled
                   ? null
@@ -176,6 +177,7 @@ class LogInScreen extends WatchingWidget {
                   ? const Text("Login Disabled (30s)")
                   : const Text("Log in"),
             ),
+
             const SizedBox(height: 16.0),
             TextButton(
               onPressed: () => Navigator.pushNamed(context, '/ForgotPassword'),
