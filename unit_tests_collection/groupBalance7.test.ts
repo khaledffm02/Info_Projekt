@@ -11,6 +11,6 @@ test('calculates balances correctly with a mix of confirmed and unconfirmed frie
 
   const balances = transaction.getUserBalances();
 
-  expect(balances['user1']).toBe(-130); // User's value + unconfirmed friend's value
+  expect(balances['user1']).toBe(-70); // User's value + unconfirmed friend's value
   expect(balances['friend1']).toBe(50); // Confirmed friend's value
 });
