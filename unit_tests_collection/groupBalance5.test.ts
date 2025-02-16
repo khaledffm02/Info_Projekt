@@ -1,3 +1,6 @@
+import {test,expect} from "bun:test"
+import {Transaction} from "../functions/src/models/Transaction"
+
 
 test('calculates balances correctly when all friends are confirmed', () => {
   const transaction = new Transaction(
