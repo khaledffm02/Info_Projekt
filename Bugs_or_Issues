@@ -16,3 +16,5 @@ RESOLVED Issue - Verified to frontend getLoginAttempts endpoint is functioning p
 
 Resolved Issue - Issue with new member of a group which contained transaction previously being given a charge upon entry into new group.
 - Performed various tests outside of the applocation system. Conclusion, backend endpoint was properly working. Frontend implementation error.
+
+Open Issue (mentioned less than 2 days before deadline, on weekend) - Reminders not sending emails...
