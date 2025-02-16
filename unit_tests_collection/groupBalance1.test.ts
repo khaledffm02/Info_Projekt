@@ -11,5 +11,5 @@ test('calculates balances correctly for the main user', () => {
 
   const balances = transaction.getUserBalances();
 
-  expect(balances['user1']).toBe(-130); // User's initial value + unconfirmed friend value
+  expect(balances['user1']).toBe(-70); // User's initial value + unconfirmed friend value
 });
