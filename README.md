@@ -1,27 +1,28 @@
 # Fairshare - Flutter & Firebase App
 
-Fairshare is an app designed to simplify the process of sharing and managing expenses. Built with Flutter and Firebase, alongside a JavaScript backend, it enables users to split expenses within a group, track payments, and view statistics.
+Fairshare is an app designed to simplify the process of sharing and managing expenses. Built with Flutter and Firebase, orchestrated by a TypeScript backend, it enables users to split expenses within a group, track payments, and view statistics.
 
 ## 🚀 Features
 
 - **User-Friendly Login**:
-  - Standard login with access to the dashboard.
-  - Password reset via email OTP with mandatory password update.
-  - Account unlock with OTP and mandatory password change.
-  - Email verification for added security.
-
+  - Seamless & secure authentication.
+  - Easy account recovery & protection.
+  
 - **Dynamic Expense Management**:
   - Overview of all transactions and shared expenses.
   - Smart cost distribution among group members.
 
 - **Firebase Integration**:
-  - Authentication with email and password.
-  - Password and OTP management.
-  - Secure storage and retrieval of data via Firebase Firestore.
-
+  - Real-time updates and sync of group transactions and balances
+  - Utilizes Firestore for real-time, scalable storage and retrieval of user and transaction data
+ 
 - **Modern User Interface**:
   - Intuitive design using Flutter widgets.
   - Responsive layout for multiple platforms (iOS, Android, Web).
+
+- **Backend Architecture & Security**
+  - Secure backend built with TypeScript and Google Cloud Functions, handling authentication, data validation, and error tracing scalable for millions of users.
+  - Robust error logging, secure password management, and customized email handling ensure smooth user interactions while safeguarding sensitive information.
 
 ## 📱 Screens
 
@@ -40,7 +41,8 @@ Fairshare is an app designed to simplify the process of sharing and managing exp
     - Authentication
     - Firestore
     - Firebase Hosting (optional)
-  - JavaScript for backend logic (in Backend branch)
+  - TypeScript for backend logic (in Backend branch)
+  - nodeJS Cloud Functions
 - **Configuration**: `flutter_dotenv` for environment variables.
 
 ## 🛠️ Installation
