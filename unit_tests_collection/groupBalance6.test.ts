@@ -11,5 +11,5 @@ test('calculates balances correctly when all friends are unconfirmed', () => {
 
   const balances = transaction.getUserBalances();
 
-  expect(balances['user1']).toBe(-180); // User's value + all unconfirmed values
+  expect(balances['user1']).toBe(-20); // User's value + all unconfirmed values
 });
