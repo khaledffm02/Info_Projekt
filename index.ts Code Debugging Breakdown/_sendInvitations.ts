@@ -2,12 +2,15 @@ import { onRequest } from "firebase-functions/v2/https";
 import { getUserID } from "./auth";
 import { groupManager } from "./config";
 
+// Function/method to send invitation email to a user
 export const sendInvitation = onRequest(
-    {cors: true, secrets: [emailAccount, emailPassword]},
+    {cors: true, secrets: [emailAccount, emailPassword]}, // Enable CORS and use secrets for email account and password
     async (request, response) => {
-      const groupID = request.query.groupID as string;
-      const email = request.query.email as string;
-      const {userID} = await getUserID(request);
+      const groupID = request.query.groupID as string; // Get the group ID from the request query
+      const email = request.query.email as string; // Get the email from the request query
+      const {userID} = await getUserID(request);// Get the user ID from the request
+
+      // Check if required parameters are present
       if (!groupID || !userID || !email) {
         response.send({
           success: false,
@@ -16,7 +19,7 @@ export const sendInvitation = onRequest(
         });
         return;
       }
-      const group = await groupManager.getGroup(groupID);
+      const group = await groupManager.getGroup(groupID); // Get the group data using the group ID
       if (!group) {
         response.send({
           success: false,
@@ -25,6 +28,7 @@ export const sendInvitation = onRequest(
         });
         return;
       }
+      // Send an email with the invitation details
       await sendMail({
         account: emailAccount.value(),
         password: emailPassword.value(),
@@ -38,6 +42,6 @@ export const sendInvitation = onRequest(
               in the app to join.</b>`,
       });
   
-      response.send({success: true});
+      response.send({success: true}); // Send success status in response
     }
   );
