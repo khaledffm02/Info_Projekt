@@ -1,3 +1,6 @@
+import {test,expect} from "bun:test"
+import {Transaction} from "../functions/src/models/Transaction"
+
 
 test('handles zero and negative values correctly', () => {
   const transaction = new Transaction(
