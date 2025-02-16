@@ -28,5 +28,5 @@ test('calculates balances correctly for multiple transactions', () => {
   const balances = group.getBalances();
 
   expect(balances['user1']).toBe(-70); // (-100 from dinner + 30 from taxi)
-  expect(balances['user2']).toBe(20); // (50 from dinner - 60 from taxi)
+  expect(balances['user2']).toBe(-10); // (50 from dinner - 60 from taxi)
 });
