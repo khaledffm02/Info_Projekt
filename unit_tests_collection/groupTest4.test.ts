@@ -2,6 +2,9 @@ import {test,expect} from "bun:test"
 import {Transaction} from "../functions/src/models/Transaction"
 import {Group} from "../functions/src/models/Group"
 
+// Test to calculate balances correctly for mulitple transactions
+// First transaction: user1 pays 100, user2 contributes 50
+
 test('calculates balances correctly for multiple transactions', () => {
   const transaction1 = new Transaction(
     { title: 'Dinner', timestamp: Date.now(), category: 'Food', storageURL: undefined },
@@ -9,12 +12,14 @@ test('calculates balances correctly for multiple transactions', () => {
     { user2: { value: 50, isConfirmed: true } }
   );
 
+  // Second transaction: user2 pays 60, user1 contributes 30
   const transaction2 = new Transaction(
     { title: 'Taxi', timestamp: Date.now(), category: 'Transport', storageURL: undefined },
     { userID: 'user2', value: 60 },
     { user1: { value: 30, isConfirmed: true } }
   );
 
+  // Create a group and add both transaction
   const group = new Group('group1', {
     creatorID: 'user1',
     creationTimestamp: Date.now(),
