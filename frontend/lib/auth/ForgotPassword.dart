@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/models/LogInStateModel.dart';
 import 'package:frontend/shared/ApiService.dart';
 import 'package:frontend/shared/Validator.dart';
+import 'package:watch_it/watch_it.dart';
 
 
 class ForgotPassword extends StatelessWidget {
@@ -56,6 +58,7 @@ class ForgotPassword extends StatelessWidget {
                 } else {
                   try {
                     ApiService.resetPassword(email);   //One Time Password wird verschickt
+                    di<LogInStateModel>().failedLoginAttempts=3;   // otpMode set auf true. Only possibility to do this
                   }catch(e){
                     print("Email  was not sent: $e");
                   }
