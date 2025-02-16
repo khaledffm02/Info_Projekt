@@ -485,7 +485,7 @@ export const sendReminders = onRequest(
           html: `<b>Hi ${user.name}, 
             you have open payments to take action on 
             in your group "${group.data.name}". 
-            Open: ${balance} ${group.data.currency} EUR</b>`,
+            Open: ${balance} ${group.data.currency}</b>`,
         });
       }
     }
