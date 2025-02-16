@@ -10,6 +10,8 @@ import {
 import {FieldValue} from "firebase-admin/firestore";
 import { getAuth } from "firebase-admin/auth";
 
+// Define the GroupManager class
+//Constructor to initialize the class with a Firestore database
 export class GroupManager {
   constructor(readonly db: FirebaseFirestore.Firestore) {}
 
