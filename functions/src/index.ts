@@ -30,6 +30,8 @@ initializeApp();
 const db = getFirestore();
 const groupManager = new GroupManager(db);
 
+// Currency Rate
+
 export const currencyRate = onRequest(
   {cors: true, secrets: [discordApiKey]},
   async (request, response) => {
@@ -44,6 +46,7 @@ export const currencyRate = onRequest(
   }
 );
 
+// Group Create
 export const groupCreate = onRequest(
   {cors: true},
   async (request, response) => {
@@ -59,6 +62,7 @@ export const groupCreate = onRequest(
   }
 );
 
+// Group Change
 export const groupChange = onRequest(
   {cors: true},
   async (request, response) => {
@@ -83,6 +87,7 @@ export const groupChange = onRequest(
   }
 );
 
+// Group Delete
 export const groupDelete = onRequest(
   {cors: true},
   async (request, response) => {
@@ -92,6 +97,7 @@ export const groupDelete = onRequest(
   }
 );
 
+// Group Join
 export const groupJoin = onRequest(
   {cors: true},
   async (request, response) => {
@@ -113,6 +119,7 @@ export const groupJoin = onRequest(
   }
 );
 
+// Group Leave
 export const groupLeave = onRequest(
   {cors: true},
   async (request, response) => {
@@ -133,6 +140,7 @@ export const groupLeave = onRequest(
   }
 );
 
+// User Login
 export const userLogin = onRequest(
   {cors: true},
   async (request, response) => {
@@ -142,6 +150,7 @@ export const userLogin = onRequest(
   }
 );
 
+// User Registration
 export const userRegistration = onRequest(
   {cors: true},
   async (request, response) => {
@@ -157,6 +166,7 @@ export const userRegistration = onRequest(
   }
 );
 
+// User Delete
 export const userDelete = onRequest(
   {cors: true},
   async (request, response) => {
@@ -174,6 +184,7 @@ export const userDelete = onRequest(
   }
 );
 
+// Send New Password
 export const sendNewPassword = onRequest(
   {cors: true, secrets: [emailAccount, emailPassword]},
   async (request, response) => {
@@ -194,6 +205,7 @@ export const sendNewPassword = onRequest(
   }
 );
 
+// Create Transaction
 export const createTransaction = onRequest(
   {cors: true},
   async (request, response) => {
@@ -243,6 +255,7 @@ export const createTransaction = onRequest(
   }
 );
 
+// Confirm Transaction
 export const confirmTransaction = onRequest(
   {cors: true},
   async (request, response) => {
@@ -263,6 +276,7 @@ export const confirmTransaction = onRequest(
   }
 );
 
+// Delete Transaction
 export const deleteTransaction = onRequest(
   {cors: true},
   async (request, response) => {
@@ -282,6 +296,7 @@ export const deleteTransaction = onRequest(
   }
 );
 
+// Add Payment
 export const addPayment = onRequest(
   {cors: true, secrets: [emailAccount, emailPassword]},
   async (request, response) => {
@@ -335,6 +350,7 @@ export const addPayment = onRequest(
   }
 );
 
+// Add File to Transaction
 export const addFileToTransaction = onRequest(
   {cors: true},
   async (request, response) => {
@@ -358,6 +374,7 @@ export const addFileToTransaction = onRequest(
   }
 );
 
+// Get Group Balance
 export const getGroupBalance = onRequest(
   {cors: true},
   async (request, response) => {
@@ -382,7 +399,7 @@ export const getGroupBalance = onRequest(
   }
 );
 
-
+// Update Rates
 export const updateRates = onRequest(
   {cors: true, secrets: [currencyKey]},
   async (request, response) => {
@@ -403,6 +420,7 @@ export const updateRates = onRequest(
   }
 );
 
+// extract Information
 export const extractInformation = onRequest(
   {cors: true, secrets: [openaiToken]},
   async (request, response) => {
@@ -452,6 +470,7 @@ export const extractInformation = onRequest(
   }
 );
 
+// Send Reminders
 export const sendReminders = onRequest(
   {cors: true, secrets: [emailAccount, emailPassword]},
   async (request, response) => {
@@ -494,6 +513,7 @@ export const sendReminders = onRequest(
   }
 );
 
+// Get Login Attempts
 export const getLoginAttempts = onRequest(
   {cors: true},
   async (request, response) => {
@@ -508,6 +528,7 @@ export const getLoginAttempts = onRequest(
   }
 );
 
+// Increase Login Attempts
 export const increaseLoginAttempts = onRequest(
   {cors: true},
   async (request, response) => {
@@ -522,6 +543,7 @@ export const increaseLoginAttempts = onRequest(
   }
 );
 
+// Reset Login Attempts
 export const resetLoginAttempts = onRequest(
   {cors: true},
   async (request, response) => {
@@ -536,6 +558,7 @@ export const resetLoginAttempts = onRequest(
   }
 );
 
+// Send Invitations
 export const sendInvitation = onRequest(
   {cors: true, secrets: [emailAccount, emailPassword]},
   async (request, response) => {
@@ -576,6 +599,7 @@ export const sendInvitation = onRequest(
   }
 );
 
+// Scheduler
 exports.scheduledFunctionCrontab = onSchedule("*/5 * * * *", async () => {
   const groups = await groupManager.getGroupRemindersForDate();
   const getEndpoint = (groupID: string) =>
@@ -584,3 +608,5 @@ exports.scheduledFunctionCrontab = onSchedule("*/5 * * * *", async () => {
     groups.map((groupID) => fetch(getEndpoint(groupID)))
   );
 });
+
+// -r. 
