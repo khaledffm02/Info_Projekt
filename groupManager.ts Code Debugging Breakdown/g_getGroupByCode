@@ -1,0 +1,14 @@
+// Method to get a group a group by its code
+export async function getGroupByCode(db: Firestore, groupCode: string): Promise<Group | undefined> {
+    // Query the database for a group with the given code
+  const group = await db
+    .collection("groups")
+    .where("groupCode", "==", groupCode)
+    .get();
+    // Return undefined if no group is found
+  if (group.docs.length === 0) {
+    return;
+  }
+  const doc = group.docs[0];
+  return new Group(doc.id, doc.data() as GroupJSON);
+}
