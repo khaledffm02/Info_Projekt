@@ -1,6 +1,6 @@
 import {test,expect} from "bun:test"
 import {Transaction} from "../functions/src/models/Transaction"
-
+import {Group} from "../functions/src/models/Group"
 
 test('calculates balances correctly for multiple transactions', () => {
   const transaction1 = new Transaction(
