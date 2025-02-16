@@ -1,3 +1,5 @@
+import {test,expect} from "bun:test"
+import {Group} from "../functions/src/models/Group"
 
 test('calculates balances correctly when there are no transactions', () => {
   const group = new Group('group1', {
