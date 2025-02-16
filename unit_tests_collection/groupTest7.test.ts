@@ -1,6 +1,6 @@
 import {test,expect} from "bun:test"
 import {Transaction} from "../functions/src/models/Transaction"
-
+import {Group} from "../functions/src/models/Group"
 
 test('handles transactions with zero values correctly', () => {
   const transaction = new Transaction(
