@@ -1,6 +1,7 @@
 class Currency {
 
 
+  //curency class for User currency
 
   String name = "";
   int id = 0;

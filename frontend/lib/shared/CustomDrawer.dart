@@ -66,7 +66,7 @@ class CustomDrawer extends StatelessWidget {
 
                 Navigator.pushReplacementNamed(context, '/StartScreen');
               } catch (e) {
-                print('Fehler beim Abmelden: $e');
+                print('Error during sign out: $e');
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(content: Text('An error occurred while logging out. Please try again')),
 

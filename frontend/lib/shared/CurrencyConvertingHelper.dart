@@ -23,10 +23,10 @@ String groupCurrencyName = "";
          groupCurrencyName = data['currency'];
          print('Currency: $groupCurrencyName'); // Gibt 'EUR' aus
        } else {
-         print('Das Feld "currency" ist nicht verfügbar.');
+         print('Das Field currency is not avaliable.');
        }
      } else {
-       print("Das Dokument mit der ID $groupId wurde nicht gefunden.");
+       print("The Document with ID: $groupId don't exist.");
      }
      if (groupCurrencyName != di<CurrencyStateModel>().userCurrency){
     var groupRate = di<CurrencyStateModel>().getRateOfCurrency(groupCurrencyName);

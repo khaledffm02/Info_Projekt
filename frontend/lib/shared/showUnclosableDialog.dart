@@ -23,12 +23,12 @@ class _UnclosableDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const AlertDialog(
-      title: Text("Login gesperrt"),
-      content: Text("Bitte warte 30 Sekunden, bevor du es erneut versuchst."),
+      title: Text("Login disabled"),
+      content: Text("You have to wait 30 seconds to try again"),
       actions: [
         TextButton(
           onPressed: null, //Button is not activ
-          child: Text("Warten...", style: TextStyle(color: Colors.grey)),
+          child: Text("Wait...", style: TextStyle(color: Colors.grey)),
         ),
       ],
     );

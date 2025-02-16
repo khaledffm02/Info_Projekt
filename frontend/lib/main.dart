@@ -16,8 +16,7 @@ void main() async {
     await dotenv.load(fileName: ".env");
     print("Dotenv geladen: ${dotenv.env}");
   } catch (e) {
-    print("Fehler beim Laden der .env-Datei: ${e.toString()}");
-    print("Fehler beim Laden der .env-Datei: $e");
+    print("Error during loading .env File: ${e.toString()}");
 
   }
 

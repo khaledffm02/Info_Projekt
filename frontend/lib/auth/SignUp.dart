@@ -164,7 +164,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ],
               ),
               const SizedBox(height: 16.0),
-              ElevatedButton(
+              ElevatedButton(   //only of AGB button is checked , the user is able to proceed
                 onPressed: isChecked
                     ? () async {
                         final firstname = _firstnameController.text.trim();
@@ -187,7 +187,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           return;
                         }
 
-                        // Password match validation
                         if (password != confirmPassword) {
                           DialogHelper.showDialogCustom(
                             context: context,
@@ -197,7 +196,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           return;
                         }
                         if (Validator.validatePassword(password)) {
-                          // Register user using the ApiService
                           try {
                             await ApiService.registerUser(
                                 email, password, firstname, lastname);

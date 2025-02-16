@@ -48,7 +48,7 @@ class LogInScreen extends WatchingWidget {
         var failedLoginAttempts = await ApiService.getLoginAttempts(email);
         di<LogInStateModel>().failedLoginAttempts = failedLoginAttempts;
 
-        if (di<LogInStateModel>().failedLoginAttempts == 3) {
+        if (di<LogInStateModel>().failedLoginAttempts == 3) {   // in set method from failedLoginAttempt otpMode will be set to true.
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text(
@@ -163,17 +163,13 @@ class LogInScreen extends WatchingWidget {
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: isButtonDisabled
-                  ? null
-                  : () async {
-                      _login(context, otpMode);
-                    },
+              onPressed: () async {
+                _login(context, otpMode);
+              },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: isButtonDisabled
-                  ? const Text("Login Disabled (30s)")
-                  : const Text("Log in"),
+              child: const Text("Log in"),
             ),
             const SizedBox(height: 16.0),
             TextButton(

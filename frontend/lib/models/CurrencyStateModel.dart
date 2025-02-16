@@ -6,7 +6,7 @@ class CurrencyStateModel extends ChangeNotifier {
   List<Currency> _currencies = [
     new Currency("CHF", 1, 0),
     new Currency("CNY", 2, 0),
-    new Currency("EUR", 3, 0),
+    new Currency("EUR", 3, 0),     //Currency List for User Settings
     new Currency("GBP", 4, 0),
     new Currency("JPY", 5, 0),
     new Currency("USD", 6, 0),

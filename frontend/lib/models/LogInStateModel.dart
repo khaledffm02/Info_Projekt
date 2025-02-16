@@ -8,7 +8,7 @@ class LogInStateModel extends ChangeNotifier {
   int _failedLoginAttempts = 0;
 
   int get failedLoginAttempts => _failedLoginAttempts;
-  int lockDuration = 30;
+
   set failedLoginAttempts(int value) {
 
     _failedLoginAttempts=value;
