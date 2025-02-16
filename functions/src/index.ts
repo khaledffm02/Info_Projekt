@@ -466,8 +466,7 @@ export const sendReminders = onRequest(
     }
     const group = await groupManager.getGroup(groupID);
     const balances = group.getBalances();
-    // eslint-disable-next-line guard-for-in
-    for (const entries in Object.entries(balances)) {
+    for (const entries of Object.entries(balances)) {
       const userID = entries[0];
       const balance = Number(entries[1]);
       if (balance > 0) {
