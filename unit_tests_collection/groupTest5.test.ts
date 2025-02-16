@@ -1,3 +1,6 @@
+import {test,expect} from "bun:test"
+import {Transaction} from "../functions/src/models/Transaction"
+
 
 test('retrieves balance correctly for a specific user', () => {
   const transaction = new Transaction(
