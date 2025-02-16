@@ -3,95 +3,120 @@ ENDPOINTS:
 addFileToTransaction
   - https://addfiletotransaction-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID, transactionID, fileName
+  - Attaches a file to a specific transaction in a group
 
 addPayment
   - https://addpayment-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupId, fromId, toId, amount
+  - Records a payment between two users and sends a notification email
 
 confirmTransaction
   - https://confirmtransaction-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID, transactionID
+  - Confirms a pending transaction within a group
 
 createTransaction
   - https://createtransaction-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, “request” (JSON stringified object)
+  - Creates a new financial transaction within a group, ensuring balances match
 
-currencyRate
+currencyRate 
   - https://currencyrate-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, currencyID
+  - Updates the exchange rate of a specified currency
 
 deleteTransaction
   - https://deletetransaction-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID, transactionID
+  - Deletes a specified transaction from a group
 
 extractInformation
   - https://extractinformation-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, fileName
+  - Extracts expense details from an uploaded receipt image using AI
 
 getGroupBalance
   - https://getgroupbalance-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID
+  - Retrieves the balance details of a group
 
 getLoginAttempts
   - https://getloginattempts-icvq5uaeva-uc.a.run.app
   - Parameters: email
+  - Retrieves the number of failed login attempts for a given email
 
 groupChange
   - https://groupchange-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID, groupName, groupCurrency (name and currency are optional parameters)
+  - Updates the name or currency of an existing group
 
 groupCreate
   - https://groupcreate-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupName
+  - Creates a new user group with the given name
 
 groupDelete
   - https://groupdelete-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID
+  - Deletes a specified group
 
 groupJoin
   - https://groupjoin-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupCode
+  - Allows a user to join a group using an invitation code
 
 groupLeave
   - https://groupleave-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID
+  - Allows a user to leave a group if their balance is zero
 
 increaseLoginAttempts
   - https://increaseloginattempts-icvq5uaeva-uc.a.run.app
   - Parameters: email
+  - Increments the failed login attempt count for a given email
 
 resetLoginAttempts
   - https://resetloginattempts-icvq5uaeva-uc.a.run.app
   - Parameters: email
+  - Resets the failed login attempt count for a given email 
+
 
 scheduledFunctionCrontab
   - */5 * * * *
   - (no parameters internally fetches groupIDs and sends reminders)
+  - A scheduled function that runs every 5 minutes to send reminders to group mmbers with outstanding balances
 
 sendInvitation: 
   - https://sendinvitation-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, email, groupID
+  - Sends an email invitation to a user to join a specific group using the group's invitation code
 
 sendNewPassword
   - https://sendnewpassword-icvq5uaeva-uc.a.run.app
   - Parameters: email
+  - Sends a new password via email and updates the user's credentials
 
 sendReminders
   - https://sendreminders-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, groupID
+  - Sends reminder emails to users with outstanding balances in a group
 
 updateRates
   - https://updaterates-icvq5uaeva-uc.a.run.app
   - Parameters: idToken
+  - Updates currency exchange rates using an external API
 
 userDelete
   - https://userdelete-icvq5uaeva-uc.a.run.app
   - Parameters: idToken
+  - Deletes a user if they have no outstanding balances in any group
 
 userLogin
   - https://userlogin-icvq5uaeva-uc.a.run.app
   - Parameters: idToken
+  - Handles user login and sets a preferred currency
 
 userRegistration
   - https://userregistration-icvq5uaeva-uc.a.run.app
   - Parameters: idToken, firstName, lastName
+  - Registers a new user with first and last name, assigning a default currency
