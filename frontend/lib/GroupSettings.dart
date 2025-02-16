@@ -98,7 +98,9 @@ class _GroupSettingsState extends State<GroupSettings> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          if (email.isNotEmpty && Validator.validateEmail(email) == null) {
+                         String? validationResult = Validator.validateEmail(email);
+
+                          if (email.isNotEmpty && validationResult == null) {
 
                             try{
                             await ApiService.sendInvitation( email: email, groupID: widget.groupId, );
